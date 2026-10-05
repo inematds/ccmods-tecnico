@@ -30,5 +30,6 @@ Edite `context/corpos/`, rode `python3 scripts/montar.py` e `python3 scripts/lin
 
 ## Mais no INEMA.CLUB
 
+- [Ficha completa deste curso](https://www.inema.club/cursos/314-mods-do-claude-code-o-curso-tecnico/)
 - [Guia: como aprender inteligência artificial](https://www.inema.club/aprender-inteligencia-artificial/)
 - [Todos os cursos](https://www.inema.club/cursos/)

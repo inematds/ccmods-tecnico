@@ -31,8 +31,10 @@ DESC = ('Curso técnico gratuito do INEMA.CLUB: escreva, teste e distribua mods 
         'register, eventos, cadeia com next, estado, faixa, painéis, comandos, guardas e claude plugin test.')
 
 
-BACKLINKS = ('<p class="mt-2"><a href="https://www.inema.club/aprender-inteligencia-artificial/" class="underline">Guia: como aprender inteligência artificial</a>'
-             ' · <a href="https://www.inema.club/cursos/" class="underline">Todos os cursos</a></p>\n      ')
+BACKLINKS = ('<!-- inema-backlink:v1 -->\n      <p style="display:block;width:100%;text-align:center;font-size:.85rem;margin:.75rem 0 0;opacity:.85">'
+             '<a href="https://www.inema.club/cursos/314-mods-do-claude-code-o-curso-tecnico/" style="color:inherit;text-decoration:underline">Ficha completa deste curso no INEMA.CLUB</a>'
+             ' · <a href="https://www.inema.club/aprender-inteligencia-artificial/" style="color:inherit;text-decoration:underline">Guia: como aprender inteligência artificial</a></p>\n'
+             '      <!-- /inema-backlink:v1 -->\n      ')
 
 CONTINUAR = '''  <script>
     // "Continuar de onde parei": lê o último módulo visitado (gravado pelo learn.js)
