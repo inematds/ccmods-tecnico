@@ -8,6 +8,7 @@
 - Capa (flux, cena temática). Repo inematds/ccmods-tecnico publicado (05a9576), Pages via Actions configurado.
 
 ## Falta
+- Prompts de entrevista (inema-mods + prompts-prontos): ver ~/projetos/output/cursos-mods/CONTINUAR-PROMPTS-ENTREVISTA.md
 - Pages no ar (incidente do GitHub Actions: runners não alocam; vigia em scratchpad/vigia-pages.sh redispara). Depois: portal (curso em platformsData + trilha 🖥️ Claude Code + updatesData + enrichment curso:ccmods-tecnico).
 - Pendências paralelas desta sessão:
   - claude-mods-starter-kit: Pages travado no incidente do GitHub Actions; redisparado run 37368206172. Depois: registrar EN/ES em portal/src/data/translated-courses.ts.
