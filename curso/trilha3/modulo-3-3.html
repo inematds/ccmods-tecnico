@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="inema-course" content="ccmt">
+  <title>Painéis e botões | Mods do Claude Code — técnico</title>
+  <meta name="description" content="Curso técnico gratuito do INEMA.CLUB: escreva, teste e distribua mods do Claude Code — register, eventos, cadeia com next, estado, faixa, painéis, comandos, guardas e claude plugin test.">
+
+  <!-- ANTI-FOUC: bloqueante, ANTES do Tailwind -->
+  <script>
+  (function () {
+    try {
+      var html = document.documentElement;
+      var DEF = { theme: 'inema-dark', font: 'inter', fontScale: 100, lineWidth: 68, leading: 1.7, accent: 'emerald' };
+      function clone(o) { var r = {}; for (var x in o) r[x] = o[x]; return r; }
+      var p = clone(DEF);
+      try {
+        var raw = localStorage.getItem('inema.prefs');
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') { for (var k in DEF) if (parsed[k] != null) p[k] = parsed[k]; }
+        } else {
+          var legacy = localStorage.getItem('theme');
+          if (legacy === 'light') p.theme = 'claro'; else if (legacy === 'dark') p.theme = 'inema-dark';
+        }
+      } catch (e) { p = clone(DEF); }
+      var THEMES = {
+        'inema-dark': { dark: true,  attr: null,        cs: 'dark'  },
+        'claro':      { dark: false, attr: null,        cs: 'light' },
+        'sepia':      { dark: false, attr: 'sepia',     cs: 'light' },
+        'foco':       { dark: null,  attr: 'foco',      cs: null    },
+        'contraste':  { dark: true,  attr: 'contraste', cs: 'dark'  }
+      };
+      var t = THEMES[p.theme] || THEMES['inema-dark'];
+      if (t.dark === true) html.classList.add('dark'); else if (t.dark === false) html.classList.remove('dark');
+      if (t.attr) html.setAttribute('data-theme', t.attr); else html.removeAttribute('data-theme');
+      html.style.colorScheme = (t.cs ? t.cs : (html.classList.contains('dark') ? 'dark' : 'light'));
+      html.setAttribute('data-font', p.font || 'inter');
+      html.setAttribute('data-accent', p.accent || 'emerald');
+      var s = html.style; var scale = (+p.fontScale || 100);
+      s.setProperty('--inema-font-scale', (scale / 100).toString());
+      s.setProperty('font-size', scale + '%');
+      s.setProperty('--measure', (+p.lineWidth || 68) + 'ch');
+      s.setProperty('--lh-body', (+p.leading || 1.7).toString());
+      var fam = p.font === 'system' ? 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif'
+        : (p.font === 'leitura' ? '"Atkinson Hyperlegible", "Inter", system-ui, sans-serif' : '"Inter", system-ui, sans-serif');
+      s.setProperty('--font-body', fam);
+      var ACC = { emerald: [152,76,45], blue: [217,91,60], purple: [258,90,66], amber: [38,92,50], teal: [174,72,41], rose: [350,89,60] };
+      var a = ACC[p.accent] || ACC.emerald;
+      s.setProperty('--accent-h', a[0]+''); s.setProperty('--accent-s', a[1]+'%'); s.setProperty('--accent-l', a[2]+'%');
+      s.setProperty('--accent', 'hsl('+a[0]+' '+a[1]+'% '+a[2]+'%)');
+    } catch (err) { try { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme = 'dark'; } catch(e){} }
+  })();
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class', theme: { extend: { colors: {
+      primary: '#FACC15', dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' } } } } }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/learn.css">
+
+  <!-- Manifesto do curso (OBRIGATORIO em TODA pagina, identico) -->
+  <script type="application/json" data-inema-manifest>
+  {"course":"ccmt","tracks":[{"n":"1","title":"Anatomia","modules":[{"id":"1-1","title":"O que é um mod por dentro","topics":6,"href":"curso/trilha1/modulo-1-1.html"},{"id":"1-2","title":"Estrutura de arquivos e manifesto","topics":6,"href":"curso/trilha1/modulo-1-2.html"},{"id":"1-3","title":"Carregar, recarregar e instalar","topics":6,"href":"curso/trilha1/modulo-1-3.html"},{"id":"1-4","title":"Seu primeiro mod: comando e contador","topics":6,"href":"curso/trilha1/modulo-1-4.html"}]},{"n":"2","title":"Eventos e estado","modules":[{"id":"2-1","title":"O mapa de eventos","topics":6,"href":"curso/trilha2/modulo-2-1.html"},{"id":"2-2","title":"A cadeia: next, reescrever e responder","topics":6,"href":"curso/trilha2/modulo-2-2.html"},{"id":"2-3","title":"Estado que sobrevive","topics":6,"href":"curso/trilha2/modulo-2-3.html"},{"id":"2-4","title":"Trabalho fora do dispatch","topics":6,"href":"curso/trilha2/modulo-2-4.html"}]},{"n":"3","title":"Telas e comandos","modules":[{"id":"3-1","title":"ui.render e as superfícies","topics":6,"href":"curso/trilha3/modulo-3-1.html"},{"id":"3-2","title":"Faixa, status e avisos","topics":6,"href":"curso/trilha3/modulo-3-2.html"},{"id":"3-3","title":"Painéis e botões","topics":6,"href":"curso/trilha3/modulo-3-3.html"},{"id":"3-4","title":"Comandos, ferramentas e configuração","topics":6,"href":"curso/trilha3/modulo-3-4.html"}]},{"n":"4","title":"Controlar e distribuir","modules":[{"id":"4-1","title":"Mods que mudam o fluxo","topics":6,"href":"curso/trilha4/modulo-4-1.html"},{"id":"4-2","title":"Testar com claude plugin test","topics":6,"href":"curso/trilha4/modulo-4-2.html"},{"id":"4-3","title":"Depurar e as pegadinhas","topics":6,"href":"curso/trilha4/modulo-4-3.html"},{"id":"4-4","title":"Distribuir e projeto final","topics":6,"href":"curso/trilha4/modulo-4-4.html"}]}]}
+  </script>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .dark body { background-color: #111827; }
+
+    /* Light mode - base */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-200 { color: #1f2937; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #6b7280; }
+    html:not(.dark) .text-white { color: #111827; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* Light mode - acentos das 5 trilhas (emerald, blue, purple, amber, teal) */
+    html:not(.dark) .text-emerald-400 { color: #059669; }
+    html:not(.dark) .bg-emerald-500\/20 { background-color: rgba(5, 150, 105, 0.12); }
+    html:not(.dark) .bg-emerald-500\/10 { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .bg-emerald-900\/20 { background-color: rgba(5, 150, 105, 0.07); }
+    html:not(.dark) .border-emerald-500\/30 { border-color: rgba(5, 150, 105, 0.25); }
+    html:not(.dark) .hover\:bg-emerald-500\/30:hover { background-color: rgba(5, 150, 105, 0.18); }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:bg-emerald-500\/10:hover { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-emerald-400 { color: #059669; }
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .bg-blue-500\/20 { background-color: rgba(37, 99, 235, 0.12); }
+    html:not(.dark) .bg-blue-500\/10 { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .bg-blue-900\/20 { background-color: rgba(37, 99, 235, 0.07); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37, 99, 235, 0.25); }
+    html:not(.dark) .hover\:bg-blue-500\/30:hover { background-color: rgba(37, 99, 235, 0.18); }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:bg-blue-500\/10:hover { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-blue-400 { color: #2563eb; }
+    html:not(.dark) .text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .bg-purple-500\/20 { background-color: rgba(124, 58, 237, 0.12); }
+    html:not(.dark) .bg-purple-500\/10 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .bg-purple-900\/20 { background-color: rgba(124, 58, 237, 0.07); }
+    html:not(.dark) .border-purple-500\/30 { border-color: rgba(124, 58, 237, 0.25); }
+    html:not(.dark) .hover\:bg-purple-500\/30:hover { background-color: rgba(124, 58, 237, 0.18); }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+    html:not(.dark) .hover\:bg-purple-500\/10:hover { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .text-amber-400 { color: #92400e; }
+    html:not(.dark) .bg-amber-500\/20 { background-color: rgba(217, 119, 6, 0.12); }
+    html:not(.dark) .bg-amber-500\/10 { background-color: rgba(217, 119, 6, 0.08); }
+    html:not(.dark) .bg-amber-900\/20 { background-color: rgba(217, 119, 6, 0.07); }
+    html:not(.dark) .border-amber-500\/30 { border-color: rgba(217, 119, 6, 0.25); }
+    html:not(.dark) .hover\:bg-amber-500\/30:hover { background-color: rgba(217, 119, 6, 0.18); }
+    html:not(.dark) .hover\:text-amber-400:hover { color: #92400e; }
+    html:not(.dark) .hover\:bg-amber-500\/10:hover { background-color: rgba(217, 119, 6, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-amber-400 { color: #92400e; }
+    html:not(.dark) .text-teal-400 { color: #0d9488; }
+    html:not(.dark) .bg-teal-500\/20 { background-color: rgba(13, 148, 136, 0.12); }
+    html:not(.dark) .bg-teal-500\/10 { background-color: rgba(13, 148, 136, 0.08); }
+    html:not(.dark) .bg-teal-900\/20 { background-color: rgba(13, 148, 136, 0.07); }
+    html:not(.dark) .border-teal-500\/30 { border-color: rgba(13, 148, 136, 0.25); }
+    html:not(.dark) .hover\:bg-teal-500\/30:hover { background-color: rgba(13, 148, 136, 0.18); }
+    html:not(.dark) .hover\:text-teal-400:hover { color: #0d9488; }
+    html:not(.dark) .hover\:bg-teal-500\/10:hover { background-color: rgba(13, 148, 136, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-teal-400 { color: #0d9488; }
+
+    /* Light mode - remove gradientes e cores especiais */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .border-primary\/30 { border-color: rgba(161, 98, 7, 0.22); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.25); }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+
+    /* Light mode - nav */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+
+    /* Dark mode - bordas suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* Alvos de ancora abaixo do nav sticky */
+    [data-inema-topic], [id^="modulo-"], [id^="topico-"] { scroll-margin-top: 72px; }
+
+    /* SVG light mode + animacao */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @keyframes wf-dash { to { stroke-dashoffset: -24; } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s} .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s} .wf-a:nth-child(5){animation-delay:1s}
+      .wf-flow { stroke-dasharray: 6 6; animation: wf-dash 1.2s linear infinite; }
+    }
+
+    /* Topicos expansiveis */
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    /* Popover de aparência ancorado à direita e fora do layout quando fechado (sem transbordo) */
+    .inema-appearance-pop { right: 0; }
+    main code, main pre { overflow-wrap: anywhere; }
+    main .flex-1 { min-width: 0; }
+    .inema-appearance-pop:not([data-open="true"]) { visibility: hidden; display: none; }
+  </style>
+</head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen">
+  <a href="#conteudo" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[60] focus:px-4 focus:py-2 focus:bg-primary focus:text-black focus:rounded-lg">Pular para o conteúdo</a>
+
+  <nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-14">
+        <div class="flex items-center space-x-1.5 sm:space-x-3">
+          <a href="../../index.html" class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300">
+            <span class="text-2xl">🧩</span>
+            <span class="font-bold text-lg hidden lg:inline">Mods técnico</span>
+          </a>
+          <span class="text-neutral-600 hidden sm:inline">|</span>
+          <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 text-sm font-medium">INEMA.CLUB</a>
+          <span class="text-neutral-600">-</span>
+          <a href="https://inema.pro" target="_blank" class="text-amber-700 hover:text-amber-600 dark:text-slate-300 dark:hover:text-slate-200 text-sm font-medium">PRO</a>
+        </div>
+        <div class="flex items-center sm:space-x-1">
+          <a href="../trilha1/index.html" class="px-1.5 sm:px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors">
+            <span class="xl:hidden">T1</span><span class="hidden xl:inline">Anatomia</span>
+          </a>
+          <a href="../trilha2/index.html" class="px-1.5 sm:px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors">
+            <span class="xl:hidden">T2</span><span class="hidden xl:inline">Eventos e estado</span>
+          </a>
+          <a href="index.html" class="px-1.5 sm:px-2.5 py-1.5 rounded-lg text-sm font-semibold text-purple-400 bg-purple-500/10">
+            <span class="xl:hidden">T3</span><span class="hidden xl:inline">Telas e comandos</span>
+          </a>
+          <a href="../trilha4/index.html" class="px-1.5 sm:px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-amber-400 hover:bg-amber-500/10 transition-colors">
+            <span class="xl:hidden">T4</span><span class="hidden xl:inline">Controlar e distribuir</span>
+          </a>
+          <button type="button" data-inema-journey-open class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-sm text-neutral-300 hover:text-neutral-100 transition-colors" title="Minha jornada">
+            <span aria-hidden="true">◷</span><span class="hidden md:inline">Jornada</span>
+            <span class="inema-journey-badge" data-inema-journey-badge data-count="0"></span>
+          </button>
+          <div class="relative">
+            <button type="button" data-inema-appearance-toggle="#aparencia" aria-expanded="false" aria-controls="aparencia" class="p-2 rounded-lg text-neutral-300 hover:text-neutral-100 transition-colors" title="Aparência">
+              <span aria-hidden="true" class="text-sm font-semibold">Aa</span><span class="sr-only">Aparência</span>
+            </button>
+            <div id="aparencia" data-inema-appearance class="inema-appearance-pop">
+              <div class="inema-segment" aria-label="Tema">
+                <button type="button" data-inema-set-theme="inema-dark">Escuro</button>
+                <button type="button" data-inema-set-theme="claro">Claro</button>
+                <button type="button" data-inema-set-theme="sepia">Sépia</button>
+                <button type="button" data-inema-set-theme="foco">Foco</button>
+                <button type="button" data-inema-set-theme="contraste">Alto contraste</button>
+              </div>
+              <div class="inema-segment" aria-label="Fonte">
+                <button type="button" data-inema-set-font="inter">Inter</button>
+                <button type="button" data-inema-set-font="system">Sistema</button>
+                <button type="button" data-inema-set-font="leitura">Leitura</button>
+              </div>
+              <div class="inema-segment" aria-label="Tamanho do texto">
+                <button type="button" data-inema-set-fontscale="100">A</button>
+                <button type="button" data-inema-set-fontscale="112">A+</button>
+                <button type="button" data-inema-set-fontscale="125">A++</button>
+              </div>
+              <div class="inema-segment" aria-label="Largura da linha">
+                <button type="button" data-inema-set-linewidth="60">Estreito</button>
+                <button type="button" data-inema-set-linewidth="68">Médio</button>
+                <button type="button" data-inema-set-linewidth="75">Largo</button>
+              </div>
+              <div class="inema-segment" aria-label="Entrelinha">
+                <button type="button" data-inema-set-leading="1.45">Compacto</button>
+                <button type="button" data-inema-set-leading="1.7">Confortável</button>
+              </div>
+            </div>
+          </div>
+          <button id="theme-toggle" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors" aria-label="Alternar tema claro/escuro">
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <nav aria-label="Trilha de navegação" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex items-center space-x-2 text-sm text-neutral-400">
+      <a href="../../index.html" class="hover:text-purple-400">Início</a><span>/</span>
+      <a href="index.html" class="hover:text-purple-400">Trilha 3</a><span>/</span>
+      <span class="text-purple-400">Módulo 3.3</span>
+    </div>
+  </nav>
+
+  <header class="bg-gradient-to-br from-purple-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600" data-inema-module="3-3" data-inema-track="3">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="inline-block px-3 py-1 bg-purple-500/20 text-purple-400 text-xs font-semibold rounded-full mb-4">MÓDULO 3.3</span>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-4">🪟 Painéis e botões</h1>
+      <p class="text-lg text-neutral-400 max-w-3xl">Quando uma linha não basta, o mod abre um painel: uma área com moldura, ao lado da conversa ou acima do prompt, que ele desenha inteira. Aqui o Rafa abre um painel com os arquivos que o Claude editou, põe botões com atalho e aprende a fechar sem deixar nada pendurado.</p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 max-w-2xl">
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-purple-400">6</div><div class="text-xs text-neutral-400">Tópicos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-purple-400">~35</div><div class="text-xs text-neutral-400">Minutos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-purple-400">Médio</div><div class="text-xs text-neutral-400">Nível</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-purple-400">Prático</div><div class="text-xs text-neutral-400">Tipo</div></div>
+      </div>
+      <div data-inema-meter="modulo:3-3" class="mt-6 max-w-2xl" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso do módulo 3.3">
+        <div class="flex justify-between text-xs text-neutral-400 mb-1"><span data-inema-meter-frac>0 de 6</span><span data-inema-meter-pct>0%</span></div>
+        <div class="inema-bar"><div class="inema-bar__fill" data-inema-meter-fill></div></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:grid lg:grid-cols-[1fr_220px] lg:gap-10">
+  <main id="conteudo" class="min-w-0" data-inema-module="3-3" data-inema-track="3">
+
+    <div class="bg-amber-900/20 rounded-xl border border-amber-500/30 p-5 mb-10 text-sm text-neutral-300">
+      <strong class="text-amber-400">Versão conferida:</strong> <code>$.ui.open</code>, as props de <code>Pane</code> e de <code>Button</code> foram conferidos no <code>claude-code.d.ts</code> do <strong>Claude Code 2.1.289</strong>, em 05/10/2026. O mod de exemplo passou no <code>claude plugin validate</code> e respondeu o <code>/tocados</code> num <code>claude -p</code> nessa versão.
+    </div>
+
+    <!-- ===================== TOPICO 1 ===================== -->
+    <section id="topico-1" data-inema-topic="modulo-3-3#topico-1" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl">1</span>
+        <h2 class="text-2xl font-bold flex-1">Abra um painel com ui.open</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m3-3-t1-p1" class="text-neutral-300 mb-4 leading-relaxed">Um painel tem duas metades. <code>$.ui.open({ id, title })</code> <strong class="text-purple-400">pede o espaço</strong>; um hook <code>ui.render</code> em <code>{ component: 'Pane', requestId: id }</code> <strong class="text-purple-400">desenha o conteúdo</strong>. Um painel por <code>id</code>: abrir de novo um id aberto só troca o título.</p>
+      <p data-inema-block="m3-3-t1-p2" class="text-neutral-300 mb-6 leading-relaxed">Quem decide onde ele fica é a superfície. No terminal em tela cheia, ele encaixa ao lado da conversa (<code>dock</code>); fora disso, abre acima do prompt (<code>inline</code>). O painel existe em todas as superfícies, inclusive no celular.</p>
+
+      <div class="bg-purple-900/20 rounded-xl border border-purple-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🆕</span> Novo aqui? Pedido e não pedido</h3>
+        <p class="text-neutral-300 text-sm mb-2">Um painel é <strong>pedido</strong> quando um comando, um prompt ou um botão da pessoa está por trás da abertura. Pedido, ele é colocado em qualquer largura. <strong>Não pedido</strong> (aberto pelo mod sozinho, num <code>session.start</code>), só aparece a partir de 144 colunas; abaixo disso fica na fila sem ser desenhado (<code>isPlaced: false</code>) até a pessoa abrir ou a tela alargar.</p>
+        <p class="text-neutral-300 text-sm">Por isso a regra do kit INEMA (pegadinha 9): <strong>abra por comando ou botão</strong>. Abrir sozinho só vira barra lateral com a tela larga e em tela cheia (<code>e.viewport?.isFullscreen</code>).</p>
+      </div>
+
+      <div class="overflow-x-auto mb-6 rounded-xl border border-dark-600">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-dark-700/60 text-purple-400"><tr><th class="px-4 py-3 font-semibold">Mod</th><th class="px-4 py-3 font-semibold">Abre quando</th><th class="px-4 py-3 font-semibold">Resultado numa tela estreita</th></tr></thead>
+          <tbody class="divide-y divide-dark-600">
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>examples/pane.tsx</code> (oficial)</td><td class="px-4 py-3 text-neutral-300">no <code>session.start</code> (<code>void $.ui.open(...)</code>) e no <code>/tool-calls</code></td><td class="px-4 py-3 text-neutral-300">a abertura automática espera; o comando abre</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>inema-mods/mods/recibo-sessao</code></td><td class="px-4 py-3 text-neutral-300">só no <code>/recibo</code></td><td class="px-4 py-3 text-neutral-300">abre sempre que pedido</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">O que olhar na tabela:</strong> o exemplo oficial faz as duas coisas para mostrar que dá. O curso segue o recibo: abrir só por pedido evita um painel tomando a tela de quem não pediu.</p>
+
+      <div class="bg-dark-800 rounded-xl border border-purple-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-purple-900/20 border-b border-purple-500/30"><span class="text-purple-400 font-semibold text-sm">🎯 Objetivo: um painel com os arquivos editados, aberto por /tocados</span></div>
+        <div class="p-5">
+          <p class="text-sm text-neutral-400 mb-3">Crie a pasta <code>meu-painel/</code> com estes quatro arquivos (o caminho de cada um está no comentário):</p>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">// meu-painel/.claude-plugin/plugin.json
+{
+  "name": "meu-painel",
+  "version": "0.1.0",
+  "description": "Painel do Rafa: arquivos editados nesta sessão (/tocados)",
+  "author": { "name": "Rafa" },
+  "types": "./types/index.d.ts"
+}
+
+// meu-painel/hooks/hooks.json
+{ "modules": ["./register.tsx"] }
+
+// meu-painel/types/index.d.ts
+export type Caminho = string
+
+declare module 'claude-code' {
+  interface PluginState {
+    'meu-painel': { arquivos: string[] }
+  }
+}
+
+// meu-painel/hooks/register.tsx
+import { atom, read, update } from 'claude-code'
+import type { Register } from 'claude-code'
+
+const PAINEL = 'meu-painel'
+const arquivos = atom({ plugin: 'meu-painel', key: 'arquivos' } as const, [])
+
+export const register: Register = on =&gt; {
+  on('session.start', async ($, e, next) =&gt; {
+    await $.command.register({ name: 'tocados', description: 'Abre o painel dos arquivos editados' })
+    return next(e)
+  })
+
+  on('tool.call', { tool: 'Edit' }, async ($, e, next) =&gt; {
+    const ran = await next(e)
+    if (ran.deny === undefined &amp;&amp; ran.isError !== true) {
+      await update($, arquivos, lista =&gt; [...lista.filter(p =&gt; p !== e.file_path), e.file_path].slice(-50))
+    }
+    return ran
+  })
+
+  on('command.run', { command: 'tocados' }, async $ =&gt; {
+    const aberto = await $.ui.open({ id: PAINEL, title: 'Arquivos tocados' })
+    return { text: aberto.isPlaced ? 'Painel aberto.' : 'Painel esperando espaço na tela.' }
+  })
+
+  on('ui.render', { component: 'Pane', requestId: PAINEL }, async ($, e) =&gt; {
+    const { Box, Text, Button } = $.ui.resolve(e)
+    const lista = await read($, arquivos)
+    const largura = e.props.bodyColumns
+    const corta = (s: string) =&gt; (s.length &gt; largura ? `…${s.slice(-(largura - 1))}` : s)
+
+    return (
+      &lt;Box flexDirection="column"&gt;
+        {lista.length === 0 &amp;&amp; &lt;Text dimColor&gt;Nenhuma edição ainda.&lt;/Text&gt;}
+        {lista.map(p =&gt; &lt;Text&gt;{corta(p)}&lt;/Text&gt;)}
+        &lt;Box key="botoes"&gt;
+          &lt;Button key="limpar" hotkey="l" label="limpar" onPress={() =&gt; update($, arquivos, () =&gt; [])} /&gt;
+          &lt;Button key="fechar" hotkey="f" label="fechar" role="dismiss" onPress={() =&gt; $.ui.close({ id: PAINEL })} /&gt;
+        &lt;/Box&gt;
+      &lt;/Box&gt;
+    )
+  })
+}</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-purple-400">Como verificar:</strong> rode <code>claude plugin validate meu-painel</code>. Rodado aqui (2.1.289): <code>calls:</code> lista <code>$.ui.open</code>, <code>$.ui.close</code> e <code>$.ui.resolve</code>, e a última linha é <code>✔ Validation passed</code>. (Os comentários de caminho não fazem parte dos arquivos.)</div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/20 border border-purple-500/30 text-purple-400 hover:bg-purple-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 2 ===================== -->
+    <section id="topico-2" data-inema-topic="modulo-3-3#topico-2" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl">2</span>
+        <h2 class="text-2xl font-bold flex-1">Dimensione pelo bodyColumns</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m3-3-t2-p1" class="text-neutral-300 mb-4 leading-relaxed">O painel encaixado ao lado da conversa é <strong class="text-purple-400">mais estreito que a tela</strong>. Se o Rafa medir por <code>e.viewport.columns</code>, a linha passa da moldura. A medida certa é <code>e.props.bodyColumns</code>: as colunas dentro da moldura, sem nenhuma célula embaixo da marca de fechar.</p>
+      <p data-inema-block="m3-3-t2-p2" class="text-neutral-300 mb-6 leading-relaxed">Uma mudança de largura redesenha sozinha, então uma árvore medida por <code>bodyColumns</code> fica certa. Mudança só de altura não redesenha nada.</p>
+
+      <div class="rounded-2xl border border-purple-500/30 bg-dark-900/40 p-3 sm:p-4 mb-3 overflow-hidden">
+        <svg viewBox="0 0 800 240" class="w-full h-auto" role="img" aria-label="Duas telas lado a lado. À esquerda, terminal em tela cheia e largo: o painel fica encaixado à direita da conversa, placement dock, e a largura útil bodyColumns é só a parte de dentro da moldura. À direita, terminal estreito: o painel abre acima do prompt, placement inline, com borda de duas linhas.">
+          <defs>
+            <pattern id="m33a-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#c084fc" opacity="0.10"/></pattern>
+            <filter id="m33a-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <marker id="m33a-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38bdf8"/></marker>
+          </defs>
+          <rect x="0" y="0" width="800" height="240" fill="url(#m33a-grid)"/>
+          <g font-family="Inter,sans-serif" font-size="12">
+            <rect x="20" y="20" width="440" height="190" rx="10" fill="#111827" stroke="#6b7280" stroke-width="2"/>
+            <text x="35" y="45" fill="#9ca3af">conversa</text>
+            <rect x="35" y="170" width="230" height="26" rx="5" fill="#1f2937" stroke="#6b7280"/><text x="45" y="188" fill="#e5e7eb">&gt; _</text>
+            <g filter="url(#m33a-glow)"><rect x="280" y="30" width="170" height="170" rx="8" fill="#1e1233" stroke="#c084fc" stroke-width="2"/></g>
+            <text x="365" y="52" text-anchor="middle" fill="#c084fc" font-weight="600">placement: dock</text>
+            <line x1="292" y1="120" x2="438" y2="120" stroke="#38bdf8" stroke-width="2" marker-start="url(#m33a-arrow)" marker-end="url(#m33a-arrow)"/>
+            <text x="365" y="110" text-anchor="middle" fill="#bae6fd" font-family="JetBrains Mono,monospace" font-size="11">bodyColumns</text>
+            <text x="365" y="150" text-anchor="middle" fill="#e9d5ff" font-size="11">tela cheia, larga</text>
+            <text x="240" y="228" text-anchor="middle" fill="#9ca3af">terminal em tela cheia</text>
+            <rect x="490" y="20" width="290" height="190" rx="10" fill="#111827" stroke="#6b7280" stroke-width="2"/>
+            <text x="505" y="45" fill="#9ca3af">conversa</text>
+            <g filter="url(#m33a-glow)"><rect x="502" y="70" width="266" height="90" rx="8" fill="#1e1233" stroke="#c084fc" stroke-width="2"/></g>
+            <text x="635" y="95" text-anchor="middle" fill="#c084fc" font-weight="600">placement: inline</text>
+            <line x1="514" y1="130" x2="756" y2="130" stroke="#38bdf8" stroke-width="2" marker-start="url(#m33a-arrow)" marker-end="url(#m33a-arrow)"/>
+            <text x="635" y="122" text-anchor="middle" fill="#bae6fd" font-family="JetBrains Mono,monospace" font-size="11">bodyColumns</text>
+            <rect x="502" y="170" width="266" height="26" rx="5" fill="#1f2937" stroke="#6b7280"/><text x="512" y="188" fill="#e5e7eb">&gt; _</text>
+            <text x="635" y="228" text-anchor="middle" fill="#9ca3af">tela comum ou estreita</text>
+          </g>
+        </svg>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">Como ler o desenho:</strong> o mesmo painel em duas telas. A seta azul é o <code>bodyColumns</code> em cada uma: muito menor que a tela à esquerda. O <code>placement</code> chega nas props e é só leitura.</p>
+
+      <div class="overflow-x-auto mb-6 rounded-xl border border-dark-600">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-dark-700/60 text-purple-400"><tr><th class="px-4 py-3 font-semibold">Prop do Pane</th><th class="px-4 py-3 font-semibold">O que diz</th></tr></thead>
+          <tbody class="divide-y divide-dark-600">
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>bodyColumns</code></td><td class="px-4 py-3 text-neutral-300">colunas úteis dentro da moldura</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>scroll.bodyRows</code></td><td class="px-4 py-3 text-neutral-300">linhas visíveis do corpo (o <code>mapa-calor</code> usa para saber quantas pastas cabem)</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>placement</code></td><td class="px-4 py-3 text-neutral-300"><code>dock</code> ou <code>inline</code></td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>isFocused</code></td><td class="px-4 py-3 text-neutral-300">a pessoa deu o teclado ao painel</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>title</code></td><td class="px-4 py-3 text-neutral-300">rótulo da aba quando há mais de um painel</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/20 border border-purple-500/30 text-purple-400 hover:bg-purple-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 3 ===================== -->
+    <section id="topico-3" data-inema-topic="modulo-3-3#topico-3" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl">3</span>
+        <h2 class="text-2xl font-bold flex-1">Ponha botões com hotkey</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m3-3-t3-p1" class="text-neutral-300 mb-4 leading-relaxed">No terminal, um <code>Button</code> aparece como <code>[ label ]</code>. A <code>hotkey</code> (<strong class="text-purple-400">um dígito ou uma letra minúscula</strong>) aperta o botão enquanto o painel ou a faixa tem o teclado: depois de ctrl+x tab, de um clique, ou se o painel abriu com <code>focus</code>.</p>
+      <p data-inema-block="m3-3-t3-p2" class="text-neutral-300 mb-6 leading-relaxed">Sempre dê <code>key</code> aos botões. É pela <code>key</code> que o engine sabe qual foi apertado e que os testes acham o botão (módulo 4.2).</p>
+
+      <div class="bg-dark-800 rounded-xl border border-purple-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-purple-900/20 border-b border-purple-500/30"><span class="text-purple-400 font-semibold text-sm">📄 inema-mods/mods/mapa-calor/hooks/register.tsx (trecho)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">&lt;Box key="botoes"&gt;
+  &lt;Button key="alternar" hotkey="t" label={modo === 'bytes' ? 'ver por arquivos' : 'ver por tamanho'} onPress={alternar} /&gt;
+  &lt;Text&gt; &lt;/Text&gt;
+  &lt;Button key="reler" hotkey="r" label="ler de novo" onPress={reler} /&gt;
+&lt;/Box&gt;</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-purple-400">O que olhar:</strong> o rótulo do primeiro botão muda com o estado, a <code>hotkey</code> não. E o <code>&lt;Text&gt; &lt;/Text&gt;</code> no meio é só um espaço entre os dois.</div>
+      </div>
+
+      <div class="overflow-x-auto mb-6 rounded-xl border border-dark-600">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-dark-700/60 text-purple-400"><tr><th class="px-4 py-3 font-semibold">Prop do Button</th><th class="px-4 py-3 font-semibold">Efeito</th></tr></thead>
+          <tbody class="divide-y divide-dark-600">
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>variant="primary"</code></td><td class="px-4 py-3 text-neutral-300">marca a ação principal; o terminal pinta o <code>[ label ]</code> na cor de destaque</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>plain</code></td><td class="px-4 py-3 text-neutral-300">sem colchetes (<code>1: label</code> com hotkey); vence o <code>variant</code></td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>role="dismiss"</code></td><td class="px-4 py-3 text-neutral-300">o botão que fecha; só uma dica de desenho (o desktop usa o fechar nativo)</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>action</code></td><td class="px-4 py-3 text-neutral-300">liga o botão a uma ação de atalho do engine; o atalho da pessoa aperta direto do prompt</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>autoFocus</code></td><td class="px-4 py-3 text-neutral-300">começa com o anel de foco</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-dark-800 rounded-xl p-6 border border-purple-500/30">
+          <h3 class="font-semibold text-purple-400 mb-3">✓ Botão bem feito</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ <code>key</code> fixa e descritiva</li>
+            <li>✓ <code>hotkey</code> de uma letra, sem repetir no mesmo painel</li>
+            <li>✓ Um só <code>variant="primary"</code> por painel</li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ Botão que confunde</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ <code>hotkey="Enter"</code> ou maiúscula: não é um dígito nem letra minúscula</li>
+            <li>✗ Contar com <code>role="dismiss"</code> para fechar: quem fecha é o seu <code>onPress</code></li>
+            <li>✗ Botão sem <code>key</code></li>
+          </ul>
+        </div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/20 border border-purple-500/30 text-purple-400 hover:bg-purple-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 4 ===================== -->
+    <section id="topico-4" data-inema-topic="modulo-3-3#topico-4" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl">4</span>
+        <h2 class="text-2xl font-bold flex-1">Trate press, input e select</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m3-3-t4-p1" class="text-neutral-300 mb-4 leading-relaxed">Os handlers ficam <strong class="text-purple-400">no próprio plugin</strong>, como closures da árvore: <code>onPress</code> no <code>Button</code>, <code>onSubmit</code> e <code>onInput</code> no <code>Input</code>, <code>onSelect</code> no <code>Select</code>. A superfície só manda de volta "apertaram tal key".</p>
+      <p data-inema-block="m3-3-t4-p2" class="text-neutral-300 mb-6 leading-relaxed">No caminho, cada gesto vira um evento: <code>ui.press</code>, <code>ui.input</code>, <code>ui.select</code>. Outro mod pode se pendurar neles (por exemplo, para registrar cliques). No seu mod, quase sempre basta o handler no elemento.</p>
+
+      <div class="bg-purple-900/20 rounded-xl border border-purple-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🆕</span> Novo aqui? O que cada handler recebe</h3>
+        <ul class="space-y-2 text-neutral-300 text-sm">
+          <li><code>onPress(e)</code> — <code>e.element</code> (a key), <code>e.requestId</code>, <code>e.surface</code>. Passe <code>e.surface</code> adiante quando precisar, como em <code>$.ui.copy</code>.</li>
+          <li><code>onSubmit(value, e)</code> — Enter no campo (<code>kind: 'submit'</code>). <code>onInput(value, e)</code> recebe cada edição (<code>kind: 'change'</code>).</li>
+          <li><code>onSelect(value, e)</code> — a opção escolhida num <code>Select</code> com <code>options</code>.</li>
+        </ul>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-purple-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-purple-900/20 border-b border-purple-500/30"><span class="text-purple-400 font-semibold text-sm">📄 Exemplo curto (nomes conferidos no d.ts): um filtro no painel do Rafa</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">const { Box, Text, Input } = $.ui.resolve(e)
+// ...
+&lt;Input
+  key="filtro"
+  placeholder="filtrar por pasta"
+  onSubmit={valor =&gt; update($, filtro, () =&gt; valor)}
+/&gt;</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-purple-400">O que olhar:</strong> o handler escreve no <code>$.state</code> (um atom <code>filtro</code> declarado no contrato); o render lê e redesenha. A mesma regra do módulo 3.1: render lê, handler escreve.</div>
+      </div>
+
+      <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-red-400 mb-2 flex items-center"><span class="mr-2">⚠️</span> Celular não tem campo</h3>
+        <p class="text-neutral-300 text-sm">O <code>mobile</code> não tem <code>Input</code> nem <code>Select</code>. Se o painel precisa abrir lá, estreite <code>e.surface</code> e troque o campo por botões (ou por um argumento do comando: <code>/tocados src</code>).</p>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/20 border border-purple-500/30 text-purple-400 hover:bg-purple-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 5 ===================== -->
+    <section id="topico-5" data-inema-topic="modulo-3-3#topico-5" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl">5</span>
+        <h2 class="text-2xl font-bold flex-1">Faça um painel virar diálogo</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m3-3-t5-p1" class="text-neutral-300 mb-4 leading-relaxed">Às vezes o Rafa quer uma pergunta rápida que a pessoa responde e fecha: "limpar a lista?". Três opções de <code>$.ui.open</code> juntas <strong class="text-purple-400">transformam o painel num diálogo</strong>: <code>focus</code>, <code>closeOnEscape</code> e <code>holdToasts</code>.</p>
+      <p data-inema-block="m3-3-t5-p2" class="text-neutral-300 mb-6 leading-relaxed">Com elas, o painel pega o teclado, Tab e setas andam pelos botões, Esc fecha, e todo toast (de qualquer plugin) espera atrás dele. <code>rows</code> pede a altura certa para um diálogo curto aparecer inteiro.</p>
+
+      <div class="space-y-5 mb-6">
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center"><span class="text-purple-400 font-bold">1</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Abra como diálogo</h4><p class="text-neutral-300 text-sm"><code>await $.ui.open({ id: 'confirma', title: 'Limpar?', focus: true, closeOnEscape: true, holdToasts: true, rows: 3 })</code></p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center"><span class="text-purple-400 font-bold">2</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Desenhe a pergunta e dois botões</h4><p class="text-neutral-300 text-sm">O seguro com <code>autoFocus</code>; o destrutivo com <code>variant="primary"</code> só se ele for a ação principal.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center"><span class="text-purple-400 font-bold">3</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Cada botão fecha ao terminar</h4><p class="text-neutral-300 text-sm">O <code>onPress</code> faz o trabalho e chama <code>$.ui.close({ id: 'confirma' })</code>. Esc fecha sem fazer nada.</p></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-dark-800 rounded-xl p-6 border border-purple-500/30">
+          <h3 class="font-semibold text-purple-400 mb-3">✓ Diálogo</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ <code>focus</code>, <code>closeOnEscape</code>, <code>holdToasts</code> e <code>rows</code></li>
+            <li>✓ Pergunta curta, dois ou três botões</li>
+            <li>✓ Fecha assim que a pessoa responde</li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ Painel que fica</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ <code>holdToasts</code> ligado num painel permanente</li>
+            <li>✗ Diálogo sem botão que feche</li>
+            <li>✗ <code>focus</code> num painel que abre sozinho</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-primary mb-2 flex items-center"><span class="mr-2">💡</span> São pedidos, não garantias</h3>
+        <p class="text-neutral-300 text-sm"><code>focus</code> só é atendido se o prompt tem o teclado e está vazio: com texto digitado, um diálogo do engine ou uma pesquisa aberta, o painel abre sem foco. <code>rows</code> perde para o tamanho que a pessoa arrastou. Desenhe pensando que pode não ter vindo.</p>
+      </div>
+
+      <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-red-400 mb-2 flex items-center"><span class="mr-2">⚠️</span> holdToasts só em diálogo</h3>
+        <p class="text-neutral-300 text-sm">Num painel que fica aberto (como o <code>/tocados</code>), <code>holdToasts</code> segura os avisos de todos os mods enquanto ele estiver à vista. Use só no painel que a pessoa responde e fecha.</p>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/20 border border-purple-500/30 text-purple-400 hover:bg-purple-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 6 ===================== -->
+    <section id="topico-6" data-inema-topic="modulo-3-3#topico-6" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl">6</span>
+        <h2 class="text-2xl font-bold flex-1">Feche e libere o painel</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m3-3-t6-p1" class="text-neutral-300 mb-4 leading-relaxed"><code>$.ui.close({ id })</code> fecha um painel do seu plugin; um id que não está aberto é ignorado. Todo fechamento passa pelo evento <code>ui.close</code>, com <code>e.origin</code> dizendo de quem foi: <code>plugin</code> (a sua chamada), <code>person</code> (a marca de fechar, ctrl+x x ou Esc com <code>closeOnEscape</code>) ou <code>unload</code> (o engine descarregou o plugin).</p>
+      <p data-inema-block="m3-3-t6-p2" class="text-neutral-300 mb-6 leading-relaxed">Um hook em <code>ui.close</code> que responde sem <code>next</code> <strong class="text-purple-400">mantém o painel aberto</strong>, menos no <code>unload</code>. Use com cuidado: segurar o painel contra a vontade da pessoa é irritante. Para saber o que está aberto, <code>$.ui.panes()</code> lista os seus painéis com <code>isPlaced</code>.</p>
+
+      <div class="rounded-2xl border border-purple-500/30 bg-dark-900/40 p-3 sm:p-4 mb-3 overflow-hidden">
+        <svg viewBox="0 0 800 220" class="w-full h-auto" role="img" aria-label="Três origens de fechamento, plugin, person e unload, entram no evento ui.close. Um hook nesse evento pode chamar next e o painel fecha, ou responder sem next e o painel continua aberto. A origem unload passa por fora: o painel fecha de qualquer jeito.">
+          <defs>
+            <pattern id="m33b-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#c084fc" opacity="0.10"/></pattern>
+            <filter id="m33b-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <marker id="m33b-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38bdf8"/></marker>
+          </defs>
+          <rect x="0" y="0" width="800" height="220" fill="url(#m33b-grid)"/>
+          <g font-family="JetBrains Mono,monospace" font-size="12" text-anchor="middle">
+            <rect x="20" y="20" width="140" height="40" rx="8" fill="#1f2937" stroke="#6b7280" stroke-width="1.5"/><text x="90" y="45" fill="#e5e7eb">plugin</text>
+            <rect x="20" y="80" width="140" height="40" rx="8" fill="#1f2937" stroke="#6b7280" stroke-width="1.5"/><text x="90" y="105" fill="#e5e7eb">person</text>
+            <rect x="20" y="160" width="140" height="40" rx="8" fill="#1f2937" stroke="#f59e0b" stroke-width="1.5"/><text x="90" y="185" fill="#fde68a">unload</text>
+            <line class="wf-flow" x1="162" y1="40" x2="268" y2="72" stroke="#38bdf8" stroke-width="2" marker-end="url(#m33b-arrow)"/>
+            <line class="wf-flow" x1="162" y1="100" x2="268" y2="88" stroke="#38bdf8" stroke-width="2" marker-end="url(#m33b-arrow)"/>
+            <g filter="url(#m33b-glow)"><rect x="272" y="50" width="170" height="60" rx="12" fill="#1e1233" stroke="#c084fc" stroke-width="2"/></g>
+            <text x="357" y="76" fill="#c084fc" font-weight="600">ui.close</text><text x="357" y="96" fill="#e9d5ff" font-size="11" font-family="Inter,sans-serif">hooks dos mods</text>
+            <line class="wf-flow" x1="444" y1="70" x2="568" y2="45" stroke="#38bdf8" stroke-width="2" marker-end="url(#m33b-arrow)"/>
+            <line x1="444" y1="92" x2="568" y2="115" stroke="#9ca3af" stroke-width="2" marker-end="url(#m33b-arrow)"/>
+            <rect class="wf-a" x="572" y="20" width="208" height="46" rx="10" fill="#0b1f2e" stroke="#38bdf8" stroke-width="2"/><text x="676" y="48" fill="#bae6fd">next(e): painel fecha</text>
+            <rect x="572" y="94" width="208" height="46" rx="10" fill="#1f2937" stroke="#6b7280" stroke-width="2"/><text x="676" y="122" fill="#e5e7eb">sem next: fica aberto</text>
+            <line x1="162" y1="180" x2="568" y2="180" stroke="#f59e0b" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#m33b-arrow)"/>
+            <rect x="572" y="160" width="208" height="40" rx="10" fill="#2a1d06" stroke="#f59e0b" stroke-width="2"/><text x="676" y="185" fill="#fde68a">fecha sempre</text>
+          </g>
+        </svg>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">Como ler o desenho:</strong> os fechamentos do plugin e da pessoa passam pelo <code>ui.close</code>, onde um hook pode segurar. O <code>unload</code> (tracejado) não pode ser segurado: quando o engine descarrega o plugin, o painel fecha de qualquer jeito.</p>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">🔌</div><div class="text-sm font-semibold text-purple-400">plugin</div><p class="text-xs text-neutral-400 mt-1">$.ui.close</p></div>
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">🙋</div><div class="text-sm font-semibold text-purple-400">person</div><p class="text-xs text-neutral-400 mt-1">marca, ctrl+x x, Esc</p></div>
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">♻️</div><div class="text-sm font-semibold text-purple-400">unload</div><p class="text-xs text-neutral-400 mt-1">não dá para segurar</p></div>
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">📋</div><div class="text-sm font-semibold text-purple-400">$.ui.panes </div><p class="text-xs text-neutral-400 mt-1">o que está aberto</p></div>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-purple-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-purple-900/20 border-b border-purple-500/30"><span class="text-purple-400 font-semibold text-sm">🎯 Objetivo: abrir, usar e fechar o painel do Rafa</span></div>
+        <div class="p-5">
+          <p class="text-sm text-neutral-400 mb-3">Na pasta que contém <code>meu-painel/</code> (do tópico 1):</p>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">claude --plugin-dir meu-painel</pre>
+          <p class="text-sm text-neutral-400 mt-3">Na sessão: peça uma edição num arquivo de teste, digite <code>/tocados</code>, dê o teclado ao painel (ctrl+x tab) e aperte <code>f</code>.</p>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-purple-400">Como verificar:</strong> rodado aqui com <code>claude -p "/tocados" --plugin-dir meu-painel</code>, a resposta foi <code>meu-painel: Painel aberto.</code>. Na sessão interativa (não medido aqui), esperado: o painel lista o arquivo editado com <code>[ limpar ]</code> e <code>[ fechar ]</code> embaixo, e o <code>f</code> fecha o painel. Rodando <code>/tocados</code> de novo, ele volta com a mesma lista (o estado mora no <code>$.state</code>, não no painel).</div>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-dark-600 p-6 mb-6" data-inema-check="modulo-3-3#q1">
+        <p class="font-medium mb-4">Teste rápido (opcional): o Rafa abre o painel no <code>session.start</code>, sem comando. No notebook dele (terminal de 100 colunas) o painel nunca aparece. Por quê?</p>
+        <div class="space-y-2">
+          <button type="button" data-inema-check-option="0" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">O <code>session.start</code> não pode chamar <code>$.ui.open</code>.</button>
+          <button type="button" data-inema-check-option="1" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">Painel não pedido só é colocado a partir de 144 colunas; abaixo disso espera. Abrir por comando resolve.</button>
+          <button type="button" data-inema-check-option="2" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">Faltou <code>holdToasts</code> no <code>$.ui.open</code>.</button>
+        </div>
+        <div data-inema-check-feedback class="mt-4 text-sm" role="status" aria-live="polite"></div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/20 border border-purple-500/30 text-purple-400 hover:bg-purple-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== RESUMO ===================== -->
+    <section class="mb-12">
+      <div class="bg-gradient-to-br from-purple-900/40 via-dark-800 to-dark-800 rounded-xl border border-purple-500/30 p-8">
+        <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🎓</span> Resumo do módulo</h2>
+        <div class="space-y-4 mb-8">
+          <div class="flex items-start space-x-3"><span class="text-purple-400 mt-1">✓</span><div><strong class="text-neutral-100">Painel = ui.open + render no Pane</strong><span class="text-neutral-400"> — um por id.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-purple-400 mt-1">✓</span><div><strong class="text-neutral-100">Abra por comando</strong><span class="text-neutral-400"> — não pedido, só a partir de 144 colunas.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-purple-400 mt-1">✓</span><div><strong class="text-neutral-100">Largura é bodyColumns</strong><span class="text-neutral-400"> — dock ou inline, nunca viewport.columns.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-purple-400 mt-1">✓</span><div><strong class="text-neutral-100">Botão com key e hotkey</strong><span class="text-neutral-400"> — handlers ficam no plugin.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-purple-400 mt-1">✓</span><div><strong class="text-neutral-100">Diálogo = focus + closeOnEscape + holdToasts</strong><span class="text-neutral-400"> — e fecha com $.ui.close.</span></div></div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-4 mb-8">
+          <h3 class="font-semibold text-purple-400 mb-2">Próximo módulo:</h3>
+          <p class="text-neutral-300">3.4 — Comandos, ferramentas e configuração</p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="index.html" class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">← Voltar para a trilha</a>
+          <a href="modulo-3-4.html" class="flex-1 text-center px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-500 transition-colors">Módulo 3.4 →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="hidden lg:block">
+    <nav data-inema-toc aria-label="Índice da página" class="sticky top-24">
+      <p class="text-sm text-neutral-400 mb-3"><span data-inema-section-counter>Seção 1 de 6</span></p>
+      <ol class="space-y-2 text-sm">
+        <li><a href="#topico-1" class="text-neutral-400 hover:text-purple-400">1. $.ui.open</a></li>
+        <li><a href="#topico-2" class="text-neutral-400 hover:text-purple-400">2. bodyColumns</a></li>
+        <li><a href="#topico-3" class="text-neutral-400 hover:text-purple-400">3. Botões e hotkey</a></li>
+        <li><a href="#topico-4" class="text-neutral-400 hover:text-purple-400">4. press, input, select</a></li>
+        <li><a href="#topico-5" class="text-neutral-400 hover:text-purple-400">5. Diálogo</a></li>
+        <li><a href="#topico-6" class="text-neutral-400 hover:text-purple-400">6. Fechar</a></li>
+      </ol>
+    </nav>
+  </aside>
+  </div>
+
+  <footer class="border-t border-dark-600 py-8 mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+      <p>Mods do Claude Code — técnico · 2026 | <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300">INEMA.CLUB</a> - <a href="https://inema.pro" target="_blank" class="text-amber-700 hover:text-amber-600 dark:text-slate-300 dark:hover:text-slate-200">PRO</a></p>
+      <p class="mt-2 text-xs">Kits usados no curso: <a href="https://github.com/inematds/inema-mods" target="_blank" class="text-sky-400 hover:text-sky-300">inematds/inema-mods</a> · <a href="https://github.com/promptadvisers/claude-mods-starter-kit" target="_blank" class="text-sky-400 hover:text-sky-300">Claude Mods Starter Kit</a> (Prompt Advisers, MIT)</p>
+    </div>
+  </footer>
+
+  <script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const _html = document.documentElement;
+    if (!_html.classList.contains('dark')) { themeToggleDarkIcon.classList.remove('hidden'); }
+    else { themeToggleLightIcon.classList.remove('hidden'); }
+    themeToggle.addEventListener('click', () => {
+      if (window.INEMA && INEMA.setPref) { INEMA.setPref('theme', _html.classList.contains('dark') ? 'claro' : 'inema-dark'); }
+      else { _html.classList.toggle('dark'); }
+      themeToggleDarkIcon.classList.toggle('hidden', _html.classList.contains('dark'));
+      themeToggleLightIcon.classList.toggle('hidden', !_html.classList.contains('dark'));
+      try { localStorage.setItem('theme', _html.classList.contains('dark') ? 'dark' : 'light'); } catch (e) {}
+    });
+    function toggleTopic(button) {
+      const item = button.closest('.topic-item');
+      const exp = item.querySelector('.topic-explanation');
+      const card = button.closest('[id^="modulo-"]') || document;
+      card.querySelectorAll('.topic-explanation.active').forEach(e => { if (e !== exp) { e.classList.remove('active'); const b = e.parentElement.querySelector('[aria-controls]'); if (b) b.setAttribute('aria-expanded', 'false'); } });
+      exp.classList.toggle('active');
+      button.setAttribute('aria-expanded', exp.classList.contains('active') ? 'true' : 'false');
+    }
+    let _lastModalTrigger = null;
+    function openModal(id){ const m=document.getElementById(id); if(m){ _lastModalTrigger=document.activeElement; m.classList.remove('hidden'); document.body.style.overflow='hidden'; const c=m.querySelector('button'); if(c) c.focus(); } }
+    function closeModal(){ document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden')); document.body.style.overflow='auto'; if(_lastModalTrigger){ _lastModalTrigger.focus(); _lastModalTrigger=null; } }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  </script>
+  <script src="../../assets/learn.js"></script>
+  <script>
+    if (window.INEMA && typeof window.INEMA.init === 'function') { window.INEMA.init(); }
+  </script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (window.INEMA && INEMA.registerCheck) {
+
+        INEMA.registerCheck('modulo-3-3#q1', { answer: 1, explain: {
+          '0': 'Pode, e o exemplo oficial pane.tsx faz isso. O problema é a largura: aberto sem pedido, ele espera.',
+          '1': 'Isso. Sem pedido, o painel só é colocado a partir de 144 colunas; pedido (comando, prompt ou botão), em qualquer largura. Por isso o curso abre por comando.',
+          '2': 'holdToasts segura avisos enquanto o painel está à vista. Não tem nada a ver com ele aparecer.'
+        } });
+      }
+    });
+  </script>
+</body>
+</html>

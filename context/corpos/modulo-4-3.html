@@ -1,0 +1,437 @@
+<!--TITLE: Depurar e as pegadinhas -->
+  <nav aria-label="Trilha de navegação" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex items-center space-x-2 text-sm text-neutral-400">
+      <a href="../../index.html" class="hover:text-amber-400">Início</a><span>/</span>
+      <a href="index.html" class="hover:text-amber-400">Trilha 4</a><span>/</span>
+      <span class="text-amber-400">Módulo 4.3</span>
+    </div>
+  </nav>
+
+  <header class="bg-gradient-to-br from-amber-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600" data-inema-module="4-3" data-inema-track="4">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="inline-block px-3 py-1 bg-amber-500/20 text-amber-400 text-xs font-semibold rounded-full mb-4">MÓDULO 4.3</span>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-4">🔍 Depurar e as pegadinhas</h1>
+      <p class="text-lg text-neutral-400 max-w-3xl">Um mod que "não faz nada" quase sempre já recebeu o motivo: o engine pulou um hook, recusou uma árvore ou nem carregou o módulo, e escreveu isso em algum lugar. Este módulo ensina onde olhar e passa pelas pegadinhas que o inema-mods já pagou para aprender.</p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 max-w-2xl">
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">6</div><div class="text-xs text-neutral-400">Tópicos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">~35</div><div class="text-xs text-neutral-400">Minutos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">Avançado</div><div class="text-xs text-neutral-400">Nível</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">Prático</div><div class="text-xs text-neutral-400">Tipo</div></div>
+      </div>
+      <div data-inema-meter="modulo:4-3" class="mt-6 max-w-2xl" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso do módulo 4.3">
+        <div class="flex justify-between text-xs text-neutral-400 mb-1"><span data-inema-meter-frac>0 de 6</span><span data-inema-meter-pct>0%</span></div>
+        <div class="inema-bar"><div class="inema-bar__fill" data-inema-meter-fill></div></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:grid lg:grid-cols-[1fr_220px] lg:gap-10">
+  <main id="conteudo" class="min-w-0" data-inema-module="4-3" data-inema-track="4">
+
+    <div class="bg-amber-900/20 rounded-xl border border-amber-500/30 p-5 mb-10 text-sm text-neutral-300">
+      <strong class="text-amber-400">Versão conferida:</strong> as mensagens citadas aqui estão na referência oficial do <strong>Claude Code 2.1.289</strong>; as pegadinhas, no <code>docs/COMO-FAZER-UM-MOD.md</code> do inema-mods (05/10/2026). O texto exato de um log pode mudar entre versões: guie-se pelo sentido.
+    </div>
+
+    <!-- ===================== TOPICO 1 ===================== -->
+    <section id="topico-1" data-inema-topic="modulo-4-3#topico-1" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">1</span>
+        <h2 class="text-2xl font-bold flex-1">Ligue o --debug</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-3-t1-p1" class="text-neutral-300 mb-4 leading-relaxed">A referência oficial dá o conselho em uma linha: rode com <code>claude --debug</code> enquanto desenvolve. O <strong class="text-amber-400">log de depuração</strong> tem uma linha para cada vez que algo deu errado e para cada resultado que o engine recusou.</p>
+      <p data-inema-block="m4-3-t1-p2" class="text-neutral-300 mb-6 leading-relaxed">Sem o debug você ainda vê parte disso, mas só em certas sessões. A tabela mostra onde cada sinal aparece.</p>
+
+      <div class="bg-amber-900/20 rounded-xl border border-amber-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-amber-400 mb-2 flex items-center"><span class="mr-2">🆕</span> Novo aqui? Log de depuração e linha apagada</h3>
+        <p class="text-neutral-300 text-sm">O <strong>log de depuração</strong> é o registro detalhado que o <code>--debug</code> liga. A <strong>linha apagada</strong> (dim) é um aviso discreto que aparece na própria conversa, com o nome do plugin, o evento e o motivo, uma vez só, enquanto a sessão recarrega a pasta do mod a quente.</p>
+      </div>
+
+      <div class="overflow-x-auto mb-6 rounded-xl border border-dark-600">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-dark-700/60 text-amber-400"><tr><th class="px-4 py-3 font-semibold">Tipo de sessão</th><th class="px-4 py-3 font-semibold">Onde aparece o aviso</th></tr></thead>
+          <tbody class="divide-y divide-dark-600">
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Interativa com <code>--plugin-dir</code> (pasta vigiada)</td><td class="px-4 py-3 text-neutral-300">linha apagada na conversa, uma vez; e o log de depuração</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Plugin instalado por marketplace</td><td class="px-4 py-3 text-neutral-300">só no log de depuração, como <code>&lt;plugin&gt;: &lt;linha&gt;</code></td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>claude -p</code> com saída em texto</td><td class="px-4 py-3 text-neutral-300">módulo que não carregou: uma vez no stderr, com o motivo</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>claude -p</code> com saída json</td><td class="px-4 py-3 text-neutral-300">só no log de depuração</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">O que olhar na tabela:</strong> o lugar mais completo é sempre o log. Desenvolva com <code>--plugin-dir</code> e <code>--debug</code> juntos e você vê os dois sinais.</p>
+
+      <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-red-400 mb-2 flex items-center"><span class="mr-2">⚠️</span> Instalado por marketplace não avisa na conversa</h3>
+        <p class="text-neutral-300 text-sm">A linha apagada só aparece enquanto a sessão recarrega a pasta a quente. Um mod instalado pelo marketplace que falha fica mudo na tela: o único sinal está no log. Se um mod instalado "parou de funcionar", reabra com <code>claude --debug</code> antes de qualquer outra coisa.</p>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">🪵</div><div class="text-sm font-semibold text-amber-400">--debug</div><p class="text-xs text-neutral-400 mt-1">cada ocorrência</p></div>
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">📂</div><div class="text-sm font-semibold text-amber-400">--plugin-dir</div><p class="text-xs text-neutral-400 mt-1">aviso na conversa</p></div>
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">⚡</div><div class="text-sm font-semibold text-amber-400">-p</div><p class="text-xs text-neutral-400 mt-1">stderr no carregamento</p></div>
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">✅</div><div class="text-sm font-semibold text-amber-400">validate</div><p class="text-xs text-neutral-400 mt-1">antes de carregar</p></div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 2 ===================== -->
+    <section id="topico-2" data-inema-topic="modulo-4-3#topico-2" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">2</span>
+        <h2 class="text-2xl font-bold flex-1">Leia a linha de hook pulado</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-3-t2-p1" class="text-neutral-300 mb-4 leading-relaxed">Um hook que lança erro, estoura o orçamento de tempo ou devolve uma forma errada é <strong class="text-amber-400">pulado</strong>. A cadeia segue sem ele: os hooks de baixo e o núcleo rodam no lugar, ou vale o último resultado do <code>next</code> que ele chegou a chamar.</p>
+      <p data-inema-block="m4-3-t2-p2" class="text-neutral-300 mb-6 leading-relaxed">Por isso o sintoma é silencioso: o Claude Code continua normal, só que sem o seu mod. A exceção é o <code>.catch</code> do registro, que responde no lugar do hook que falhou (módulo 2.2).</p>
+
+      <div class="rounded-2xl border border-amber-500/30 bg-dark-900/40 p-3 sm:p-4 mb-3 overflow-hidden">
+        <svg viewBox="0 0 800 230" class="w-full h-auto" role="img" aria-label="Uma cadeia de três caixas: plugin A, o seu hook e o núcleo. O seu hook está riscado em vermelho porque lançou um erro. A seta do plugin A desvia por cima dele e chega ao núcleo. Abaixo, a linha do log de depuração guarda o nome do erro e o tamanho da mensagem, não o texto.">
+          <defs>
+            <pattern id="m43a-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#fbbf24" opacity="0.10"/></pattern>
+            <filter id="m43a-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <marker id="m43a-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38bdf8"/></marker>
+          </defs>
+          <rect x="0" y="0" width="800" height="230" fill="url(#m43a-grid)"/>
+          <g font-family="Inter,sans-serif" font-size="12" text-anchor="middle">
+            <rect class="wf-a" x="40" y="80" width="160" height="56" rx="12" fill="#0b1f2e" stroke="#38bdf8" stroke-width="2"/><text x="120" y="104" fill="#bae6fd">plugin A</text><text x="120" y="122" fill="#7dd3fc" font-size="11">chama next(e)</text>
+            <g filter="url(#m43a-glow)"><rect x="320" y="80" width="160" height="56" rx="12" fill="#2a1d06" stroke="#fbbf24" stroke-width="2"/></g>
+            <text x="400" y="104" fill="#fbbf24" font-weight="600">o seu hook</text><text x="400" y="122" fill="#fde68a" font-size="11">throw TypeError</text>
+            <line x1="325" y1="85" x2="475" y2="131" stroke="#f87171" stroke-width="3"/><line x1="475" y1="85" x2="325" y2="131" stroke="#f87171" stroke-width="3"/>
+            <rect x="600" y="80" width="160" height="56" rx="12" fill="#1f2937" stroke="#6b7280" stroke-width="2"/><text x="680" y="104" fill="#e5e7eb">núcleo</text><text x="680" y="122" fill="#9ca3af" font-size="11">roda no lugar</text>
+            <path class="wf-flow" d="M200,100 C300,20 500,20 598,100" fill="none" stroke="#38bdf8" stroke-width="2" marker-end="url(#m43a-arrow)"/>
+            <text x="400" y="38" fill="#7dd3fc" font-size="11">a cadeia desvia do hook pulado</text>
+            <rect x="160" y="168" width="480" height="40" rx="10" fill="#111827" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <text x="400" y="193" fill="#e5e7eb" font-family="JetBrains Mono,monospace" font-size="11">log: nome do erro + tamanho da mensagem (sem o texto)</text>
+          </g>
+        </svg>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">Como ler o desenho:</strong> o X vermelho não derruba a sessão; a seta passa por cima. O que sobra é a linha pontilhada no log. Pela referência, ela traz o nome do erro e o tamanho da mensagem no lugar do texto; o texto do primeiro erro, cortado, fica na linha apagada da conversa.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-dark-800 rounded-xl p-6 border border-amber-500/30">
+          <h3 class="font-semibold text-amber-400 mb-3">✓ Causas comuns de hook pulado</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ Mock ou noun que não responde e lança</li>
+            <li>✓ <code>$.command.register</code> recusado por nome repetido</li>
+            <li>✓ Laço longo que passa do orçamento do dispatch</li>
+            <li>✓ Resposta com forma errada para o evento</li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ Não conclua</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ "O evento não dispara" antes de ler o log</li>
+            <li>✗ "Foi o outro mod" sem rodar só o seu</li>
+            <li>✗ Que o erro some sozinho no próximo reload</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6">
+        <h3 class="text-lg font-semibold text-primary mb-2 flex items-center"><span class="mr-2">💡</span> Um .catch por comando registrado</h3>
+        <p class="text-neutral-300 text-sm">Visto ao vivo no inema-mods: se a pessoa já tem uma skill ou comando com o mesmo nome, o <code>$.command.register</code> é recusado e o erro derruba o hook <code>session.start</code> inteiro, levando junto tudo o que vinha depois. Registre cada comando com o seu próprio <code>.catch(...)</code> e escolha nomes pouco comuns.</p>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 3 ===================== -->
+    <section id="topico-3" data-inema-topic="modulo-4-3#topico-3" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">3</span>
+        <h2 class="text-2xl font-bold flex-1">Corrija um módulo que não carrega</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-3-t3-p1" class="text-neutral-300 mb-4 leading-relaxed">Pior que um hook pulado é um módulo que nem carrega: nenhum hook entra, nenhum comando aparece. As causas conhecidas são poucas e quase sempre <strong class="text-amber-400">estruturais</strong>, não de lógica.</p>
+      <p data-inema-block="m4-3-t3-p2" class="text-neutral-300 mb-6 leading-relaxed">O <code>claude plugin validate</code> lê o manifesto e o código como o engine vai ler e relata o que o engine recusaria, antes de você abrir uma sessão. Rode-o primeiro, sempre.</p>
+
+      <div class="overflow-x-auto mb-6 rounded-xl border border-dark-600">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-dark-700/60 text-amber-400"><tr><th class="px-4 py-3 font-semibold">Causa</th><th class="px-4 py-3 font-semibold">Fonte</th><th class="px-4 py-3 font-semibold">Correção</th></tr></thead>
+          <tbody class="divide-y divide-dark-600">
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>import()</code> dinâmico</td><td class="px-4 py-3 text-neutral-300">reference.md</td><td class="px-4 py-3 text-neutral-300"><code>import</code> estático de arquivo do mod</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Extensão fora da lista</td><td class="px-4 py-3 text-neutral-300">reference.md</td><td class="px-4 py-3 text-neutral-300"><code>.ts .tsx .jsx .js .mjs .cjs .mts .cts</code></td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>require</code>, Node, DOM</td><td class="px-4 py-3 text-neutral-300">pegadinha 2</td><td class="px-4 py-3 text-neutral-300">tudo pelo <code>$</code></td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>$</code> passado a função interna</td><td class="px-4 py-3 text-neutral-300">pegadinha 1</td><td class="px-4 py-3 text-neutral-300">função no topo do arquivo</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Contrato só com <code>export {}</code></td><td class="px-4 py-3 text-neutral-300">pegadinha 13</td><td class="px-4 py-3 text-neutral-300">exportar ao menos um tipo</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-red-900/20 rounded-xl border border-red-500/30 overflow-hidden">
+          <div class="px-5 py-3 border-b border-red-500/30"><span class="text-red-400 font-semibold text-sm">✗ Não carrega (pegadinha 1)</span></div>
+          <pre class="font-mono text-xs text-neutral-200 whitespace-pre-wrap p-4">export const register: Register = on =&gt; {
+  // função que recebe $, DENTRO do register
+  const avisar = async ($: EngineInterface, t: string) =&gt;
+    $.ui.toast(t)
+  on('session.start', async ($, e, next) =&gt; {
+    await avisar($, 'mod pronto')
+    return next(e)
+  })
+}</pre>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-amber-500/30 overflow-hidden">
+          <div class="px-5 py-3 border-b border-amber-500/30"><span class="text-amber-400 font-semibold text-sm">✓ Carrega</span></div>
+          <pre class="font-mono text-xs text-neutral-200 whitespace-pre-wrap p-4">// no TOPO do arquivo
+async function avisar($: EngineInterface, t: string) {
+  $.ui.toast(t)
+}
+
+export const register: Register = on =&gt; {
+  on('session.start', async ($, e, next) =&gt; {
+    await avisar($, 'mod pronto')
+    return next(e)
+  })
+}</pre>
+        </div>
+      </div>
+
+      <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6">
+        <h3 class="text-base font-semibold text-red-400 mb-2 flex items-center"><span class="mr-2">⚠️</span> Fora isso, $ é sempre $.&lt;noun&gt;.&lt;método&gt;</h3>
+        <p class="text-neutral-300 text-sm">A pegadinha 1 completa diz: <code>$</code> só pode ser passado para função declarada no topo do arquivo; fora isso, use sempre a forma <code>$.&lt;noun&gt;.&lt;método&gt;(…)</code>. É por isso que todos os mods do inema-mods (e este curso desde a trilha 2) declaram <code>medir</code>, <code>registrar</code>, <code>aplicarModo</code> acima do <code>register</code>.</p>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 4 ===================== -->
+    <section id="topico-4" data-inema-topic="modulo-4-3#topico-4" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">4</span>
+        <h2 class="text-2xl font-bold flex-1">Corrija uma árvore recusada</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-3-t4-p1" class="text-neutral-300 mb-4 leading-relaxed">Quando um <code>ui.render</code> devolve uma árvore que <strong class="text-amber-400">não valida</strong> (um elemento que a superfície não tem, uma prop que ele não aceita, um filho onde não cabe filho), o engine não desenha a árvore. Ele desenha a dele no lugar e registra o motivo.</p>
+      <p data-inema-block="m4-3-t4-p2" class="text-neutral-300 mb-6 leading-relaxed">No log de depuração a linha começa assim, seguida do motivo:</p>
+      <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600 mb-4">ui.render (&lt;Component&gt;): a hook returned a tree that does not validate</pre>
+      <p data-inema-block="m4-3-t4-p3" class="text-neutral-300 mb-4 leading-relaxed">Numa sessão que recarrega a pasta do mod a quente, a conversa mostra também, uma vez por carga, componente e motivo:</p>
+      <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600 mb-6">&lt;plugin&gt;: ui.render (&lt;Component&gt;) refused: &lt;reason&gt;; the engine drew its own</pre>
+
+      <div class="rounded-2xl border border-amber-500/30 bg-dark-900/40 p-3 sm:p-4 mb-3 overflow-hidden">
+        <svg viewBox="0 0 800 220" class="w-full h-auto" role="img" aria-label="O hook de ui.render devolve uma árvore. Ela passa pela tabela de elementos da superfície. Se valida, é desenhada. Se não valida, o engine desenha o seu próprio componente; na faixa acima do prompt isso significa faixa vazia, num painel significa painel fechado. Em todos os casos o motivo vai para o log.">
+          <defs>
+            <pattern id="m43b-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#fbbf24" opacity="0.10"/></pattern>
+            <filter id="m43b-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <marker id="m43b-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38bdf8"/></marker>
+          </defs>
+          <rect x="0" y="0" width="800" height="220" fill="url(#m43b-grid)"/>
+          <g font-family="Inter,sans-serif" font-size="12" text-anchor="middle">
+            <g filter="url(#m43b-glow)"><rect x="20" y="82" width="150" height="56" rx="12" fill="#2a1d06" stroke="#fbbf24" stroke-width="2"/></g>
+            <text x="95" y="106" fill="#fbbf24" font-weight="600">ui.render</text><text x="95" y="124" fill="#fde68a" font-size="11">devolve a árvore</text>
+            <line class="wf-flow" x1="172" y1="110" x2="233" y2="110" stroke="#38bdf8" stroke-width="2" marker-end="url(#m43b-arrow)"/>
+            <rect class="wf-a" x="238" y="82" width="170" height="56" rx="12" fill="#0b1f2e" stroke="#38bdf8" stroke-width="2"/><text x="323" y="106" fill="#bae6fd">tabela da superfície</text><text x="323" y="124" fill="#7dd3fc" font-size="11">valida?</text>
+            <line x1="410" y1="100" x2="480" y2="50" stroke="#38bdf8" stroke-width="2" marker-end="url(#m43b-arrow)"/>
+            <rect class="wf-a" x="485" y="22" width="290" height="44" rx="10" fill="#0b1f2e" stroke="#38bdf8" stroke-width="2"/><text x="630" y="49" fill="#bae6fd">sim: desenha a sua árvore</text>
+            <line x1="410" y1="122" x2="480" y2="160" stroke="#f87171" stroke-width="2" marker-end="url(#m43b-arrow)"/>
+            <rect x="485" y="132" width="290" height="70" rx="10" fill="#2a0f0f" stroke="#f87171" stroke-width="2"/>
+            <text x="630" y="154" fill="#fecaca">não: o engine desenha a dele</text>
+            <text x="630" y="172" fill="#fca5a5" font-size="11">faixa: nothing was drawn</text>
+            <text x="630" y="189" fill="#fca5a5" font-size="11">painel: the pane was closed</text>
+          </g>
+        </svg>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">Como ler o desenho:</strong> o caminho vermelho não quebra a sessão, mas o seu desenho some. Segundo a referência, quando o engine não tem o que desenhar, a faixa fica vazia e a linha termina em <code>nothing was drawn</code>; um painel é fechado e a linha termina em <code>the pane was closed</code>.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-dark-800 rounded-xl p-6 border border-amber-500/30">
+          <h3 class="font-semibold text-amber-400 mb-3">✓ Como corrigir</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ Leia o motivo e o tipo das props do elemento</li>
+            <li>✓ Estreite por <code>e.surface</code> antes de usar <code>Raster</code></li>
+            <li>✓ No teste, <code>ui.drawn()</code> rejeita com a recusa</li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ Recusas clássicas</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ <code>Raster</code> ou <code>Image</code> fora do terminal</li>
+            <li>✗ <code>Svg</code> no terminal</li>
+            <li>✗ <code>Input</code> ou <code>Select</code> no mobile</li>
+          </ul>
+        </div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 5 ===================== -->
+    <section id="topico-5" data-inema-topic="modulo-4-3#topico-5" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">5</span>
+        <h2 class="text-2xl font-bold flex-1">Percorra as pegadinhas do kit INEMA</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-3-t5-p1" class="text-neutral-300 mb-4 leading-relaxed">O <code>docs/COMO-FAZER-UM-MOD.md</code> do inema-mods lista <strong class="text-amber-400">23 pegadinhas</strong> que custaram tempo na construção dos 18 mods. Abaixo, o sentido de cada uma, agrupado. O número é o do arquivo (lá a 17 aparece por último).</p>
+
+      <div class="overflow-x-auto mb-6 rounded-xl border border-dark-600">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-dark-700/60 text-amber-400"><tr><th class="px-4 py-3 font-semibold">Grupo</th><th class="px-4 py-3 font-semibold">Pegadinhas (resumo)</th></tr></thead>
+          <tbody class="divide-y divide-dark-600">
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Carregar</td><td class="px-4 py-3 text-neutral-300"><strong>1</strong> <code>$</code> só em função do topo · <strong>2</strong> sem <code>import()</code>, <code>require</code>, Node, DOM · <strong>13</strong> contrato exporta ao menos um tipo · <strong>21</strong> item do <code>PluginState</code> é objeto literal ali mesmo</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Testes</td><td class="px-4 py-3 text-neutral-300"><strong>3</strong> nada responde por baixo: mock cada noun · <strong>4</strong> <code>prompt.submit</code> pede <code>{ text, origin, wait: false }</code> · <strong>5</strong> <code>FsStat</code> exige <code>isLink</code> · <strong>14</strong> <code>mock.store(on, {…})</code> · <strong>15</strong> <code>turn.start</code> precisa de mock; <code>turn.step</code> se lê com <code>for await</code> · <strong>18</strong> mocks antes do <code>$</code> · <strong>19</strong> <code>fs.list</code> com <code>mtimeMs</code>; outros nouns de sessão precisam de mock · <strong>23</strong> datas com meio-dia UTC</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Estado e tempo</td><td class="px-4 py-3 text-neutral-300"><strong>7</strong> <code>$.clock.now()</code>, nunca <code>Date.now()</code> · <strong>8</strong> estado do desenho em <code>$.state</code>; render nunca escreve · <strong>16</strong> <code>$.command.run</code> num hook que o turno espera fica na fila: use <code>$.clock.after(0, …)</code> · <strong>17</strong> timers do <code>every</code> morrem no reload (recriação no <code>session.start</code> não confirmada)</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Tela</td><td class="px-4 py-3 text-neutral-300"><strong>9</strong> painel sem pedido só vira barra lateral com tela larga · <strong>10</strong> terminal sem <code>Svg</code>; grade é um <code>Raster</code> · <strong>11</strong> a faixa é uma só: some a sua linha ao <code>next(e)</code> · <strong>12</strong> <code>key</code> em <code>Text</code> some · <strong>20</strong> barra que funcione no desktop: <code>█░</code> com cor</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Ferramentas</td><td class="px-4 py-3 text-neutral-300"><strong>6</strong> sucesso = <code>deny === undefined &amp;&amp; isError !== true</code> · <strong>22</strong> recusa de permissão chega como <code>isError</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bg-amber-900/20 rounded-xl border border-amber-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-amber-400 mb-3 flex items-center"><span class="mr-2">🆕</span> Novo aqui? "Visto ao vivo"</h3>
+        <ul class="space-y-2 text-neutral-300 text-sm">
+          <li>• <code>$.command.register</code> recusado por nome repetido derruba o <code>session.start</code> (tópico 2).</li>
+          <li>• Comandos de mod respondem sem chamar o modelo: <code>claude -p</code> vira teste de fumaça barato (tópico 6).</li>
+          <li>• O que um comando grava em <code>$.store</code> persiste de verdade: depois de testar ao vivo, volte ao padrão.</li>
+          <li>• <code>$.ui.ask</code> pode se resolver sozinho por ausência: opção segura primeiro (módulo 4.1).</li>
+        </ul>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6">
+        <h3 class="text-lg font-semibold text-primary mb-2 flex items-center"><span class="mr-2">💡</span> Leia o original</h3>
+        <p class="text-neutral-300 text-sm">Esta tabela resume. O texto completo, com os exemplos e as regras do kit (mod nunca chama modelo nem rede, mensagens em português, tudo configurável em <code>userConfig</code>), está em <a href="https://github.com/inematds/inema-mods" target="_blank" class="text-sky-400 hover:text-sky-300">github.com/inematds/inema-mods</a>, arquivo <code>docs/COMO-FAZER-UM-MOD.md</code>.</p>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 6 ===================== -->
+    <section id="topico-6" data-inema-topic="modulo-4-3#topico-6" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">6</span>
+        <h2 class="text-2xl font-bold flex-1">Faça um teste de fumaça com claude -p</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-3-t6-p1" class="text-neutral-300 mb-4 leading-relaxed">Os testes provam a lógica. O teste de fumaça prova que o mod <strong class="text-amber-400">carrega de verdade</strong> numa sessão real. Um comando de mod responde sem chamar o modelo, então custa zero de cota.</p>
+      <p data-inema-block="m4-3-t6-p2" class="text-neutral-300 mb-6 leading-relaxed">O inema-mods junta os três controles anteriores num script só, <code>scripts/checar-mod.sh</code>: validate, <code>tsc</code> contra os tipos do engine e test. O Rafa roda os dois antes de dizer "pronto".</p>
+
+      <div class="space-y-5 mb-6">
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">1</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">validate</h4> <p class="text-neutral-300 text-sm">Manifesto e código lidos como o engine lê.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">2</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">tsc</h4> <p class="text-neutral-300 text-sm">Nome de evento, campo e método conferidos contra os tipos da sua versão.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">3</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">test</h4> <p class="text-neutral-300 text-sm">O comportamento, com o mundo em memória (módulo 4.2).</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">4</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">fumaça com claude -p</h4> <p class="text-neutral-300 text-sm">Uma sessão de verdade carrega a pasta e responde o comando.</p></div>
+        </div>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-amber-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-amber-900/20 border-b border-amber-500/30"><span class="text-amber-400 font-semibold text-sm">🎯 Objetivo: provar que o recibo-sessao carrega e responde</span></div>
+        <div class="p-5">
+          <p class="text-sm text-neutral-400 mb-3">No terminal, dentro da pasta <code>inema-mods</code>. Troque <code>&lt;caminho do tsc&gt;</code> pelo seu (ex.: o de um <code>node_modules/.bin</code>):</p>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">TSC=&lt;caminho do tsc&gt; scripts/checar-mod.sh mods/recibo-sessao
+claude -p "/recibo" --plugin-dir mods/recibo-sessao</pre>
+          <p class="text-xs text-neutral-500 mt-4 mb-2">Saída real (05/10/2026, Claude Code 2.1.289):</p>
+          <pre class="font-mono text-xs text-neutral-400 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">== recibo-sessao
+  validate: ok
+  tsc: ok
+  test: ok (6 linhas de aprovação)
+
+recibo-sessao: Nesta sessão: nenhum arquivo criado ou alterado.</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-amber-400">Como verificar:</strong> as três linhas do <code>checar-mod.sh</code> dizem <code>ok</code>, e o <code>claude -p</code> devolve a linha do recibo prefixada com o nome do plugin. Se em vez disso aparecer no stderr um aviso de que o módulo não carregou, volte ao tópico 3.</div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-dark-800 rounded-xl p-6 border border-amber-500/30">
+          <h3 class="font-semibold text-amber-400 mb-3">✓ Fumaça boa</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ Um comando que só lê estado e responde texto</li>
+            <li>✓ Resultado conhecido de antemão (sessão nova, nada feito)</li>
+            <li>✓ Roda em segundos e não grava nada</li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ Fumaça ruim</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ Um prompt que faz o modelo trabalhar (gasta cota)</li>
+            <li>✗ Comando que grava em <code>$.store</code> sem voltar ao padrão</li>
+            <li>✗ Comando que depende de <code>$.ui.ask</code> (no <code>-p</code> ele rejeita)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-dark-600 p-6 mb-6" data-inema-check="modulo-4-3#q1">
+        <p class="font-medium mb-4">Teste rápido (opcional): o mod do Rafa abre com <code>--plugin-dir</code>, mas nenhum hook roda e o comando não aparece. A função <code>contar($, e)</code> está declarada dentro do <code>register</code>. Qual a causa provável?</p>
+        <div class="space-y-2">
+          <button type="button" data-inema-check-option="0" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">Pegadinha 1: função que recebe <code>$</code> dentro do <code>register</code> impede o módulo de carregar.</button>
+          <button type="button" data-inema-check-option="1" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">O orçamento do dispatch é curto demais para o <code>session.start</code>.</button>
+          <button type="button" data-inema-check-option="2" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">Falta rodar com <code>--debug</code> para os hooks ligarem.</button>
+        </div>
+        <div data-inema-check-feedback class="mt-4 text-sm" role="status" aria-live="polite"></div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== RESUMO ===================== -->
+    <section class="mb-12">
+      <div class="bg-gradient-to-br from-amber-900/40 via-dark-800 to-dark-800 rounded-xl border border-amber-500/30 p-8">
+        <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🎓</span> Resumo do módulo</h2>
+        <div class="space-y-4 mb-8">
+          <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-neutral-100">--debug com --plugin-dir</strong><span class="text-neutral-400"> — log completo e aviso na conversa.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-neutral-100">Hook que falha é pulado</strong><span class="text-neutral-400"> — o log guarda nome do erro e tamanho.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-neutral-100">Módulo que não carrega é estrutural</strong><span class="text-neutral-400"> — import(), extensão, $ em função interna.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-neutral-100">Árvore recusada: o engine desenha a dele</strong><span class="text-neutral-400"> — leia o motivo na linha do log.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-neutral-100">checar-mod.sh e claude -p</strong><span class="text-neutral-400"> — antes de dizer "pronto".</span></div></div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-4 mb-8">
+          <h3 class="font-semibold text-amber-400 mb-2">Próximo módulo:</h3>
+          <p class="text-neutral-300">4.4 — Distribuir e projeto final</p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="index.html" class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">← Voltar para a trilha</a>
+          <a href="modulo-4-4.html" class="flex-1 text-center px-6 py-3 bg-amber-600 text-white rounded-lg font-semibold hover:bg-amber-500 transition-colors">Módulo 4.4 →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="hidden lg:block">
+    <nav data-inema-toc aria-label="Índice da página" class="sticky top-24">
+      <p class="text-sm text-neutral-400 mb-3"><span data-inema-section-counter>Seção 1 de 6</span></p>
+      <ol class="space-y-2 text-sm">
+        <li><a href="#topico-1" class="text-neutral-400 hover:text-amber-400">1. --debug</a></li>
+        <li><a href="#topico-2" class="text-neutral-400 hover:text-amber-400">2. Hook pulado</a></li>
+        <li><a href="#topico-3" class="text-neutral-400 hover:text-amber-400">3. Módulo não carrega</a></li>
+        <li><a href="#topico-4" class="text-neutral-400 hover:text-amber-400">4. Árvore recusada</a></li>
+        <li><a href="#topico-5" class="text-neutral-400 hover:text-amber-400">5. Pegadinhas</a></li>
+        <li><a href="#topico-6" class="text-neutral-400 hover:text-amber-400">6. Fumaça com -p</a></li>
+      </ol>
+    </nav>
+  </aside>
+  </div>
+<!--CHECKS-->
+        INEMA.registerCheck('modulo-4-3#q1', { answer: 0, explain: {
+          '0': 'Isso. Pegadinha 1 do COMO-FAZER-UM-MOD.md: função auxiliar dentro do register que recebe $ faz o módulo não carregar. Mova a função para o topo do arquivo.',
+          '1': 'Orçamento estourado pula um hook e deixa o resto do mod funcionando. Aqui nada do mod entrou, nem o comando: o problema é anterior, no carregamento.',
+          '2': 'O --debug só mostra o motivo; ele não liga hook nenhum. Use-o para achar a causa, mas a correção é no código.'
+        } });

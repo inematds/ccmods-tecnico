@@ -80,7 +80,7 @@ else:
     CLAUDE_OK = {'plugin validate','plugin test','plugin marketplace','plugin install','plugin disable','plugin enable',
                  'plugin uninstall','plugin update','plugin list','plugin init','-p','--plugin-dir','--debug','--version'}
     for p in sorted((RAIZ / 'context' / 'corpos').glob('*.html')):
-        t = _html.unescape(re.sub(r'<[^>]+>', '', p.read_text(encoding='utf-8')))
+        t = _html.unescape(re.sub(r'<[^>]+>', ' ', p.read_text(encoding='utf-8')))
         for noun, met in set(re.findall(r'\$\.([a-z]+)\.([a-zA-Z]+)', t)):
             if not api_ok(noun, met): falha(p.name, f'API inexistente: $.{noun}.{met}')
         for ev in set(re.findall(r"""\bon\(\s*['"]([a-zA-Z]+\.[a-zA-Z.*]+)['"]""", t)):

@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="inema-course" content="ccmt">
+  <title>ui.render e as superfícies | Mods do Claude Code — técnico</title>
+  <meta name="description" content="Curso técnico gratuito do INEMA.CLUB: escreva, teste e distribua mods do Claude Code — register, eventos, cadeia com next, estado, faixa, painéis, comandos, guardas e claude plugin test.">
+
+  <!-- ANTI-FOUC: bloqueante, ANTES do Tailwind -->
+  <script>
+  (function () {
+    try {
+      var html = document.documentElement;
+      var DEF = { theme: 'inema-dark', font: 'inter', fontScale: 100, lineWidth: 68, leading: 1.7, accent: 'emerald' };
+      function clone(o) { var r = {}; for (var x in o) r[x] = o[x]; return r; }
+      var p = clone(DEF);
+      try {
+        var raw = localStorage.getItem('inema.prefs');
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') { for (var k in DEF) if (parsed[k] != null) p[k] = parsed[k]; }
+        } else {
+          var legacy = localStorage.getItem('theme');
+          if (legacy === 'light') p.theme = 'claro'; else if (legacy === 'dark') p.theme = 'inema-dark';
+        }
+      } catch (e) { p = clone(DEF); }
+      var THEMES = {
+        'inema-dark': { dark: true,  attr: null,        cs: 'dark'  },
+        'claro':      { dark: false, attr: null,        cs: 'light' },
+        'sepia':      { dark: false, attr: 'sepia',     cs: 'light' },
+        'foco':       { dark: null,  attr: 'foco',      cs: null    },
+        'contraste':  { dark: true,  attr: 'contraste', cs: 'dark'  }
+      };
+      var t = THEMES[p.theme] || THEMES['inema-dark'];
+      if (t.dark === true) html.classList.add('dark'); else if (t.dark === false) html.classList.remove('dark');
+      if (t.attr) html.setAttribute('data-theme', t.attr); else html.removeAttribute('data-theme');
+      html.style.colorScheme = (t.cs ? t.cs : (html.classList.contains('dark') ? 'dark' : 'light'));
+      html.setAttribute('data-font', p.font || 'inter');
+      html.setAttribute('data-accent', p.accent || 'emerald');
+      var s = html.style; var scale = (+p.fontScale || 100);
+      s.setProperty('--inema-font-scale', (scale / 100).toString());
+      s.setProperty('font-size', scale + '%');
+      s.setProperty('--measure', (+p.lineWidth || 68) + 'ch');
+      s.setProperty('--lh-body', (+p.leading || 1.7).toString());
+      var fam = p.font === 'system' ? 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif'
+        : (p.font === 'leitura' ? '"Atkinson Hyperlegible", "Inter", system-ui, sans-serif' : '"Inter", system-ui, sans-serif');
+      s.setProperty('--font-body', fam);
+      var ACC = { emerald: [152,76,45], blue: [217,91,60], purple: [258,90,66], amber: [38,92,50], teal: [174,72,41], rose: [350,89,60] };
+      var a = ACC[p.accent] || ACC.emerald;
+      s.setProperty('--accent-h', a[0]+''); s.setProperty('--accent-s', a[1]+'%'); s.setProperty('--accent-l', a[2]+'%');
+      s.setProperty('--accent', 'hsl('+a[0]+' '+a[1]+'% '+a[2]+'%)');
+    } catch (err) { try { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme = 'dark'; } catch(e){} }
+  })();
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class', theme: { extend: { colors: {
+      primary: '#FACC15', dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' } } } } }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/learn.css">
+
+  <!-- Manifesto do curso (OBRIGATORIO em TODA pagina, identico) -->
+  <script type="application/json" data-inema-manifest>
+  {"course":"ccmt","tracks":[{"n":"1","title":"Anatomia","modules":[{"id":"1-1","title":"O que é um mod por dentro","topics":6,"href":"curso/trilha1/modulo-1-1.html"},{"id":"1-2","title":"Estrutura de arquivos e manifesto","topics":6,"href":"curso/trilha1/modulo-1-2.html"},{"id":"1-3","title":"Carregar, recarregar e instalar","topics":6,"href":"curso/trilha1/modulo-1-3.html"},{"id":"1-4","title":"Seu primeiro mod: comando e contador","topics":6,"href":"curso/trilha1/modulo-1-4.html"}]},{"n":"2","title":"Eventos e estado","modules":[{"id":"2-1","title":"O mapa de eventos","topics":6,"href":"curso/trilha2/modulo-2-1.html"},{"id":"2-2","title":"A cadeia: next, reescrever e responder","topics":6,"href":"curso/trilha2/modulo-2-2.html"},{"id":"2-3","title":"Estado que sobrevive","topics":6,"href":"curso/trilha2/modulo-2-3.html"},{"id":"2-4","title":"Trabalho fora do dispatch","topics":6,"href":"curso/trilha2/modulo-2-4.html"}]},{"n":"3","title":"Telas e comandos","modules":[{"id":"3-1","title":"ui.render e as superfícies","topics":6,"href":"curso/trilha3/modulo-3-1.html"},{"id":"3-2","title":"Faixa, status e avisos","topics":6,"href":"curso/trilha3/modulo-3-2.html"},{"id":"3-3","title":"Painéis e botões","topics":6,"href":"curso/trilha3/modulo-3-3.html"},{"id":"3-4","title":"Comandos, ferramentas e configuração","topics":6,"href":"curso/trilha3/modulo-3-4.html"}]},{"n":"4","title":"Controlar e distribuir","modules":[{"id":"4-1","title":"Mods que mudam o fluxo","topics":6,"href":"curso/trilha4/modulo-4-1.html"},{"id":"4-2","title":"Testar com claude plugin test","topics":6,"href":"curso/trilha4/modulo-4-2.html"},{"id":"4-3","title":"Depurar e as pegadinhas","topics":6,"href":"curso/trilha4/modulo-4-3.html"},{"id":"4-4","title":"Distribuir e projeto final","topics":6,"href":"curso/trilha4/modulo-4-4.html"}]}]}
+  </script>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .dark body { background-color: #111827; }
+
+    /* Light mode - base */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-200 { color: #1f2937; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #6b7280; }
+    html:not(.dark) .text-white { color: #111827; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* Light mode - acentos das 5 trilhas (emerald, blue, purple, amber, teal) */
+    html:not(.dark) .text-emerald-400 { color: #059669; }
+    html:not(.dark) .bg-emerald-500\/20 { background-color: rgba(5, 150, 105, 0.12); }
+    html:not(.dark) .bg-emerald-500\/10 { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .bg-emerald-900\/20 { background-color: rgba(5, 150, 105, 0.07); }
+    html:not(.dark) .border-emerald-500\/30 { border-color: rgba(5, 150, 105, 0.25); }
+    html:not(.dark) .hover\:bg-emerald-500\/30:hover { background-color: rgba(5, 150, 105, 0.18); }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:bg-emerald-500\/10:hover { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-emerald-400 { color: #059669; }
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .bg-blue-500\/20 { background-color: rgba(37, 99, 235, 0.12); }
+    html:not(.dark) .bg-blue-500\/10 { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .bg-blue-900\/20 { background-color: rgba(37, 99, 235, 0.07); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37, 99, 235, 0.25); }
+    html:not(.dark) .hover\:bg-blue-500\/30:hover { background-color: rgba(37, 99, 235, 0.18); }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:bg-blue-500\/10:hover { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-blue-400 { color: #2563eb; }
+    html:not(.dark) .text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .bg-purple-500\/20 { background-color: rgba(124, 58, 237, 0.12); }
+    html:not(.dark) .bg-purple-500\/10 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .bg-purple-900\/20 { background-color: rgba(124, 58, 237, 0.07); }
+    html:not(.dark) .border-purple-500\/30 { border-color: rgba(124, 58, 237, 0.25); }
+    html:not(.dark) .hover\:bg-purple-500\/30:hover { background-color: rgba(124, 58, 237, 0.18); }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+    html:not(.dark) .hover\:bg-purple-500\/10:hover { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .text-amber-400 { color: #92400e; }
+    html:not(.dark) .bg-amber-500\/20 { background-color: rgba(217, 119, 6, 0.12); }
+    html:not(.dark) .bg-amber-500\/10 { background-color: rgba(217, 119, 6, 0.08); }
+    html:not(.dark) .bg-amber-900\/20 { background-color: rgba(217, 119, 6, 0.07); }
+    html:not(.dark) .border-amber-500\/30 { border-color: rgba(217, 119, 6, 0.25); }
+    html:not(.dark) .hover\:bg-amber-500\/30:hover { background-color: rgba(217, 119, 6, 0.18); }
+    html:not(.dark) .hover\:text-amber-400:hover { color: #92400e; }
+    html:not(.dark) .hover\:bg-amber-500\/10:hover { background-color: rgba(217, 119, 6, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-amber-400 { color: #92400e; }
+    html:not(.dark) .text-teal-400 { color: #0d9488; }
+    html:not(.dark) .bg-teal-500\/20 { background-color: rgba(13, 148, 136, 0.12); }
+    html:not(.dark) .bg-teal-500\/10 { background-color: rgba(13, 148, 136, 0.08); }
+    html:not(.dark) .bg-teal-900\/20 { background-color: rgba(13, 148, 136, 0.07); }
+    html:not(.dark) .border-teal-500\/30 { border-color: rgba(13, 148, 136, 0.25); }
+    html:not(.dark) .hover\:bg-teal-500\/30:hover { background-color: rgba(13, 148, 136, 0.18); }
+    html:not(.dark) .hover\:text-teal-400:hover { color: #0d9488; }
+    html:not(.dark) .hover\:bg-teal-500\/10:hover { background-color: rgba(13, 148, 136, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-teal-400 { color: #0d9488; }
+
+    /* Light mode - remove gradientes e cores especiais */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .border-primary\/30 { border-color: rgba(161, 98, 7, 0.22); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.25); }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+
+    /* Light mode - nav */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+
+    /* Dark mode - bordas suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* Alvos de ancora abaixo do nav sticky */
+    [data-inema-topic], [id^="modulo-"], [id^="topico-"] { scroll-margin-top: 72px; }
+
+    /* SVG light mode + animacao */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @keyframes wf-dash { to { stroke-dashoffset: -24; } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s} .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s} .wf-a:nth-child(5){animation-delay:1s}
+      .wf-flow { stroke-dasharray: 6 6; animation: wf-dash 1.2s linear infinite; }
+    }
+
+    /* Topicos expansiveis */
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    /* Popover de aparência ancorado à direita e fora do layout quando fechado (sem transbordo) */
+    .inema-appearance-pop { right: 0; }
+    main code, main pre { overflow-wrap: anywhere; }
+    main .flex-1 { min-width: 0; }
+    .inema-appearance-pop:not([data-open="true"]) { visibility: hidden; display: none; }
+  </style>
+</head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen">
+  <a href="#conteudo" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[60] focus:px-4 focus:py-2 focus:bg-primary focus:text-black focus:rounded-lg">Pular para o conteúdo</a>
+
+  <nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-14">
+        <div class="flex items-center space-x-1.5 sm:space-x-3">
+          <a href="../../index.html" class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300">
+            <span class="text-2xl">🧩</span>
+            <span class="font-bold text-lg hidden lg:inline">Mods técnico</span>
+          </a>
+          <span class="text-neutral-600 hidden sm:inline">|</span>
+          <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 text-sm font-medium">INEMA.CLUB</a>
+          <span class="text-neutral-600">-</span>
+          <a href="https://inema.pro" target="_blank" class="text-amber-700 hover:text-amber-600 dark:text-slate-300 dark:hover:text-slate-200 text-sm font-medium">PRO</a>
+        </div>
+        <div class="flex items-center sm:space-x-1">
+          <a href="../trilha1/index.html" class="px-1.5 sm:px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors">
+            <span class="xl:hidden">T1</span><span class="hidden xl:inline">Anatomia</span>
+          </a>
+          <a href="../trilha2/index.html" class="px-1.5 sm:px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors">
+            <span class="xl:hidden">T2</span><span class="hidden xl:inline">Eventos e estado</span>
+          </a>
+          <a href="index.html" class="px-1.5 sm:px-2.5 py-1.5 rounded-lg text-sm font-semibold text-purple-400 bg-purple-500/10">
+            <span class="xl:hidden">T3</span><span class="hidden xl:inline">Telas e comandos</span>
+          </a>
+          <a href="../trilha4/index.html" class="px-1.5 sm:px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-amber-400 hover:bg-amber-500/10 transition-colors">
+            <span class="xl:hidden">T4</span><span class="hidden xl:inline">Controlar e distribuir</span>
+          </a>
+          <button type="button" data-inema-journey-open class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-sm text-neutral-300 hover:text-neutral-100 transition-colors" title="Minha jornada">
+            <span aria-hidden="true">◷</span><span class="hidden md:inline">Jornada</span>
+            <span class="inema-journey-badge" data-inema-journey-badge data-count="0"></span>
+          </button>
+          <div class="relative">
+            <button type="button" data-inema-appearance-toggle="#aparencia" aria-expanded="false" aria-controls="aparencia" class="p-2 rounded-lg text-neutral-300 hover:text-neutral-100 transition-colors" title="Aparência">
+              <span aria-hidden="true" class="text-sm font-semibold">Aa</span><span class="sr-only">Aparência</span>
+            </button>
+            <div id="aparencia" data-inema-appearance class="inema-appearance-pop">
+              <div class="inema-segment" aria-label="Tema">
+                <button type="button" data-inema-set-theme="inema-dark">Escuro</button>
+                <button type="button" data-inema-set-theme="claro">Claro</button>
+                <button type="button" data-inema-set-theme="sepia">Sépia</button>
+                <button type="button" data-inema-set-theme="foco">Foco</button>
+                <button type="button" data-inema-set-theme="contraste">Alto contraste</button>
+              </div>
+              <div class="inema-segment" aria-label="Fonte">
+                <button type="button" data-inema-set-font="inter">Inter</button>
+                <button type="button" data-inema-set-font="system">Sistema</button>
+                <button type="button" data-inema-set-font="leitura">Leitura</button>
+              </div>
+              <div class="inema-segment" aria-label="Tamanho do texto">
+                <button type="button" data-inema-set-fontscale="100">A</button>
+                <button type="button" data-inema-set-fontscale="112">A+</button>
+                <button type="button" data-inema-set-fontscale="125">A++</button>
+              </div>
+              <div class="inema-segment" aria-label="Largura da linha">
+                <button type="button" data-inema-set-linewidth="60">Estreito</button>
+                <button type="button" data-inema-set-linewidth="68">Médio</button>
+                <button type="button" data-inema-set-linewidth="75">Largo</button>
+              </div>
+              <div class="inema-segment" aria-label="Entrelinha">
+                <button type="button" data-inema-set-leading="1.45">Compacto</button>
+                <button type="button" data-inema-set-leading="1.7">Confortável</button>
+              </div>
+            </div>
+          </div>
+          <button id="theme-toggle" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors" aria-label="Alternar tema claro/escuro">
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <nav aria-label="Trilha de navegação" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex items-center space-x-2 text-sm text-neutral-400">
+      <a href="../../index.html" class="hover:text-purple-400">Início</a><span>/</span>
+      <a href="index.html" class="hover:text-purple-400">Trilha 3</a><span>/</span>
+      <span class="text-purple-400">Módulo 3.1</span>
+    </div>
+  </nav>
+
+  <header class="bg-gradient-to-br from-purple-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600" data-inema-module="3-1" data-inema-track="3">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="inline-block px-3 py-1 bg-purple-500/20 text-purple-400 text-xs font-semibold rounded-full mb-4">MÓDULO 3.1</span>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-4">🎨 ui.render e as superfícies</h1>
+      <p class="text-lg text-neutral-400 max-w-3xl">Tudo o que um mod desenha passa por um único evento: <code>ui.render</code>. O mesmo hook é chamado para o terminal, o desktop, o celular e o VS Code, e cada um aceita um conjunto diferente de elementos. Este módulo é o contrato do desenho antes da faixa, do painel e do comando.</p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 max-w-2xl">
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-purple-400">6</div><div class="text-xs text-neutral-400">Tópicos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-purple-400">~35</div><div class="text-xs text-neutral-400">Minutos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-purple-400">Médio</div><div class="text-xs text-neutral-400">Nível</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-purple-400">Fundamento</div><div class="text-xs text-neutral-400">Tipo</div></div>
+      </div>
+      <div data-inema-meter="modulo:3-1" class="mt-6 max-w-2xl" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso do módulo 3.1">
+        <div class="flex justify-between text-xs text-neutral-400 mb-1"><span data-inema-meter-frac>0 de 6</span><span data-inema-meter-pct>0%</span></div>
+        <div class="inema-bar"><div class="inema-bar__fill" data-inema-meter-fill></div></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:grid lg:grid-cols-[1fr_220px] lg:gap-10">
+  <main id="conteudo" class="min-w-0" data-inema-module="3-1" data-inema-track="3">
+
+    <div class="bg-amber-900/20 rounded-xl border border-amber-500/30 p-5 mb-10 text-sm text-neutral-300">
+      <strong class="text-amber-400">Versão conferida:</strong> nomes de elementos, props e mensagens de erro deste módulo foram conferidos no <code>claude-code.d.ts</code> do <strong>Claude Code 2.1.289</strong> e na referência oficial (seção "Drawing: ui.render"), em 05/10/2026. A tabela de elementos por superfície é a parte que mais muda entre versões: confira o tipo <code>Elements</code> da sua instalação.
+    </div>
+
+    <!-- ===================== TOPICO 1 ===================== -->
+    <section id="topico-1" data-inema-topic="modulo-3-1#topico-1" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl">1</span>
+        <h2 class="text-2xl font-bold flex-1">Entenda o que o ui.render recebe</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m3-1-t1-p1" class="text-neutral-300 mb-4 leading-relaxed">Um hook em <code>ui.render</code> recebe <strong class="text-purple-400">uma instância de um componente</strong> por vez: a faixa acima do prompt, um painel, a linha de saída de um comando, uma mensagem do modelo. Ele devolve uma árvore de elementos, ou passa adiante com <code>next</code>.</p>
+      <p data-inema-block="m3-1-t1-p2" class="text-neutral-300 mb-6 leading-relaxed">O <code>e</code> de um <code>ui.render</code> tem cinco campos que você vai usar sempre. O matcher filtra por eles: <code>{ component: 'Pane', requestId: 'meu-painel' }</code> faz o hook acordar só para o seu painel.</p>
+
+      <div class="bg-purple-900/20 rounded-xl border border-purple-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🆕</span> Novo aqui? Três palavras do desenho</h3>
+        <ul class="space-y-2 text-neutral-300 text-sm">
+          <li><strong>Componente</strong> — o lugar da tela que está sendo desenhado. Os nomes estão no tipo <code>RenderComponent</code>: <code>AbovePrompt</code>, <code>Pane</code>, <code>CommandOutput</code>, <code>UserMessage</code>, <code>ToolUse</code>, <code>Spinner</code> e outros.</li>
+          <li><strong>Superfície</strong> — onde o desenho aparece: <code>terminal</code>, <code>desktop</code> (o app Claude Code Desktop), <code>mobile</code> (o app do celular) ou <code>vscode</code>.</li>
+          <li><strong>requestId</strong> — qual instância: o id do painel, o id da mensagem, o <code>tool_use_id</code> de uma linha de ferramenta. É o endereço que <code>$.ui.blit</code> e <code>$.ui.focus</code> usam depois.</li>
+        </ul>
+      </div>
+
+      <div class="overflow-x-auto mb-6 rounded-xl border border-dark-600">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-dark-700/60 text-purple-400"><tr><th class="px-4 py-3 font-semibold">Campo de <code>e</code></th><th class="px-4 py-3 font-semibold">O que diz</th><th class="px-4 py-3 font-semibold">Para que serve</th></tr></thead>
+          <tbody class="divide-y divide-dark-600">
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>e.component</code></td><td class="px-4 py-3 text-neutral-300">qual componente</td><td class="px-4 py-3 text-neutral-300">matcher; um hook pode atender vários</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>e.surface</code></td><td class="px-4 py-3 text-neutral-300"><code>terminal</code>, <code>desktop</code>, <code>mobile</code> ou <code>vscode</code></td><td class="px-4 py-3 text-neutral-300">escolher o que desenhar em cada uma</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>e.requestId</code></td><td class="px-4 py-3 text-neutral-300">qual instância</td><td class="px-4 py-3 text-neutral-300">separar o seu painel dos outros</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>e.props</code></td><td class="px-4 py-3 text-neutral-300">os dados do componente, como dado simples</td><td class="px-4 py-3 text-neutral-300"><code>bodyColumns</code>, <code>hasSurvey</code>, <code>text</code>...</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>e.viewport</code></td><td class="px-4 py-3 text-neutral-300"><code>columns</code>, <code>rows</code> e, quando a superfície diz, <code>isFullscreen</code></td><td class="px-4 py-3 text-neutral-300">saber o tamanho total; pode faltar</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">O que olhar na tabela:</strong> o <code>e.viewport</code> é opcional (use <code>e.viewport?.rows ?? 24</code>, como o exemplo oficial do painel). E para a faixa e o painel, a largura certa não é <code>viewport.columns</code>: é <code>e.props.bodyColumns</code>, a caixa que sobra sem as marcas do engine.</p>
+
+      <div class="rounded-2xl border border-purple-500/30 bg-dark-900/40 p-3 sm:p-4 mb-3 overflow-hidden">
+        <svg viewBox="0 0 800 250" class="w-full h-auto" role="img" aria-label="O engine pergunta ao hook como desenhar uma instância. À esquerda, o cartão e com component Pane, surface terminal, requestId recibo, props com bodyColumns e viewport com columns e rows. No meio, o hook do mod. À direita, duas saídas: devolver uma árvore própria de Box e Text, ou chamar next e deixar o engine desenhar a dele.">
+          <defs>
+            <pattern id="m31a-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#c084fc" opacity="0.10"/></pattern>
+            <filter id="m31a-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <marker id="m31a-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38bdf8"/></marker>
+          </defs>
+          <rect x="0" y="0" width="800" height="250" fill="url(#m31a-grid)"/>
+          <rect x="20" y="30" width="250" height="190" rx="14" fill="#1f2937" stroke="#6b7280" stroke-width="2"/>
+          <g font-family="JetBrains Mono,monospace" font-size="12" fill="#e5e7eb">
+            <text x="38" y="58" fill="#e9d5ff" font-size="13">e (ui.render)</text>
+            <text x="38" y="86">component: "Pane"</text>
+            <text x="38" y="110">surface: "terminal"</text>
+            <text x="38" y="134">requestId: "recibo"</text>
+            <text x="38" y="158">props: { bodyColumns: 58 }</text>
+            <text x="38" y="182">viewport: { columns: 120,</text>
+            <text x="38" y="200">            rows: 40 }</text>
+          </g>
+          <line class="wf-flow" x1="272" y1="125" x2="318" y2="125" stroke="#38bdf8" stroke-width="2" marker-end="url(#m31a-arrow)"/>
+          <g filter="url(#m31a-glow)"><rect x="322" y="90" width="160" height="70" rx="14" fill="#1e1233" stroke="#c084fc" stroke-width="2"/></g>
+          <text x="402" y="120" text-anchor="middle" fill="#c084fc" font-family="JetBrains Mono,monospace" font-size="14" font-weight="600">seu hook</text>
+          <text x="402" y="140" text-anchor="middle" fill="#e9d5ff" font-family="Inter,sans-serif" font-size="11">($, e, next)</text>
+          <line class="wf-flow" x1="484" y1="110" x2="545" y2="70" stroke="#38bdf8" stroke-width="2" marker-end="url(#m31a-arrow)"/>
+          <line x1="484" y1="140" x2="545" y2="180" stroke="#9ca3af" stroke-width="2" marker-end="url(#m31a-arrow)"/>
+          <rect class="wf-a" x="550" y="35" width="230" height="70" rx="12" fill="#0b1f2e" stroke="#38bdf8" stroke-width="2"/>
+          <text x="665" y="64" text-anchor="middle" fill="#bae6fd" font-family="JetBrains Mono,monospace" font-size="13">return &lt;Box&gt;…&lt;/Box&gt;</text>
+          <text x="665" y="86" text-anchor="middle" fill="#7dd3fc" font-family="Inter,sans-serif" font-size="11">a sua árvore é desenhada</text>
+          <rect x="550" y="145" width="230" height="70" rx="12" fill="#1f2937" stroke="#6b7280" stroke-width="2"/>
+          <text x="665" y="174" text-anchor="middle" fill="#e5e7eb" font-family="JetBrains Mono,monospace" font-size="13">return next(e)</text>
+          <text x="665" y="196" text-anchor="middle" fill="#9ca3af" font-family="Inter,sans-serif" font-size="11">o engine desenha a dele</text>
+        </svg>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">Como ler o desenho:</strong> o cartão da esquerda é o <code>e</code> que chega. O hook olha esses campos e escolhe um dos dois caminhos: devolve uma árvore própria (seta azul) ou passa a vez (seta cinza). Existe um terceiro caminho, <code>next({ ...e, props })</code>, que muda os dados antes de o engine desenhar.</p>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">🧱</div><div class="text-sm font-semibold text-purple-400">component</div><p class="text-xs text-neutral-400 mt-1">qual lugar</p></div>
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">🖥️</div><div class="text-sm font-semibold text-purple-400">surface</div><p class="text-xs text-neutral-400 mt-1">qual tela</p></div>
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">🔖</div><div class="text-sm font-semibold text-purple-400">requestId</div><p class="text-xs text-neutral-400 mt-1">qual instância</p></div>
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">📐</div><div class="text-sm font-semibold text-purple-400">viewport</div><p class="text-xs text-neutral-400 mt-1">tamanho, se houver</p></div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/20 border border-purple-500/30 text-purple-400 hover:bg-purple-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 2 ===================== -->
+    <section id="topico-2" data-inema-topic="modulo-3-1#topico-2" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl">2</span>
+        <h2 class="text-2xl font-bold flex-1">Pegue os elementos com ui.resolve</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m3-1-t2-p1" class="text-neutral-300 mb-4 leading-relaxed">O módulo do mod <strong class="text-purple-400">não tem <code>Box</code> nem <code>Text</code> globais</strong>. Quem entrega os elementos é <code>$.ui.resolve(e)</code>: uma tabela de construtores da superfície em que aquele <code>e</code> vai ser desenhado.</p>
+      <p data-inema-block="m3-1-t2-p2" class="text-neutral-300 mb-6 leading-relaxed">Você desestrutura o que precisa e usa como tag JSX. Não é uma chamada ao engine: o engine já resolveu a tabela quando os plugins carregaram. Por isso pode ser chamada no começo de todo render, sem custo.</p>
+
+      <div class="bg-dark-800 rounded-xl border border-purple-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-purple-900/20 border-b border-purple-500/30"><span class="text-purple-400 font-semibold text-sm">📄 plugin-authoring/examples/pane.tsx (referência oficial, trecho do render)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) =&gt; {
+  const { Box, Text } = $.ui.resolve(e)
+  const list = await read($, calls)
+  const room = Math.max(1, (e.viewport?.rows ?? 24) - 4)
+
+  return (
+    &lt;Box flexDirection="column"&gt;
+      {list.length === 0 &amp;&amp; &lt;Text dimColor&gt;No tool calls yet.&lt;/Text&gt;}
+      {list.slice(-room).map(call =&gt; (
+        &lt;Text dimColor={call.isDone}&gt;
+          {call.isDone ? 'done' : 'runs'} {call.tool}
+        &lt;/Text&gt;
+      ))}
+    &lt;/Box&gt;
+  )
+})</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-purple-400">O que olhar:</strong> a primeira linha do corpo é sempre <code>$.ui.resolve(e)</code>. Repare também que este hook não recebe <code>next</code>: o painel é dele, não há o que passar adiante.</div>
+      </div>
+
+      <div class="space-y-5 mb-6">
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center"><span class="text-purple-400 font-bold">1</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Resolva a tabela</h4><p class="text-neutral-300 text-sm"><code>const { Box, Text, Button } = $.ui.resolve(e)</code>. Peça só o que vai usar.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center"><span class="text-purple-400 font-bold">2</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Leia o estado</h4><p class="text-neutral-300 text-sm"><code>await read($, calls)</code>: a leitura inscreve este desenho para redesenhar quando o valor mudar (tópico 4).</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center"><span class="text-purple-400 font-bold">3</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Meça o espaço</h4><p class="text-neutral-300 text-sm">Linhas pelo <code>viewport</code>, colunas pelo <code>e.props.bodyColumns</code> no painel e na faixa.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center"><span class="text-purple-400 font-bold">4</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Devolva a árvore</h4><p class="text-neutral-300 text-sm">JSX com <code>h</code> como fábrica. No <code>.mjs</code> do kit, sem JSX, a mesma árvore é <code>Box({ flexDirection: "column", children: [...] })</code>.</p></div>
+        </div>
+      </div>
+
+      <div class="bg-purple-900/20 rounded-xl border border-purple-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-purple-400 mb-2 flex items-center"><span class="mr-2">🆕</span> Novo aqui? Elements</h3>
+        <p class="text-neutral-300 text-sm"><code>Elements</code> é o tipo que lista, por superfície, os construtores que <code>$.ui.resolve</code> devolve. Quando você estreita o <code>e.surface</code> (<code>if (e.surface === 'terminal')</code>), o TypeScript estreita a tabela junto: <code>Raster</code> só aparece dentro desse <code>if</code>.</p>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/20 border border-purple-500/30 text-purple-400 hover:bg-purple-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 3 ===================== -->
+    <section id="topico-3" data-inema-topic="modulo-3-1#topico-3" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl">3</span>
+        <h2 class="text-2xl font-bold flex-1">Respeite as diferenças entre superfícies</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m3-1-t3-p1" class="text-neutral-300 mb-4 leading-relaxed">Cada superfície pede o desenho por conta própria. O terminal desenha a árvore inteira com Ink; as outras recebem a árvore pela rede e desenham do jeito delas. Por isso <strong class="text-purple-400">cada uma tem sua tabela de elementos</strong>.</p>
+      <p data-inema-block="m3-1-t3-p2" class="text-neutral-300 mb-6 leading-relaxed">E nem todo componente existe em toda superfície: a faixa <code>AbovePrompt</code> só é pedida no terminal e no desktop; o <code>Pane</code> é pedido em todas.</p>
+
+      <div class="overflow-x-auto mb-6 rounded-xl border border-dark-600">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-dark-700/60 text-purple-400"><tr><th class="px-4 py-3 font-semibold">Elemento</th><th class="px-4 py-3 font-semibold">terminal</th><th class="px-4 py-3 font-semibold">desktop</th><th class="px-4 py-3 font-semibold">mobile</th><th class="px-4 py-3 font-semibold">vscode</th></tr></thead>
+          <tbody class="divide-y divide-dark-600">
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Box, Text, Button, Link, Code, Markdown</td><td class="px-4 py-3 text-neutral-300">✓</td><td class="px-4 py-3 text-neutral-300">✓</td><td class="px-4 py-3 text-neutral-300">✓</td><td class="px-4 py-3 text-neutral-300">✓</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Input, Select</td><td class="px-4 py-3 text-neutral-300">✓</td><td class="px-4 py-3 text-neutral-300">✓</td><td class="px-4 py-3 text-red-400">✗</td><td class="px-4 py-3 text-neutral-300">✓</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Client</td><td class="px-4 py-3 text-neutral-300">✓</td><td class="px-4 py-3 text-neutral-300">✓</td><td class="px-4 py-3 text-red-400">✗</td><td class="px-4 py-3 text-red-400">✗</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Svg</td><td class="px-4 py-3 text-red-400">✗</td><td class="px-4 py-3 text-neutral-300">✓</td><td class="px-4 py-3 text-neutral-300">✓</td><td class="px-4 py-3 text-neutral-300">✓</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Raster, Image</td><td class="px-4 py-3 text-neutral-300">✓</td><td class="px-4 py-3 text-red-400">✗</td><td class="px-4 py-3 text-red-400">✗</td><td class="px-4 py-3 text-red-400">✗</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">O que olhar na tabela:</strong> o básico (Box, Text, Button) funciona em todo lugar. O resto exige um <code>if (e.surface === ...)</code>. Um <code>Svg</code> devolvido ao terminal é uma árvore que não valida (tópico 5).</p>
+
+      <div class="bg-dark-800 rounded-xl border border-purple-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-purple-900/20 border-b border-purple-500/30"><span class="text-purple-400 font-semibold text-sm">📄 claude-mods-starter-kit/plugins/terminal-pet/hooks/terminal-pet.mjs (Prompt Advisers, MIT; trecho resumido)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">if (e.surface === "desktop") {
+  const { Svg } = $.ui.resolve(e);
+  // ... desenha o bicho como SVG animado
+}
+const fits = e.surface === "terminal" &amp;&amp; columns &gt;= COLS + 2 &amp;&amp; (e.props.maxRows || 0) &gt;= ROWS + 1;
+if (!fits) {
+  stopTicker();
+  return stack(fallbackLine(Text, prefs, mood, stats, fill));
+}
+const { Raster } = $.ui.resolve(e);</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-purple-400">O que olhar:</strong> três caminhos para o mesmo bicho. Desktop: <code>Svg</code>. Terminal com espaço: <code>Raster</code>. Qualquer outro caso: uma linha de texto. Nunca uma superfície sem nada.</div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-dark-800 rounded-xl p-6 border border-purple-500/30">
+          <h3 class="font-semibold text-purple-400 mb-3">✓ Faça</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ Estreite <code>e.surface</code> antes de pedir Svg, Raster ou Image</li>
+            <li>✓ Tenha uma versão só com Box e Text para o resto</li>
+            <li>✓ Teste em terminal e desktop (módulo 3.2)</li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ Evite</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ Supor que a pessoa usa o terminal</li>
+            <li>✗ <code>Input</code> num painel que precisa abrir no celular</li>
+            <li>✗ Contar com a faixa no VS Code ou no celular</li>
+          </ul>
+        </div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/20 border border-purple-500/30 text-purple-400 hover:bg-purple-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 4 ===================== -->
+    <section id="topico-4" data-inema-topic="modulo-3-1#topico-4" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl">4</span>
+        <h2 class="text-2xl font-bold flex-1">Desenhe do estado, nunca escreva ao desenhar</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m3-1-t4-p1" class="text-neutral-300 mb-4 leading-relaxed">O render é uma <strong class="text-purple-400">leitura</strong>. Ele lê o <code>$.state</code> (direto ou com <code>read</code>) e devolve uma árvore. A leitura feita durante o desenho inscreve aquela instância: quando alguém grava um valor novo, o engine redesenha exatamente quem leu. Ninguém precisa pedir redesenho.</p>
+      <p data-inema-block="m3-1-t4-p2" class="text-neutral-300 mb-6 leading-relaxed">Quem escreve é outro: um evento (<code>tool.call</code>, <code>turn.complete</code>) ou um handler de botão. Uma escrita feita dentro do render é <strong>recusada</strong>. Você viu o porquê do estado em <code>$.state</code> no módulo 2.3: variável de módulo some no hot-reload.</p>
+
+      <div class="bg-dark-800 rounded-xl border border-purple-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-purple-900/20 border-b border-purple-500/30"><span class="text-purple-400 font-semibold text-sm">📄 plugin-authoring/examples/band.tsx (referência oficial, trecho)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">const isHidden = atom({ plugin: 'turn-band', key: 'isHidden' } as const, false)
+// ...
+on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) =&gt; {
+  const turn = await read($, last)
+  // ...
+  &lt;Button
+    key="hide"
+    label="Hide"
+    onPress={() =&gt; update($, isHidden, () =&gt; true)}
+  /&gt;</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-purple-400">O que olhar:</strong> o render só lê (<code>read</code>). A escrita (<code>update</code>) mora dentro do <code>onPress</code>, que roda depois, quando a pessoa aperta. Aí o render volta sozinho, porque leu <code>isHidden</code>.</div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-dark-800 rounded-xl p-6 border border-purple-500/30">
+          <h3 class="font-semibold text-purple-400 mb-3">✓ No render</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ <code>read($, atom)</code> ou <code>$.state.get(ref)</code></li>
+            <li>✓ <code>$.clock.now()</code> para um relógio</li>
+            <li>✓ Montar closures de botão que escrevem depois</li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ No render</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ <code>$.state.set</code> ou <code>update</code> direto: negado</li>
+            <li>✗ Ler de uma variável de módulo que o reload zera</li>
+            <li>✗ Escrever a partir de um valor capturado no desenho</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-red-400 mb-2 flex items-center"><span class="mr-2">⚠️</span> O valor capturado engana</h3>
+        <p class="text-neutral-300 text-sm"><code>onPress: () =&gt; $.state.set(ref, n + 1)</code>, com <code>n</code> lido no desenho, perde cliques: dois toques antes do redesenho gravam o mesmo número. Use <code>update($, ref, n =&gt; (n ?? 0) + 1)</code>, que lê, aplica e grava com <code>ifVersion</code> e tenta de novo se perder a corrida.</p>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-primary mb-2 flex items-center"><span class="mr-2">💡</span> E quando o estado não é do $.state?</h3>
+        <p class="text-neutral-300 text-sm">Um relógio que conta minutos não muda nenhum valor guardado. Nesse caso o mod pede <code>$.ui.invalidate('ui.render')</code> de um timer (<code>$.clock.every</code>), como o terminal-pet faz quando o humor do bicho expira.</p>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/20 border border-purple-500/30 text-purple-400 hover:bg-purple-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 5 ===================== -->
+    <section id="topico-5" data-inema-topic="modulo-3-1#topico-5" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl">5</span>
+        <h2 class="text-2xl font-bold flex-1">Saiba o que acontece quando a árvore não valida</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m3-1-t5-p1" class="text-neutral-300 mb-4 leading-relaxed">Uma árvore <strong class="text-purple-400">não valida</strong> quando usa um elemento que a superfície não tem, uma prop que o elemento não aceita, ou um filho onde não cabe filho. O engine não quebra a sessão: <strong>desenha a dele no lugar</strong> e anota o motivo.</p>
+      <p data-inema-block="m3-1-t5-p2" class="text-neutral-300 mb-6 leading-relaxed">Por isso um mod com erro de desenho parece "não fazer nada". O motivo está escrito; você só precisa saber onde olhar.</p>
+
+      <div class="space-y-5 mb-6">
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center"><span class="text-purple-400 font-bold">1</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">O hook devolve a árvore</h4><p class="text-neutral-300 text-sm">Por exemplo, um <code>Svg</code> no terminal.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center"><span class="text-purple-400 font-bold">2</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">O engine valida e recusa</h4><p class="text-neutral-300 text-sm">No debug log entra uma linha que começa com <code>ui.render (&lt;Component&gt;): a hook returned a tree that does not validate</code>, seguida do motivo.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center"><span class="text-purple-400 font-bold">3</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Com hot-reload, a conversa também avisa</h4><p class="text-neutral-300 text-sm">Uma vez por carga: <code>&lt;plugin&gt;: ui.render (&lt;Component&gt;) refused: &lt;reason&gt;; the engine drew its own</code>. Fora disso, só o debug log sabe.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center"><span class="text-purple-400 font-bold">4</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">O lugar fica com o desenho do engine</h4><p class="text-neutral-300 text-sm">Onde o engine não desenha nada, nada sobra: a faixa fica vazia (a linha termina em <code>nothing was drawn</code>) e o painel é fechado (<code>the pane was closed</code>).</p></div>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-purple-500/30 bg-dark-900/40 p-3 sm:p-4 mb-3 overflow-hidden">
+        <svg viewBox="0 0 800 220" class="w-full h-auto" role="img" aria-label="Um portão de validação entre o hook e a tela. Uma árvore válida passa e é desenhada. Uma árvore inválida, por exemplo um Svg no terminal, bate no portão: a tela recebe o desenho do próprio engine, e uma linha vai para o debug log com o componente e o motivo.">
+          <defs>
+            <pattern id="m31b-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#c084fc" opacity="0.10"/></pattern>
+            <filter id="m31b-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <marker id="m31b-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38bdf8"/></marker>
+          </defs>
+          <rect x="0" y="0" width="800" height="220" fill="url(#m31b-grid)"/>
+          <g font-family="Inter,sans-serif" font-size="12" text-anchor="middle">
+            <rect x="20" y="40" width="160" height="50" rx="10" fill="#1e1233" stroke="#c084fc" stroke-width="2"/><text x="100" y="70" fill="#e9d5ff">árvore válida</text>
+            <rect x="20" y="130" width="160" height="50" rx="10" fill="#1f2937" stroke="#f87171" stroke-width="2"/><text x="100" y="160" fill="#fecaca">Svg no terminal</text>
+            <line class="wf-flow" x1="182" y1="65" x2="318" y2="95" stroke="#38bdf8" stroke-width="2" marker-end="url(#m31b-arrow)"/>
+            <line x1="182" y1="155" x2="318" y2="125" stroke="#f87171" stroke-width="2" marker-end="url(#m31b-arrow)"/>
+            <g filter="url(#m31b-glow)"><rect x="322" y="70" width="120" height="80" rx="12" fill="#1e1233" stroke="#c084fc" stroke-width="2"/></g>
+            <text x="382" y="105" fill="#c084fc" font-weight="600">valida</text><text x="382" y="124" fill="#e9d5ff" font-size="11">elemento, prop, filho</text>
+            <line class="wf-flow" x1="444" y1="95" x2="570" y2="60" stroke="#38bdf8" stroke-width="2" marker-end="url(#m31b-arrow)"/>
+            <line x1="444" y1="125" x2="570" y2="160" stroke="#9ca3af" stroke-width="2" marker-end="url(#m31b-arrow)"/>
+            <rect class="wf-a" x="575" y="30" width="200" height="56" rx="10" fill="#0b1f2e" stroke="#38bdf8" stroke-width="2"/><text x="675" y="55" fill="#bae6fd">tela: a sua árvore</text><text x="675" y="73" fill="#7dd3fc" font-size="11">tudo certo</text>
+            <rect x="575" y="132" width="200" height="56" rx="10" fill="#1f2937" stroke="#6b7280" stroke-width="2"/><text x="675" y="157" fill="#e5e7eb">tela: a do engine</text><text x="675" y="175" fill="#9ca3af" font-size="11">+ linha no debug log</text>
+          </g>
+        </svg>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">Como ler o desenho:</strong> o portão do meio confere três coisas. Passou, a sua árvore aparece. Não passou, a tela mostra o desenho padrão e o motivo vai para o log. O módulo 4.3 mostra como corrigir uma árvore recusada.</p>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-primary mb-2 flex items-center"><span class="mr-2">💡</span> Dois valores que não derrubam a árvore</h3>
+        <p class="text-neutral-300 text-sm">Um <code>Box</code> com <code>borderStyle</code> que o terminal não conhece é desenhado sem borda. Um <code>Code</code> com <code>format: 'diff'</code> cujo texto não é um diff vira código simples. O resto da árvore aparece; o log avisa. Os estilos de borda válidos: <code>single</code>, <code>double</code>, <code>round</code>, <code>bold</code>, <code>singleDouble</code>, <code>doubleSingle</code>, <code>classic</code>, <code>arrow</code>, <code>dashed</code>, <code>quote</code>.</p>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/20 border border-purple-500/30 text-purple-400 hover:bg-purple-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 6 ===================== -->
+    <section id="topico-6" data-inema-topic="modulo-3-1#topico-6" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 font-bold text-xl">6</span>
+        <h2 class="text-2xl font-bold flex-1">Use Raster e Image no terminal</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m3-1-t6-p1" class="text-neutral-300 mb-4 leading-relaxed">O Rafa quer um mapa de calor do repositório: uma grade de quadradinhos coloridos. O instinto é um <code>Box</code> por célula. Não faça: <strong class="text-purple-400">uma grade colorida é um único <code>Raster</code></strong>, com todas as células empacotadas numa string.</p>
+      <p data-inema-block="m3-1-t6-p2" class="text-neutral-300 mb-6 leading-relaxed">Para uma figura de verdade (PNG, quadro de vídeo) existe o <code>Image</code>. Os dois só existem no terminal.</p>
+
+      <div class="bg-purple-900/20 rounded-xl border border-purple-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-purple-400 mb-3 flex items-center"><span class="mr-2">🆕</span> Novo aqui? Raster e Image</h3>
+        <ul class="space-y-2 text-neutral-300 text-sm">
+          <li><strong>Raster</strong> — <code>key</code>, <code>columns</code> (1 a 512), <code>rows</code> (1 a 256) e <code>cells</code>: base64 de trincas <code>[codePoint, frente, fundo]</code> em u32 little-endian, linha por linha. Cor <code>0x00RRGGBB</code>; <code>0x01000000</code> é a cor padrão do terminal. Cada caractere precisa ter largura 1 (blocos, bordas, braille).</li>
+          <li><strong>Image</strong> — <code>source</code> (<code>{ png }</code>, <code>{ rgba, width, height }</code>, ou o nome de um arquivo ou memória compartilhada), <code>columns</code>, <code>rows</code> e <code>alt</code> (obrigatório). Usa o protocolo gráfico do kitty onde o terminal tem (kitty, Ghostty); nos outros, aparece o <code>alt</code>.</li>
+          <li><strong>$.ui.blit</strong> — repinta um Raster (ou troca a fonte de um Image) já montado, pelo <code>requestId</code> e pela <code>key</code>, sem passar pelo render.</li>
+        </ul>
+      </div>
+
+      <div class="rounded-2xl border border-purple-500/30 bg-dark-900/40 p-3 sm:p-4 mb-3 overflow-hidden">
+        <svg viewBox="0 0 800 230" class="w-full h-auto" role="img" aria-label="Comparação. À esquerda, errado: uma grade de 4 por 6 feita de 24 caixas Box separadas, cada uma um elemento da árvore. À direita, certo: a mesma grade como um único Raster, com uma linha cells em base64 que guarda as 24 células.">
+          <defs>
+            <pattern id="m31c-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#c084fc" opacity="0.10"/></pattern>
+            <filter id="m31c-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <rect x="0" y="0" width="800" height="230" fill="url(#m31c-grid)"/>
+          <text x="200" y="30" text-anchor="middle" fill="#f87171" font-family="Inter,sans-serif" font-size="13" font-weight="600">✗ 24 elementos Box</text>
+          <g stroke="#f87171" stroke-width="1.5">
+            <rect x="80" y="50" width="36" height="36" rx="4" fill="#7c2d12"/><rect x="122" y="50" width="36" height="36" rx="4" fill="#9a3412"/><rect x="164" y="50" width="36" height="36" rx="4" fill="#c2410c"/><rect x="206" y="50" width="36" height="36" rx="4" fill="#ea580c"/><rect x="248" y="50" width="36" height="36" rx="4" fill="#fb923c"/><rect x="290" y="50" width="36" height="36" rx="4" fill="#fdba74"/>
+            <rect x="80" y="92" width="36" height="36" rx="4" fill="#9a3412"/><rect x="122" y="92" width="36" height="36" rx="4" fill="#c2410c"/><rect x="164" y="92" width="36" height="36" rx="4" fill="#ea580c"/><rect x="206" y="92" width="36" height="36" rx="4" fill="#fb923c"/><rect x="248" y="92" width="36" height="36" rx="4" fill="#fdba74"/><rect x="290" y="92" width="36" height="36" rx="4" fill="#7c2d12"/>
+            <rect x="80" y="134" width="36" height="36" rx="4" fill="#c2410c"/><rect x="122" y="134" width="36" height="36" rx="4" fill="#ea580c"/><rect x="164" y="134" width="36" height="36" rx="4" fill="#fb923c"/><rect x="206" y="134" width="36" height="36" rx="4" fill="#7c2d12"/><rect x="248" y="134" width="36" height="36" rx="4" fill="#9a3412"/><rect x="290" y="134" width="36" height="36" rx="4" fill="#c2410c"/>
+          </g>
+          <text x="200" y="200" text-anchor="middle" fill="#9ca3af" font-family="Inter,sans-serif" font-size="11">cada célula vira um nó para validar e desenhar</text>
+          <text x="600" y="30" text-anchor="middle" fill="#c084fc" font-family="Inter,sans-serif" font-size="13" font-weight="600">✓ 1 elemento Raster</text>
+          <g filter="url(#m31c-glow)"><rect x="470" y="50" width="260" height="120" rx="12" fill="#1e1233" stroke="#c084fc" stroke-width="2"/></g>
+          <text x="600" y="85" text-anchor="middle" fill="#e9d5ff" font-family="JetBrains Mono,monospace" font-size="13">&lt;Raster key="mapa"</text>
+          <text x="600" y="107" text-anchor="middle" fill="#e9d5ff" font-family="JetBrains Mono,monospace" font-size="13">columns={6} rows={3}</text>
+          <text x="600" y="129" text-anchor="middle" fill="#e9d5ff" font-family="JetBrains Mono,monospace" font-size="13">cells="iCUAAP+I…" /&gt;</text>
+          <text x="600" y="155" text-anchor="middle" fill="#7dd3fc" font-family="Inter,sans-serif" font-size="11">repintado com $.ui.blit</text>
+          <text x="600" y="200" text-anchor="middle" fill="#9ca3af" font-family="Inter,sans-serif" font-size="11">uma string com as 18 trincas, um nó só</text>
+        </svg>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">Como ler o desenho:</strong> as duas grades mostram a mesma coisa. A da esquerda custa um elemento por célula; a da direita, um só. O repo-heatmap do kit vai além: dois "pixels" por célula com o meio bloco <code>▀</code> (frente = pixel de cima, fundo = pixel de baixo) e animação por <code>$.ui.blit</code> num <code>$.clock.every</code>.</p>
+
+      <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-red-400 mb-2 flex items-center"><span class="mr-2">⚠️</span> E no desktop?</h3>
+        <p class="text-neutral-300 text-sm">O desktop não tem <code>Raster</code>. Para uma barra que funcione nas duas superfícies, use caracteres <code>█░</code> num <code>Text</code> com cor, como o <code>mapa-calor</code> do inema-mods faz (pegadinha 20 do COMO-FAZER-UM-MOD). Ou estreite <code>e.surface</code> e mande um <code>Svg</code> ao desktop, como o terminal-pet.</p>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-dark-600 p-6 mb-6" data-inema-check="modulo-3-1#q1">
+        <p class="font-medium mb-4">Teste rápido (opcional): o Rafa quer, no painel, uma grade 40×10 com a cor de cada arquivo pela quantidade de edições. Ele usa terminal e desktop. O que faz sentido?</p>
+        <div class="space-y-2">
+          <button type="button" data-inema-check-option="0" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">Um <code>Box</code> colorido por célula, 400 ao todo, em qualquer superfície.</button>
+          <button type="button" data-inema-check-option="1" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">Um <code>Svg</code> para todas as superfícies, que é mais bonito.</button>
+          <button type="button" data-inema-check-option="2" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">Um <code>Raster</code> quando <code>e.surface</code> é <code>terminal</code>, e outra forma (Svg ou texto <code>█░</code> colorido) no desktop.</button>
+        </div>
+        <div data-inema-check-feedback class="mt-4 text-sm" role="status" aria-live="polite"></div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500/20 border border-purple-500/30 text-purple-400 hover:bg-purple-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== RESUMO ===================== -->
+    <section class="mb-12">
+      <div class="bg-gradient-to-br from-purple-900/40 via-dark-800 to-dark-800 rounded-xl border border-purple-500/30 p-8">
+        <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🎓</span> Resumo do módulo</h2>
+        <div class="space-y-4 mb-8">
+          <div class="flex items-start space-x-3"><span class="text-purple-400 mt-1">✓</span><div><strong class="text-neutral-100">Um render, uma instância</strong><span class="text-neutral-400"> — component, surface, requestId, props e viewport.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-purple-400 mt-1">✓</span><div><strong class="text-neutral-100">Elementos vêm de $.ui.resolve(e)</strong><span class="text-neutral-400"> — não há globais.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-purple-400 mt-1">✓</span><div><strong class="text-neutral-100">Cada superfície tem sua tabela</strong><span class="text-neutral-400"> — terminal sem Svg, só ele com Raster e Image.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-purple-400 mt-1">✓</span><div><strong class="text-neutral-100">O render só lê</strong><span class="text-neutral-400"> — escrita mora em handlers e eventos.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-purple-400 mt-1">✓</span><div><strong class="text-neutral-100">Árvore recusada não quebra nada</strong><span class="text-neutral-400"> — o engine desenha a dele e o log diz por quê.</span></div></div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-4 mb-8">
+          <h3 class="font-semibold text-purple-400 mb-2">Próximo módulo:</h3>
+          <p class="text-neutral-300">3.2 — Faixa, status e avisos</p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="index.html" class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">← Voltar para a trilha</a>
+          <a href="modulo-3-2.html" class="flex-1 text-center px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-500 transition-colors">Módulo 3.2 →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="hidden lg:block">
+    <nav data-inema-toc aria-label="Índice da página" class="sticky top-24">
+      <p class="text-sm text-neutral-400 mb-3"><span data-inema-section-counter>Seção 1 de 6</span></p>
+      <ol class="space-y-2 text-sm">
+        <li><a href="#topico-1" class="text-neutral-400 hover:text-purple-400">1. O que chega no e</a></li>
+        <li><a href="#topico-2" class="text-neutral-400 hover:text-purple-400">2. $.ui.resolve</a></li>
+        <li><a href="#topico-3" class="text-neutral-400 hover:text-purple-400">3. Superfícies</a></li>
+        <li><a href="#topico-4" class="text-neutral-400 hover:text-purple-400">4. Desenhar do estado</a></li>
+        <li><a href="#topico-5" class="text-neutral-400 hover:text-purple-400">5. Árvore recusada</a></li>
+        <li><a href="#topico-6" class="text-neutral-400 hover:text-purple-400">6. Raster e Image</a></li>
+      </ol>
+    </nav>
+  </aside>
+  </div>
+
+  <footer class="border-t border-dark-600 py-8 mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+      <p>Mods do Claude Code — técnico · 2026 | <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300">INEMA.CLUB</a> - <a href="https://inema.pro" target="_blank" class="text-amber-700 hover:text-amber-600 dark:text-slate-300 dark:hover:text-slate-200">PRO</a></p>
+      <p class="mt-2 text-xs">Kits usados no curso: <a href="https://github.com/inematds/inema-mods" target="_blank" class="text-sky-400 hover:text-sky-300">inematds/inema-mods</a> · <a href="https://github.com/promptadvisers/claude-mods-starter-kit" target="_blank" class="text-sky-400 hover:text-sky-300">Claude Mods Starter Kit</a> (Prompt Advisers, MIT)</p>
+    </div>
+  </footer>
+
+  <script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const _html = document.documentElement;
+    if (!_html.classList.contains('dark')) { themeToggleDarkIcon.classList.remove('hidden'); }
+    else { themeToggleLightIcon.classList.remove('hidden'); }
+    themeToggle.addEventListener('click', () => {
+      if (window.INEMA && INEMA.setPref) { INEMA.setPref('theme', _html.classList.contains('dark') ? 'claro' : 'inema-dark'); }
+      else { _html.classList.toggle('dark'); }
+      themeToggleDarkIcon.classList.toggle('hidden', _html.classList.contains('dark'));
+      themeToggleLightIcon.classList.toggle('hidden', !_html.classList.contains('dark'));
+      try { localStorage.setItem('theme', _html.classList.contains('dark') ? 'dark' : 'light'); } catch (e) {}
+    });
+    function toggleTopic(button) {
+      const item = button.closest('.topic-item');
+      const exp = item.querySelector('.topic-explanation');
+      const card = button.closest('[id^="modulo-"]') || document;
+      card.querySelectorAll('.topic-explanation.active').forEach(e => { if (e !== exp) { e.classList.remove('active'); const b = e.parentElement.querySelector('[aria-controls]'); if (b) b.setAttribute('aria-expanded', 'false'); } });
+      exp.classList.toggle('active');
+      button.setAttribute('aria-expanded', exp.classList.contains('active') ? 'true' : 'false');
+    }
+    let _lastModalTrigger = null;
+    function openModal(id){ const m=document.getElementById(id); if(m){ _lastModalTrigger=document.activeElement; m.classList.remove('hidden'); document.body.style.overflow='hidden'; const c=m.querySelector('button'); if(c) c.focus(); } }
+    function closeModal(){ document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden')); document.body.style.overflow='auto'; if(_lastModalTrigger){ _lastModalTrigger.focus(); _lastModalTrigger=null; } }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  </script>
+  <script src="../../assets/learn.js"></script>
+  <script>
+    if (window.INEMA && typeof window.INEMA.init === 'function') { window.INEMA.init(); }
+  </script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (window.INEMA && INEMA.registerCheck) {
+
+        INEMA.registerCheck('modulo-3-1#q1', { answer: 2, explain: {
+          '0': 'Funciona mal: 400 nós para validar e desenhar a cada mudança. A referência é clara: grade colorida é um Raster, nunca um Box por célula.',
+          '1': 'O terminal não tem Svg. A árvore seria recusada lá e o engine desenharia a dele.',
+          '2': 'Isso. Raster onde existe (terminal) e outra forma onde não existe. Estreitar e.surface é o que garante as duas.'
+        } });
+      }
+    });
+  </script>
+</body>
+</html>

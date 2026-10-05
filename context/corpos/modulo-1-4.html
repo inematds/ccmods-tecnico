@@ -1,0 +1,437 @@
+<!--TITLE: Seu primeiro mod: comando e contador -->
+  <nav aria-label="Trilha de navegação" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex items-center space-x-2 text-sm text-neutral-400">
+      <a href="../../index.html" class="hover:text-emerald-400">Início</a><span>/</span>
+      <a href="index.html" class="hover:text-emerald-400">Trilha 1</a><span>/</span>
+      <span class="text-emerald-400">Módulo 1.4</span>
+    </div>
+  </nav>
+
+  <header class="bg-gradient-to-br from-emerald-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600" data-inema-module="1-4" data-inema-track="1">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="inline-block px-3 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-semibold rounded-full mb-4">MÓDULO 1.4</span>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-4">🚀 Seu primeiro mod: comando e contador</h1>
+      <p class="text-lg text-neutral-400 max-w-3xl">Hora de pôr a mão. Você copia o starter-mod, lê cada linha, valida, testa, roda o comando sem gastar modelo e depois transforma o contador de leituras num contador de edições com o seu nome.</p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 max-w-2xl">
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-emerald-400">6</div><div class="text-xs text-neutral-400">Tópicos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-emerald-400">~35</div><div class="text-xs text-neutral-400">Minutos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-emerald-400">Base</div><div class="text-xs text-neutral-400">Nível</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-emerald-400">Prático</div><div class="text-xs text-neutral-400">Tipo</div></div>
+      </div>
+      <div data-inema-meter="modulo:1-4" class="mt-6 max-w-2xl" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso do módulo 1.4">
+        <div class="flex justify-between text-xs text-neutral-400 mb-1"><span data-inema-meter-frac>0 de 6</span><span data-inema-meter-pct>0%</span></div>
+        <div class="inema-bar"><div class="inema-bar__fill" data-inema-meter-fill></div></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:grid lg:grid-cols-[1fr_220px] lg:gap-10">
+  <main id="conteudo" class="min-w-0" data-inema-module="1-4" data-inema-track="1">
+
+    <!-- ===================== TOPICO 1 ===================== -->
+    <section id="topico-1" data-inema-topic="modulo-1-4#topico-1" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl">1</span>
+        <h2 class="text-2xl font-bold flex-1">Copie o starter-mod</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m1-4-t1-p1" class="text-neutral-300 mb-4 leading-relaxed">Não edite o modelo dentro do kit. Copie para uma pasta sua, <strong class="text-emerald-400">fora do kit</strong>, e trabalhe na cópia. Assim o original continua servindo de comparação quando algo der errado.</p>
+      <p data-inema-block="m1-4-t1-p2" class="text-neutral-300 mb-6 leading-relaxed">O Rafa chama a cópia de <code>meu-contador</code> e a deixa ao lado do kit. Os comandos deste módulo partem da raiz do kit e apontam para <code>../meu-contador</code>.</p>
+
+      <div class="bg-dark-800 rounded-xl border border-emerald-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-emerald-900/20 border-b border-emerald-500/30"><span class="text-emerald-400 font-semibold text-sm">🎯 Objetivo: ter uma cópia do starter-mod que é sua</span></div>
+        <div class="p-5">
+          <p class="text-sm text-neutral-400 mb-3">Na raiz do kit (<code>claude-mods-starter-kit</code>):</p>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">cp -r templates/starter-mod ../meu-contador</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-emerald-400">Como verificar:</strong> ao lado da pasta do kit existe <code>meu-contador</code>, com <code>.claude-plugin/plugin.json</code>, <code>hooks/hooks.json</code>, <code>hooks/starter.mjs</code> e <code>tests/starter.test.ts</code>. É a mesma árvore do módulo 1.2.</div>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-primary mb-2 flex items-center"><span class="mr-2">💡</span> A pasta de tipos aparece sozinha</h3>
+        <p class="text-neutral-300 text-sm">O <code>tsconfig.json</code> do starter-mod estende <code>.claude-plugin/types/tsconfig.json</code>. Numa cópia recém-clonada essa pasta ainda não existe: o Claude Code a escreve na primeira carga por <code>--plugin-dir</code>. O seu editor só reconhece os tipos depois disso.</p>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">📋</div><div class="text-sm font-semibold text-emerald-400">cp -r</div><p class="text-xs text-neutral-400 mt-1">cópia inteira</p></div>
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">📁</div><div class="text-sm font-semibold text-emerald-400">fora do kit</div><p class="text-xs text-neutral-400 mt-1">original intacto</p></div>
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">🧬</div><div class="text-sm font-semibold text-emerald-400">mesma árvore</div><p class="text-xs text-neutral-400 mt-1">do módulo 1.2</p></div>
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">🔤</div><div class="text-sm font-semibold text-emerald-400">tipos</div><p class="text-xs text-neutral-400 mt-1">após a 1ª carga</p></div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 2 ===================== -->
+    <section id="topico-2" data-inema-topic="modulo-1-4#topico-2" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl">2</span>
+        <h2 class="text-2xl font-bold flex-1">Leia o código linha por linha</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m1-4-t2-p1" class="text-neutral-300 mb-4 leading-relaxed">No módulo 1.1 você viu as três chamadas a <code>on</code>. Agora leia o que cada linha faz <strong class="text-emerald-400">e em que ordem</strong>. São dezesseis linhas, sem tipos e sem import.</p>
+      <p data-inema-block="m1-4-t2-p2" class="text-neutral-300 mb-6 leading-relaxed">Repare na variável <code>count</code>: ela mora dentro de <code>register</code>. Cada recarga do módulo cria uma nova, valendo zero. Para um exemplo de ensino, tudo bem; na trilha 2 você troca por estado de verdade.</p>
+
+      <div class="bg-dark-800 rounded-xl border border-emerald-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-emerald-900/20 border-b border-emerald-500/30"><span class="text-emerald-400 font-semibold text-sm">📄 meu-contador/hooks/starter.mjs (cópia do starter-mod, inteiro)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">// Minimal teaching example. Counter is scoped to this module instance.
+export function register(on) {
+  let count = 0;
+  on("session.start", async ($, e, next) =&gt; {
+    const result = await next(e);
+    count = 0;
+    await $.command.register({ name: "readcount", description: "Show successful reads observed by this example" });
+    return result;
+  });
+  on("tool.call", { tool: "Read" }, async ($, e, next) =&gt; {
+    const result = await next(e);
+    if (!result.isError &amp;&amp; result.deny === undefined) count += 1;
+    return result;
+  });
+  on("command.run", { command: "readcount" }, async () =&gt; ({ text: `Successful reads observed: ${count}` }));
+}</pre>
+        </div>
+      </div>
+
+      <div class="space-y-5 mb-6">
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center"><span class="text-emerald-400 font-bold">1</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Linhas 2–3: register e o contador</h4><p class="text-neutral-300 text-sm"><code>register(on)</code> não usa <code>options</code>, porque o manifesto não declara <code>userConfig</code>. <code>count</code> começa em zero.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center"><span class="text-emerald-400 font-bold">2</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Linhas 4–9: session.start</h4><p class="text-neutral-300 text-sm">Primeiro deixa a sessão começar (<code>await next(e)</code>), depois zera o contador e registra o comando com <code>$.command.register</code>. Devolve o resultado do <code>next</code> sem mexer.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center"><span class="text-emerald-400 font-bold">3</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Linhas 10–14: tool.call só para Read</h4><p class="text-neutral-300 text-sm">Deixa a leitura acontecer, olha o resultado e conta só se não deu erro (<code>isError</code>) nem foi negada (<code>deny</code>).</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center"><span class="text-emerald-400 font-bold">4</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Linha 15: command.run responde</h4><p class="text-neutral-300 text-sm">Não chama <code>next</code>: devolve <code>{ text }</code> e o comando termina ali. É o que permite responder sem o modelo.</p></div>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-emerald-500/30 bg-dark-900/40 p-3 sm:p-4 mb-3 overflow-hidden">
+        <svg viewBox="0 0 800 220" class="w-full h-auto" role="img" aria-label="Uma chamada da ferramenta Read passa pelo hook. O hook chama next, a leitura acontece e volta um resultado. Se o resultado tem erro ou foi negado, o contador fica como está. Se deu certo, o contador soma um. Nos dois casos o hook devolve o mesmo resultado.">
+          <defs>
+            <pattern id="m14a-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#34d399" opacity="0.10"/></pattern>
+            <filter id="m14a-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <marker id="m14a-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38bdf8"/></marker>
+          </defs>
+          <rect x="0" y="0" width="800" height="220" fill="url(#m14a-grid)"/>
+          <g font-family="Inter,sans-serif" font-size="12" text-anchor="middle">
+            <rect x="20" y="70" width="140" height="56" rx="12" fill="#1f2937" stroke="#6b7280" stroke-width="2"/><text x="90" y="95" fill="#e5e7eb">Read chega</text><text x="90" y="113" fill="#9ca3af" font-size="11">matcher tool=Read</text>
+            <line class="wf-flow" x1="162" y1="98" x2="203" y2="98" stroke="#38bdf8" stroke-width="2" marker-end="url(#m14a-arrow)"/>
+            <rect class="wf-a" x="208" y="70" width="150" height="56" rx="12" fill="#0b1f2e" stroke="#38bdf8" stroke-width="2"/><text x="283" y="95" fill="#bae6fd" font-family="JetBrains Mono,monospace">await next(e)</text><text x="283" y="113" fill="#7dd3fc" font-size="11">a leitura acontece</text>
+            <line class="wf-flow" x1="360" y1="98" x2="401" y2="98" stroke="#38bdf8" stroke-width="2" marker-end="url(#m14a-arrow)"/>
+            <rect class="wf-a" x="406" y="70" width="150" height="56" rx="12" fill="#0b1f2e" stroke="#38bdf8" stroke-width="2"/><text x="481" y="95" fill="#bae6fd">result</text><text x="481" y="113" fill="#7dd3fc" font-size="11">isError? deny?</text>
+            <line x1="558" y1="90" x2="600" y2="45" stroke="#34d399" stroke-width="2" marker-end="url(#m14a-arrow)"/>
+            <line x1="558" y1="108" x2="600" y2="155" stroke="#6b7280" stroke-width="2" marker-end="url(#m14a-arrow)"/>
+            <g filter="url(#m14a-glow)"><rect x="605" y="20" width="170" height="50" rx="12" fill="#0e2018" stroke="#34d399" stroke-width="2"/></g><text x="690" y="50" fill="#a7f3d0">deu certo: count += 1</text>
+            <rect x="605" y="130" width="170" height="50" rx="12" fill="#1f2937" stroke="#6b7280" stroke-width="2"/><text x="690" y="160" fill="#9ca3af">falhou: não conta</text>
+          </g>
+          <text x="400" y="208" text-anchor="middle" fill="#9ca3af" font-family="Inter,sans-serif" font-size="12">nos dois ramos o hook devolve o mesmo result que recebeu</text>
+        </svg>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">Como ler o desenho:</strong> a decisão de contar fica depois do <code>next</code>, porque antes dele o mod ainda não sabe como a leitura terminou. O hook só observa: não muda o resultado de ninguém.</p>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 3 ===================== -->
+    <section id="topico-3" data-inema-topic="modulo-1-4#topico-3" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl">3</span>
+        <h2 class="text-2xl font-bold flex-1">Valide e teste</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m1-4-t3-p1" class="text-neutral-300 mb-4 leading-relaxed">Dois comandos, antes de abrir qualquer sessão. O <code>validate</code> confere a forma. O <code>test</code> roda o arquivo <code>tests/starter.test.ts</code> <strong class="text-emerald-400">contra o engine de verdade</strong>, sem modelo.</p>
+      <p data-inema-block="m1-4-t3-p2" class="text-neutral-300 mb-6 leading-relaxed">No teste, quem está "embaixo" do mod são hooks do próprio teste: eles fazem o papel do Claude Code. Um deles responde a <code>tool.call</code> com erro quando o caminho é <code>/missing</code>. Assim dá para provar que a leitura falha não conta.</p>
+
+      <div class="bg-dark-800 rounded-xl border border-emerald-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-emerald-900/20 border-b border-emerald-500/30"><span class="text-emerald-400 font-semibold text-sm">📄 templates/starter-mod/tests/starter.test.ts (inteiro)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-xs text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">import { test, expect } from "claude-code/testing";
+test("counts successful reads and excludes failed ones", async ($, on) =&gt; {
+  on("session.start", ($, e) =&gt; ({ cwd: e.cwd }));
+  on("command.register", ($, e) =&gt; ({ value: { command: e.name } }));
+  on("tool.call", ($, e) =&gt; e.file_path === "/missing" ? { isError: true, result: "missing", text: "missing" } : { result: {}, text: "ok" });
+  await $.session.start({ surface: "terminal", isInteractive: true, cwd: "/work" } as any);
+  await $.tool.call({ tool: "Read", file_path: "/file" } as any);
+  await $.tool.call({ tool: "Read", file_path: "/missing" } as any);
+  const r = await $.command.run({ command: "readcount", args: "", origin: { kind: "composer" }, presentation: { isFullscreen: false, columns: 100 } } as any);
+  expect(r.text).toBe("Successful reads observed: 1");
+});</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-emerald-400">O que olhar:</strong> as três primeiras chamadas a <code>on</code> são o "mundo falso" (o teste ganha o seu próprio <code>on</code>). Depois vêm duas leituras, uma boa e uma ruim, e a conta esperada é 1.</div>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-emerald-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-emerald-900/20 border-b border-emerald-500/30"><span class="text-emerald-400 font-semibold text-sm">🎯 Objetivo: provar que o mod está inteiro antes de abrir sessão</span></div>
+        <div class="p-5">
+          <p class="text-sm text-neutral-400 mb-3">Na raiz do kit, primeiro no original:</p>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600 mb-3">claude plugin test templates/starter-mod</pre>
+          <p class="text-sm text-neutral-400 mb-2">Saída real no Claude Code 2.1.289:</p>
+          <pre class="font-mono text-xs text-neutral-300 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600 mb-3">tests/starter.test.ts:
+(pass) counts successful reads and excludes failed ones [20.64ms]
+
+ 1 pass
+ 0 fail
+Ran 1 test across 1 file. [0.13s]</pre>
+          <p class="text-sm text-neutral-400 mb-3">Depois, na sua cópia:</p>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">claude plugin validate ../meu-contador
+claude plugin test ../meu-contador</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-emerald-400">Como verificar:</strong> o <code>validate</code> termina em <code>✔ Validation passed</code> (a saída completa está no módulo 1.2) e o <code>test</code> mostra <code>1 pass</code> e <code>0 fail</code>. Os tempos entre colchetes mudam a cada execução.</div>
+      </div>
+
+      <div class="bg-emerald-900/20 rounded-xl border border-emerald-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-emerald-400 mb-2 flex items-center"><span class="mr-2">🆕</span> Novo aqui? claude-code/testing</h3>
+        <p class="text-neutral-300 text-sm">É o pacote de teste que vem com o Claude Code: <code>test</code>, <code>expect</code> e <code>mock</code>. O corpo de cada <code>test</code> recebe o <code>$</code> do engine e um <code>on</code> cujos hooks ficam embaixo do mod. <code>$.tool.call</code> e <code>$.command.run</code> disparam os eventos como uma sessão faria. A trilha 4 aprofunda.</p>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 4 ===================== -->
+    <section id="topico-4" data-inema-topic="modulo-1-4#topico-4" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl">4</span>
+        <h2 class="text-2xl font-bold flex-1">Rode o comando sem gastar modelo</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m1-4-t4-p1" class="text-neutral-300 mb-4 leading-relaxed">O <code>claude -p</code> roda uma vez e sai. Com um comando de mod como pedido, ele carrega o mod do zero, a sessão começa, o comando responde e pronto. <strong class="text-emerald-400">O modelo não é chamado.</strong></p>
+      <p data-inema-block="m1-4-t4-p2" class="text-neutral-300 mb-6 leading-relaxed">É o teste de fumaça mais barato que existe: prova que o módulo carrega numa sessão real e que o comando foi registrado. O kit INEMA usa o mesmo truque com o <code>/recibo</code>.</p>
+
+      <div class="bg-dark-800 rounded-xl border border-emerald-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-emerald-900/20 border-b border-emerald-500/30"><span class="text-emerald-400 font-semibold text-sm">🎯 Objetivo: ver o comando responder numa sessão real</span></div>
+        <div class="p-5">
+          <p class="text-sm text-neutral-400 mb-3">Na raiz do kit:</p>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600 mb-3">claude -p "/readcount" --plugin-dir templates/starter-mod</pre>
+          <p class="text-sm text-neutral-400 mb-2">Saída real no Claude Code 2.1.289:</p>
+          <pre class="font-mono text-xs text-neutral-300 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">read-counter-example: Successful reads observed: 0</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-emerald-400">Como verificar:</strong> a linha começa com <code>read-counter-example:</code>, o <code>name</code> do <code>plugin.json</code>, e termina em <code>0</code>. Se o mod não carregar, o <code>claude -p</code> avisa uma vez no stderr, com o motivo.</div>
+      </div>
+
+      <div class="rounded-2xl border border-emerald-500/30 bg-dark-900/40 p-3 sm:p-4 mb-3 overflow-hidden">
+        <svg viewBox="0 0 800 210" class="w-full h-auto" role="img" aria-label="O que acontece num claude -p com /readcount. O mod carrega do zero, session.start registra o comando, o pedido /readcount vai direto para command.run e o hook responde com o texto. O caminho do modelo, com turno e ferramenta Read, aparece riscado: não acontece, por isso o contador é zero.">
+          <defs>
+            <pattern id="m14b-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#34d399" opacity="0.10"/></pattern>
+            <filter id="m14b-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <marker id="m14b-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38bdf8"/></marker>
+          </defs>
+          <rect x="0" y="0" width="800" height="210" fill="url(#m14b-grid)"/>
+          <g font-family="Inter,sans-serif" font-size="12" text-anchor="middle">
+            <rect x="20" y="30" width="150" height="50" rx="10" fill="#1f2937" stroke="#6b7280" stroke-width="2"/><text x="95" y="60" fill="#e5e7eb">carrega do zero</text>
+            <line class="wf-flow" x1="172" y1="55" x2="213" y2="55" stroke="#38bdf8" stroke-width="2" marker-end="url(#m14b-arrow)"/>
+            <rect class="wf-a" x="218" y="30" width="170" height="50" rx="10" fill="#0b1f2e" stroke="#38bdf8" stroke-width="2"/><text x="303" y="52" fill="#bae6fd" font-family="JetBrains Mono,monospace" font-size="11">session.start</text><text x="303" y="69" fill="#7dd3fc" font-size="11">registra /readcount</text>
+            <line class="wf-flow" x1="390" y1="55" x2="431" y2="55" stroke="#38bdf8" stroke-width="2" marker-end="url(#m14b-arrow)"/>
+            <g filter="url(#m14b-glow)"><rect x="436" y="30" width="170" height="50" rx="10" fill="#0e2018" stroke="#34d399" stroke-width="2"/></g><text x="521" y="52" fill="#34d399" font-family="JetBrains Mono,monospace" font-size="11">command.run</text><text x="521" y="69" fill="#a7f3d0" font-size="11">responde { text }</text>
+            <line class="wf-flow" x1="608" y1="55" x2="649" y2="55" stroke="#38bdf8" stroke-width="2" marker-end="url(#m14b-arrow)"/>
+            <rect x="654" y="30" width="126" height="50" rx="10" fill="#1f2937" stroke="#6b7280" stroke-width="2"/><text x="717" y="60" fill="#e5e7eb">count = 0</text>
+            <rect x="218" y="120" width="388" height="50" rx="10" fill="#111827" stroke="#4b5563" stroke-width="1.5" stroke-dasharray="5 4"/>
+            <text x="412" y="150" fill="#6b7280">turno → modelo → ferramenta Read</text>
+            <line x1="228" y1="145" x2="596" y2="145" stroke="#f87171" stroke-width="2"/>
+          </g>
+          <text x="400" y="198" text-anchor="middle" fill="#9ca3af" font-family="Inter,sans-serif" font-size="12">sem turno não há Read; sem Read o contador fica em zero</text>
+        </svg>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">Como ler o desenho:</strong> a linha de cima é tudo o que acontece. A caixa riscada é o caminho que um pedido normal faria. Para ver um número maior que zero, abra uma sessão interativa com <code>claude --plugin-dir</code>, peça ao Claude para ler um arquivo e rode <code>/readcount</code>.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-dark-800 rounded-xl p-6 border border-emerald-500/30">
+          <h3 class="font-semibold text-emerald-400 mb-3">✓ O claude -p prova</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ o módulo carrega numa sessão de verdade</li>
+            <li>✓ o comando foi registrado</li>
+            <li>✓ o <code>command.run</code> responde sem modelo</li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ Não prova</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ que o contador soma (isso é o teste)</li>
+            <li>✗ nada sobre a tela: não há tela</li>
+            <li>✗ o comportamento depois de uma recarga</li>
+          </ul>
+        </div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 5 ===================== -->
+    <section id="topico-5" data-inema-topic="modulo-1-4#topico-5" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl">5</span>
+        <h2 class="text-2xl font-bold flex-1">Mude o contador para outra ferramenta</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m1-4-t5-p1" class="text-neutral-300 mb-4 leading-relaxed">O Rafa não quer saber quantos arquivos o Claude leu. Quer saber <strong class="text-emerald-400">quantas edições deram certo</strong>. A mudança é no matcher: <code>{ tool: "Read" }</code> vira <code>{ tool: "Edit" }</code>.</p>
+      <p data-inema-block="m1-4-t5-p2" class="text-neutral-300 mb-6 leading-relaxed">O nome da ferramenta vem da tabela de ferramentas desta build, em <code>.claude-plugin/types/claude-code-tools/index.d.ts</code>. Lá está o <code>Edit</code>, com o campo <code>file_path</code>. Mude o código e o teste juntos: o teste antigo ainda chama <code>Read</code> e passa a falhar.</p>
+
+      <div class="bg-dark-800 rounded-xl border border-emerald-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-emerald-900/20 border-b border-emerald-500/30"><span class="text-emerald-400 font-semibold text-sm">🎯 Objetivo: contar edições em vez de leituras</span></div>
+        <div class="p-5">
+          <p class="text-sm text-neutral-400 mb-3">Em <code>meu-contador/hooks/starter.mjs</code>, troque o matcher e o texto (as outras linhas ficam iguais):</p>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600 mb-3">  on("tool.call", { tool: "Edit" }, async ($, e, next) =&gt; {
+    const result = await next(e);
+    if (!result.isError &amp;&amp; result.deny === undefined) count += 1;
+    return result;
+  });
+  on("command.run", { command: "readcount" }, async () =&gt; ({ text: `Successful edits observed: ${count}` }));</pre>
+          <p class="text-sm text-neutral-400 mb-3">Em <code>meu-contador/tests/starter.test.ts</code>, troque as duas chamadas e o texto esperado:</p>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600 mb-3">  await $.tool.call({ tool: "Edit", file_path: "/file" } as any);
+  await $.tool.call({ tool: "Edit", file_path: "/missing" } as any);
+  // ...
+  expect(r.text).toBe("Successful edits observed: 1");</pre>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">claude plugin validate ../meu-contador
+claude plugin test ../meu-contador</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-emerald-400">Como verificar:</strong> rodado aqui (2.1.289): a linha <code>hooks:</code> do validate mostra <code>tool.call{tool=Edit}</code> e termina em <code>✔ Validation passed</code>; o test volta a <code>1 pass</code> e <code>0 fail</code>. O hook falso de <code>tool.call</code> do teste olha só o <code>file_path</code>, então não precisa mudar.</div>
+      </div>
+
+      <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-red-400 mb-2 flex items-center"><span class="mr-2">⚠️</span> Confira o nome da ferramenta letra por letra</h3>
+        <p class="text-neutral-300 text-sm">O validate mostra o matcher que você escreveu, não o que você quis escrever. Um <code>{ tool: "edit" }</code>, em minúscula, não casa com a ferramenta <code>Edit</code>, e o contador fica parado. Copie o nome da tabela de ferramentas, não da memória.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-dark-800 rounded-xl p-6 border border-emerald-500/30">
+          <h3 class="font-semibold text-emerald-400 mb-3">✓ Mudança completa</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ matcher <code>{ tool: "Edit" }</code></li>
+            <li>✓ texto da resposta fala em edições</li>
+            <li>✓ teste chama <code>Edit</code> e espera o texto novo</li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ Mudança pela metade</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ trocar o código e esquecer o teste: <code>1 fail</code></li>
+            <li>✗ manter "reads" na resposta de um contador de edições</li>
+            <li>✗ inventar o nome da ferramenta</li>
+          </ul>
+        </div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 6 ===================== -->
+    <section id="topico-6" data-inema-topic="modulo-1-4#topico-6" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl">6</span>
+        <h2 class="text-2xl font-bold flex-1">Renomeie para virar seu</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m1-4-t6-p1" class="text-neutral-300 mb-4 leading-relaxed">O README do starter-mod pede: renomeie o plugin e o comando antes de transformar o exemplo em outra coisa. São <strong class="text-emerald-400">dois nomes, em quatro lugares</strong>.</p>
+      <p data-inema-block="m1-4-t6-p2" class="text-neutral-300 mb-6 leading-relaxed">O Rafa escolhe <code>contador-rafa</code> para o plugin e <code>rafa-edicoes</code> para o comando. Um nome de comando pouco comum não é capricho, como mostra o alerta abaixo.</p>
+
+      <div class="overflow-x-auto mb-6 rounded-xl border border-dark-600">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-dark-700/60 text-emerald-400"><tr><th class="px-4 py-3 font-semibold">Arquivo</th><th class="px-4 py-3 font-semibold">De</th><th class="px-4 py-3 font-semibold">Para</th></tr></thead>
+          <tbody class="divide-y divide-dark-600">
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>.claude-plugin/plugin.json</code> (<code>name</code>)</td><td class="px-4 py-3 text-neutral-300"><code>read-counter-example</code></td><td class="px-4 py-3 text-neutral-300"><code>contador-rafa</code></td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>hooks/starter.mjs</code> (<code>$.command.register</code>)</td><td class="px-4 py-3 text-neutral-300"><code>name: "readcount"</code></td><td class="px-4 py-3 text-neutral-300"><code>name: "rafa-edicoes"</code></td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>hooks/starter.mjs</code> (matcher do <code>command.run</code>)</td><td class="px-4 py-3 text-neutral-300"><code>{ command: "readcount" }</code></td><td class="px-4 py-3 text-neutral-300"><code>{ command: "rafa-edicoes" }</code></td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>tests/starter.test.ts</code> (<code>$.command.run</code>)</td><td class="px-4 py-3 text-neutral-300"><code>command: "readcount"</code></td><td class="px-4 py-3 text-neutral-300"><code>command: "rafa-edicoes"</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">O que olhar na tabela:</strong> o nome do comando aparece três vezes. Esquecer o matcher do <code>command.run</code> deixa o comando registrado e mudo. Troque também a <code>description</code> do <code>plugin.json</code> e do comando.</p>
+
+      <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-red-400 mb-2 flex items-center"><span class="mr-2">⚠️</span> Colisão com uma skill derruba o session.start</h3>
+        <p class="text-neutral-300 text-sm mb-3">Visto ao vivo e registrado em <code>inema-mods/docs/COMO-FAZER-UM-MOD.md</code>: se você já tem uma skill ou comando com o mesmo nome, <code>$.command.register</code> é recusado, e o erro derruba o hook <code>session.start</code> inteiro. Escolha nomes pouco comuns e dê a cada registro o seu próprio <code>.catch</code>:</p>
+        <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">await $.command.register({ name: "rafa-edicoes", description: "Mostra quantas edições deram certo" })
+  .catch(() =&gt; {});</pre>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-emerald-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-emerald-900/20 border-b border-emerald-500/30"><span class="text-emerald-400 font-semibold text-sm">🎯 Objetivo: o mod renomeado respondendo</span></div>
+        <div class="p-5">
+          <p class="text-sm text-neutral-400 mb-3">Na raiz do kit, depois das trocas:</p>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">claude plugin test ../meu-contador
+claude -p "/rafa-edicoes" --plugin-dir ../meu-contador</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-emerald-400">Como verificar:</strong> rodado aqui (2.1.289): o teste segue em <code>1 pass</code> / <code>0 fail</code> e o <code>claude -p</code> responde <code>contador-rafa: Successful edits observed: 0</code>. Se aparecer o aviso <code>no stdin data received in 3s</code>, acrescente <code>&lt; /dev/null</code> ao fim do comando.</div>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-dark-600 p-6 mb-6" data-inema-check="modulo-1-4#q1">
+        <p class="font-medium mb-4">Teste rápido (opcional): o Rafa rodou <code>claude -p "/readcount" --plugin-dir templates/starter-mod</code> logo depois de ler dez arquivos numa sessão interativa. Saiu <code>0</code>. Por quê?</p>
+        <div class="space-y-2">
+          <button type="button" data-inema-check-option="0" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">O <code>claude -p</code> é outra sessão: carrega o mod do zero, não roda turno nem Read, e o contador começa em zero.</button>
+          <button type="button" data-inema-check-option="1" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">O matcher <code>{ tool: "Read" }</code> está errado.</button>
+          <button type="button" data-inema-check-option="2" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">O <code>claude -p</code> não carrega mods.</button>
+        </div>
+        <div data-inema-check-feedback class="mt-4 text-sm" role="status" aria-live="polite"></div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== RESUMO ===================== -->
+    <section class="mb-12">
+      <div class="bg-gradient-to-br from-emerald-900/40 via-dark-800 to-dark-800 rounded-xl border border-emerald-500/30 p-8">
+        <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🎓</span> Resumo do módulo</h2>
+        <div class="space-y-4 mb-8">
+          <div class="flex items-start space-x-3"><span class="text-emerald-400 mt-1">✓</span><div><strong class="text-neutral-100">Copie, não edite o modelo</strong><span class="text-neutral-400"> — meu-contador fora do kit.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-emerald-400 mt-1">✓</span><div><strong class="text-neutral-100">Conte depois do next</strong><span class="text-neutral-400"> — só então o resultado existe.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-emerald-400 mt-1">✓</span><div><strong class="text-neutral-100">validate e test antes da sessão</strong><span class="text-neutral-400"> — engine de verdade, sem modelo.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-emerald-400 mt-1">✓</span><div><strong class="text-neutral-100">claude -p é fumaça barata</strong><span class="text-neutral-400"> — carrega do zero, por isso 0.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-emerald-400 mt-1">✓</span><div><strong class="text-neutral-100">Dois nomes, quatro lugares</strong><span class="text-neutral-400"> — e .catch em cada register.</span></div></div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-4 mb-8">
+          <h3 class="font-semibold text-emerald-400 mb-2">Próxima trilha:</h3>
+          <p class="text-neutral-300">Trilha 2 — Eventos e estado (2.1 — O mapa de eventos)</p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="index.html" class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">← Voltar para a trilha</a>
+          <a href="../trilha2/index.html" class="flex-1 text-center px-6 py-3 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-500 transition-colors">Trilha 2 →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="hidden lg:block">
+    <nav data-inema-toc aria-label="Índice da página" class="sticky top-24">
+      <p class="text-sm text-neutral-400 mb-3"><span data-inema-section-counter>Seção 1 de 6</span></p>
+      <ol class="space-y-2 text-sm">
+        <li><a href="#topico-1" class="text-neutral-400 hover:text-emerald-400">1. Copiar</a></li>
+        <li><a href="#topico-2" class="text-neutral-400 hover:text-emerald-400">2. Ler o código</a></li>
+        <li><a href="#topico-3" class="text-neutral-400 hover:text-emerald-400">3. Validar e testar</a></li>
+        <li><a href="#topico-4" class="text-neutral-400 hover:text-emerald-400">4. claude -p</a></li>
+        <li><a href="#topico-5" class="text-neutral-400 hover:text-emerald-400">5. Outra ferramenta</a></li>
+        <li><a href="#topico-6" class="text-neutral-400 hover:text-emerald-400">6. Renomear</a></li>
+      </ol>
+    </nav>
+  </aside>
+  </div>
+<!--CHECKS-->
+        INEMA.registerCheck('modulo-1-4#q1', { answer: 0, explain: {
+          '0': 'Isso. Cada claude -p é uma sessão nova: o mod carrega do zero e o comando responde sem turno, então nenhum Read passa pelo contador.',
+          '1': 'O matcher está certo: o teste prova que ele conta leituras. O que muda é a sessão.',
+          '2': 'Carrega, sim: a linha de saída começa com o nome do plugin, read-counter-example.'
+        } });

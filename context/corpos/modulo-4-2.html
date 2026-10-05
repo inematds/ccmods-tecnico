@@ -1,0 +1,475 @@
+<!--TITLE: Testar com claude plugin test -->
+  <nav aria-label="Trilha de navegação" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex items-center space-x-2 text-sm text-neutral-400">
+      <a href="../../index.html" class="hover:text-amber-400">Início</a><span>/</span>
+      <a href="index.html" class="hover:text-amber-400">Trilha 4</a><span>/</span>
+      <span class="text-amber-400">Módulo 4.2</span>
+    </div>
+  </nav>
+
+  <header class="bg-gradient-to-br from-amber-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600" data-inema-module="4-2" data-inema-track="4">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="inline-block px-3 py-1 bg-amber-500/20 text-amber-400 text-xs font-semibold rounded-full mb-4">MÓDULO 4.2</span>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-4">🧪 Testar com claude plugin test</h1>
+      <p class="text-lg text-neutral-400 max-w-3xl">O <code>claude plugin test</code> roda os seus testes contra o engine de verdade, sem modelo e sem gastar cota. A diferença para um teste comum é uma só: por baixo do mod não há nada, e quem faz o papel do Claude Code são os hooks que o próprio teste pendura.</p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 max-w-2xl">
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">6</div><div class="text-xs text-neutral-400">Tópicos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">~35</div><div class="text-xs text-neutral-400">Minutos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">Avançado</div><div class="text-xs text-neutral-400">Nível</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">Prático</div><div class="text-xs text-neutral-400">Tipo</div></div>
+      </div>
+      <div data-inema-meter="modulo:4-2" class="mt-6 max-w-2xl" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso do módulo 4.2">
+        <div class="flex justify-between text-xs text-neutral-400 mb-1"><span data-inema-meter-frac>0 de 6</span><span data-inema-meter-pct>0%</span></div>
+        <div class="inema-bar"><div class="inema-bar__fill" data-inema-meter-fill></div></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:grid lg:grid-cols-[1fr_220px] lg:gap-10">
+  <main id="conteudo" class="min-w-0" data-inema-module="4-2" data-inema-track="4">
+
+    <div class="bg-amber-900/20 rounded-xl border border-amber-500/30 p-5 mb-10 text-sm text-neutral-300">
+      <strong class="text-amber-400">Versão conferida:</strong> testes e saídas deste módulo foram rodados no <strong>Claude Code 2.1.289</strong>, em 05/10/2026. O módulo <code>claude-code/testing</code> está declarado no mesmo arquivo de tipos da API: é lá que você confere cada função.
+    </div>
+
+    <!-- ===================== TOPICO 1 ===================== -->
+    <section id="topico-1" data-inema-topic="modulo-4-2#topico-1" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">1</span>
+        <h2 class="text-2xl font-bold flex-1">Entenda o que o teste simula</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-2-t1-p1" class="text-neutral-300 mb-4 leading-relaxed"><code>claude plugin test &lt;pasta&gt;</code> procura os arquivos <code>*.test.ts</code> do mod e roda cada um contra o <strong class="text-amber-400">engine de verdade</strong>. O mod carrega como numa sessão, com a mesma cadeia e as mesmas regras de validação.</p>
+      <p data-inema-block="m4-2-t1-p2" class="text-neutral-300 mb-6 leading-relaxed">Cada teste recebe dois objetos. O <code>$</code> do engine, para disparar eventos de cima (iniciar a sessão, chamar uma ferramenta, rodar um comando). E um <code>on</code> cujos hooks ficam <strong>embaixo</strong> do mod. A referência é direta: nada fica abaixo desses hooks; eles fazem o papel do engine.</p>
+
+      <div class="bg-amber-900/20 rounded-xl border border-amber-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-amber-400 mb-3 flex items-center"><span class="mr-2">🆕</span> Novo aqui? O kit de teste</h3>
+        <ul class="space-y-2 text-neutral-300 text-sm">
+          <li><strong><code>claude-code/testing</code></strong> — o módulo de onde vêm <code>test</code>, <code>describe</code>, <code>expect</code> e <code>mock</code>.</li>
+          <li><strong><code>test(nome, corpo)</code></strong> — o corpo é <code>async ($, on) =&gt; {…}</code>.</li>
+          <li><strong>Mock</strong> — um hook do teste que responde no lugar do engine (ex.: <code>on('fs.read', …)</code> devolve o texto de um arquivo que não existe).</li>
+        </ul>
+      </div>
+
+      <div class="rounded-2xl border border-amber-500/30 bg-dark-900/40 p-3 sm:p-4 mb-3 overflow-hidden">
+        <svg viewBox="0 0 800 250" class="w-full h-auto" role="img" aria-label="Três camadas empilhadas. Em cima, o corpo do teste chama o cifrão do engine: session.start, tool.call, command.run. No meio, o mod sob teste com os seus hooks. Embaixo, os hooks do on do teste, que respondem no lugar do engine: arquivos, store, relógio, a própria ferramenta. Abaixo deles, nada.">
+          <defs>
+            <pattern id="m42a-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#fbbf24" opacity="0.10"/></pattern>
+            <filter id="m42a-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <marker id="m42a-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38bdf8"/></marker>
+          </defs>
+          <rect x="0" y="0" width="800" height="250" fill="url(#m42a-grid)"/>
+          <g font-family="Inter,sans-serif" font-size="12" text-anchor="middle">
+            <rect class="wf-a" x="150" y="14" width="500" height="50" rx="12" fill="#0b1f2e" stroke="#38bdf8" stroke-width="2"/>
+            <text x="400" y="36" fill="#bae6fd">corpo do teste: $ do engine</text>
+            <text x="400" y="53" fill="#7dd3fc" font-family="JetBrains Mono,monospace" font-size="11">$.session.start · $.tool.call · $.command.run</text>
+            <line class="wf-flow" x1="400" y1="66" x2="400" y2="92" stroke="#38bdf8" stroke-width="2" marker-end="url(#m42a-arrow)"/>
+            <g filter="url(#m42a-glow)"><rect x="150" y="96" width="500" height="50" rx="12" fill="#2a1d06" stroke="#fbbf24" stroke-width="2"/></g>
+            <text x="400" y="118" fill="#fbbf24" font-weight="600">o seu mod</text>
+            <text x="400" y="135" fill="#fde68a" font-size="11">register(on, options), carregado como numa sessão</text>
+            <line class="wf-flow" x1="400" y1="148" x2="400" y2="174" stroke="#38bdf8" stroke-width="2" marker-end="url(#m42a-arrow)"/>
+            <rect x="150" y="178" width="500" height="50" rx="12" fill="#1f2937" stroke="#9ca3af" stroke-width="2"/>
+            <text x="400" y="200" fill="#e5e7eb">hooks do on do teste = o engine</text>
+            <text x="400" y="217" fill="#9ca3af" font-family="JetBrains Mono,monospace" font-size="11">fs.read · store.get · command.register · tool.call</text>
+            <text x="720" y="208" fill="#fca5a5" font-size="11">abaixo: nada</text>
+          </g>
+        </svg>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">Como ler o desenho:</strong> o teste empurra eventos de cima, o mod reage no meio, e o que o mod pede ao <code>$</code> desce até a camada cinza. Se nenhum hook do teste responde a um pedido, ninguém responde: o teste falha dizendo qual noun faltou.</p>
+
+      <div class="overflow-x-auto mb-6 rounded-xl border border-dark-600">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-dark-700/60 text-amber-400"><tr><th class="px-4 py-3 font-semibold">Numa sessão</th><th class="px-4 py-3 font-semibold">No teste</th></tr></thead>
+          <tbody class="divide-y divide-dark-600">
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-300">o modelo pede uma ferramenta</td><td class="px-4 py-3 text-neutral-300"><code>await $.tool.call({ tool: 'Write', … })</code></td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-300">a ferramenta roda de verdade</td><td class="px-4 py-3 text-neutral-300"><code>on('tool.call', () =&gt; ({ result: 'ok', text: 'ok' }))</code></td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-300">o disco responde</td><td class="px-4 py-3 text-neutral-300"><code>on('fs.read', …)</code> lendo de um <code>Map</code></td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-300">a pessoa digita <code>/recibo</code></td><td class="px-4 py-3 text-neutral-300"><code>await $.command.run(comando('recibo'))</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 2 ===================== -->
+    <section id="topico-2" data-inema-topic="modulo-4-2#topico-2" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">2</span>
+        <h2 class="text-2xl font-bold flex-1">Escreva os mocks antes do $</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-2-t2-p1" class="text-neutral-300 mb-4 leading-relaxed">A regra que mais derruba teste novo: <strong class="text-amber-400">todo <code>on(...)</code> vem antes da primeira chamada a <code>$</code></strong>. Um mock pendurado depois é recusado com a mensagem <code>on(...) after the test first called $</code> (pegadinha 18 do <code>COMO-FAZER-UM-MOD.md</code>).</p>
+      <p data-inema-block="m4-2-t2-p2" class="text-neutral-300 mb-6 leading-relaxed">O inema-mods resolve isso com um arquivo de mundo: <code>tests/mundo.ts</code> pendura todos os mocks de uma vez e devolve um objeto onde o teste lê o que aconteceu (comandos registrados, toasts, processos rodados).</p>
+
+      <div class="bg-dark-800 rounded-xl border border-amber-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-amber-900/20 border-b border-amber-500/30"><span class="text-amber-400 font-semibold text-sm">📄 inema-mods/mods/recibo-sessao/tests/mundo.ts (trecho)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">  mock.clock(on)
+  on('session.start', ($, e) =&gt; ({ cwd: e.cwd }))
+  on('prompt.submit', ($, e) =&gt; ({ text: e.text, ...(e.context !== undefined &amp;&amp; { context: e.context }) }))
+  on('fs.exists', ($, e) =&gt; ({ value: mundo.arquivos.has(e.path) }))
+  on('fs.read', ($, e) =&gt; {
+    const f = mundo.arquivos.get(e.path)
+    return f ? { value: f.texto } : { deny: `ENOENT: ${e.path}` }
+  })
+  on('store.get', () =&gt; ({ value: undefined }))
+  on('store.set', () =&gt; ({ value: undefined }))
+  on('command.register', ($, e) =&gt; {
+    mundo.comandos.push(e.name)
+    return { value: { command: e.name } }
+  })</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-amber-400">O que olhar:</strong> cada mock devolve a forma que o engine devolveria (<code>{ value }</code>, ou <code>{ deny }</code> para "arquivo não existe"). O arquivo vai copiado em cada mod: um mod não importa nada de fora da própria pasta.</div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-dark-800 rounded-xl p-6 border border-amber-500/30">
+          <h3 class="font-semibold text-amber-400 mb-3">✓ Ordem certa</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ <code>const mundo = mundoDe(on)</code></li>
+            <li>✓ <code>on('tool.call', …)</code> extra do teste</li>
+            <li>✓ <code>await $.session.start(SESSAO)</code></li>
+            <li>✓ chamadas e <code>expect</code></li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ Ordem que falha</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ <code>await $.session.start(...)</code> primeiro</li>
+            <li>✗ depois <code>on('fs.read', …)</code></li>
+            <li>✗ resultado: <code>on(...) after the test first called $</code></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-red-400 mb-2 flex items-center"><span class="mr-2">⚠️</span> O mock específico antes do genérico</h3>
+        <p class="text-neutral-300 text-sm">O <code>$.ui.ask</code> chega ao fundo como um <code>tool.call</code> de <code>AskUserQuestion</code>. No <code>mundo.ts</code> do freio-de-mao, o mock <code>on('tool.call', { tool: 'AskUserQuestion' }, …)</code> é registrado antes de qualquer mock genérico de <code>tool.call</code>, "para não ser engolido por ele", diz o comentário no arquivo.</p>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6">
+        <h3 class="text-lg font-semibold text-primary mb-2 flex items-center"><span class="mr-2">💡</span> A mensagem diz qual mock falta</h3>
+        <p class="text-neutral-300 text-sm">Se o mod usa um noun que o mundo não responde (<code>session.usage</code>, <code>fs.list</code>, <code>env.get</code>...), o erro nomeia exatamente o que faltou (pegadinha 3). Acrescente o <code>on('&lt;noun&gt;.&lt;método&gt;', …)</code> e rode de novo.</p>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 3 ===================== -->
+    <section id="topico-3" data-inema-topic="modulo-4-2#topico-3" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">3</span>
+        <h2 class="text-2xl font-bold flex-1">Teste um comando de ponta a ponta</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-2-t3-p1" class="text-neutral-300 mb-4 leading-relaxed">O teste do starter-mod (Claude Mods Starter Kit, da Prompt Advisers, MIT) cabe numa tela e cobre o mod inteiro: sessão, duas leituras (uma falha), o comando <code>/readcount</code> e a resposta.</p>
+
+      <div class="bg-dark-800 rounded-xl border border-amber-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-amber-900/20 border-b border-amber-500/30"><span class="text-amber-400 font-semibold text-sm">📄 templates/starter-mod/tests/starter.test.ts (inteiro)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">import { test, expect } from "claude-code/testing";
+test("counts successful reads and excludes failed ones", async ($, on) =&gt; {
+  on("session.start", ($, e) =&gt; ({ cwd: e.cwd }));
+  on("command.register", ($, e) =&gt; ({ value: { command: e.name } }));
+  on("tool.call", ($, e) =&gt; e.file_path === "/missing" ? { isError: true, result: "missing", text: "missing" } : { result: {}, text: "ok" });
+  await $.session.start({ surface: "terminal", isInteractive: true, cwd: "/work" } as any);
+  await $.tool.call({ tool: "Read", file_path: "/file" } as any);
+  await $.tool.call({ tool: "Read", file_path: "/missing" } as any);
+  const r = await $.command.run({ command: "readcount", args: "", origin: { kind: "composer" }, presentation: { isFullscreen: false, columns: 100 } } as any);
+  expect(r.text).toBe("Successful reads observed: 1");
+});</pre>
+        </div>
+      </div>
+
+      <div class="space-y-5 mb-6">
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">1</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Três mocks, antes de tudo</h4> <p class="text-neutral-300 text-sm">Sessão, registro de comando e a ferramenta Read, que falha só para <code>/missing</code>.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">2</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1"><code>$.session.start</code></h4> <p class="text-neutral-300 text-sm">Dispara o <code>session.start</code> do mod, que registra <code>/readcount</code>.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">3</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Duas chamadas de <code>$.tool.call</code></h4> <p class="text-neutral-300 text-sm">Uma dá certo, outra volta com <code>isError</code>. O mod deve contar só a primeira.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">4</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1"><code>$.command.run</code> e <code>expect</code></h4> <p class="text-neutral-300 text-sm">Roda o comando como se a pessoa digitasse e confere o texto exato.</p></div>
+        </div>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-amber-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-amber-900/20 border-b border-amber-500/30"><span class="text-amber-400 font-semibold text-sm">🎯 Objetivo: rodar o teste do starter-mod</span></div>
+        <div class="p-5">
+          <p class="text-sm text-neutral-400 mb-3">No terminal, dentro da pasta <code>claude-mods-starter-kit</code>:</p>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">claude plugin test templates/starter-mod</pre>
+          <p class="text-xs text-neutral-500 mt-4 mb-2">Saída real (05/10/2026, Claude Code 2.1.289):</p>
+          <pre class="font-mono text-xs text-neutral-400 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">tests/starter.test.ts:
+(pass) counts successful reads and excludes failed ones [20.64ms]
+
+ 1 pass
+ 0 fail
+Ran 1 test across 1 file. [0.13s]</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-amber-400">Como verificar:</strong> aparecem <code>1 pass</code> e <code>0 fail</code>. Os tempos entre colchetes mudam de máquina para máquina. Para ver o teste pegar um erro, troque o <code>1</code> do <code>expect</code> por <code>2</code>, rode de novo e desfaça.</div>
+      </div>
+
+      <div class="bg-amber-900/20 rounded-xl border border-amber-500/30 p-6">
+        <h3 class="text-base font-semibold text-amber-400 mb-2 flex items-center"><span class="mr-2">🆕</span> Novo aqui? test(nome, { options }, corpo)</h3>
+        <p class="text-neutral-300 text-sm">Entre o nome e o corpo pode vir um objeto de opções. <code>options</code> faz o papel dos valores do <code>/config</code>: o mod recebe em <code>register(on, options)</code>. O freio-de-mao usa assim: <code>test('sem tela com sem_tela=permitir: roda', { options: { sem_tela: 'permitir' } }, async ($, on) =&gt; {…})</code>. Sem <code>options</code>, valem os padrões do manifesto. O outro campo é <code>timeoutMs</code> (tópico 6).</p>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 4 ===================== -->
+    <section id="topico-4" data-inema-topic="modulo-4-2#topico-4" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">4</span>
+        <h2 class="text-2xl font-bold flex-1">Controle o relógio</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-2-t4-p1" class="text-neutral-300 mb-4 leading-relaxed">Mod que agenda trabalho (<code>$.clock.after</code>, <code>$.clock.every</code>) ou carimba hora (<code>$.clock.now</code>) precisa de um relógio que <strong class="text-amber-400">só anda quando o teste manda</strong>. É o <code>mock.clock(on)</code>.</p>
+      <p data-inema-block="m4-2-t4-p2" class="text-neutral-300 mb-6 leading-relaxed">Por isso a pegadinha 7 manda usar <code>$.clock.now()</code> e nunca <code>Date.now()</code>: o segundo lê o relógio da máquina, que o teste não controla.</p>
+
+      <div class="overflow-x-auto mb-6 rounded-xl border border-dark-600">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-dark-700/60 text-amber-400"><tr><th class="px-4 py-3 font-semibold">Do relógio que <code>mock.clock</code> devolve</th><th class="px-4 py-3 font-semibold">Faz</th></tr></thead>
+          <tbody class="divide-y divide-dark-600">
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>now()</code></td><td class="px-4 py-3 text-neutral-300">a hora que o <code>$.clock.now()</code> do mod recebe</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>advance(ms)</code></td><td class="px-4 py-3 text-neutral-300">anda e solta, em ordem, cada espera vencida no caminho</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>set(ms)</code></td><td class="px-4 py-3 text-neutral-300">vai até uma hora igual ou maior que a atual</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>settle()</code></td><td class="px-4 py-3 text-neutral-300">igual a <code>advance(0)</code>: deixa rodar o que já está pronto, sem andar</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>sleep(ms)</code></td><td class="px-4 py-3 text-neutral-300">um mock do teste que responde "atrasado"</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-amber-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-amber-900/20 border-b border-amber-500/30"><span class="text-amber-400 font-semibold text-sm">📄 claude-mods-starter-kit/plugins/auto-handoff/tests/auto-handoff.test.ts (trecho)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">    const clock = mock.clock(on, { now: START });
+    mock.store(on);
+    const { fs, seen } = world(on, { [`${CWD}/.git/HEAD`]: "ref" });
+    await $.session.start({ surface: "terminal", isInteractive: true, cwd: CWD } as any);
+
+    await $.session.measure(measure(50));
+    await clock.settle();
+    expect(seen.forks).toBe(0);
+
+    await $.session.measure(measure(86));
+    await clock.settle();
+    expect(seen.forks).toBe(1);</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-amber-400">O que olhar:</strong> o mod dispara trabalho sem esperar (pegadinha 16: <code>$.clock.after(0, …)</code>). O <code>settle()</code> é o passo entre "disparei" e "confiro o que aconteceu".</div>
+      </div>
+
+      <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6">
+        <h3 class="text-base font-semibold text-red-400 mb-2 flex items-center"><span class="mr-2">⚠️</span> Espera presa tem limite</h3>
+        <p class="text-neutral-300 text-sm">Segundo os tipos, uma espera presa no relógio falso além do orçamento de um hook (dez segundos de tempo real) é solta, como um hook que estourou. Se o teste esquece de chamar <code>advance</code>, o sintoma é lentidão seguida de falha, não um travamento eterno.</p>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 5 ===================== -->
+    <section id="topico-5" data-inema-topic="modulo-4-2#topico-5" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">5</span>
+        <h2 class="text-2xl font-bold flex-1">Monte a tela em terminal e desktop</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-2-t5-p1" class="text-neutral-300 mb-4 leading-relaxed">Para testar o que o mod desenha, o teste <strong class="text-amber-400">monta</strong> um componente numa superfície que ele nomeia: <code>$.ui.mount({ plugin, surface, component, … })</code>. A superfície nunca é presumida.</p>
+      <p data-inema-block="m4-2-t5-p2" class="text-neutral-300 mb-6 leading-relaxed">A referência recomenda escrever o corpo uma vez e repetir para <code>['terminal', 'desktop'] as const</code>. Assim o teste prova que o mod não depende de uma tela só (lembre: <code>Raster</code> só existe no terminal).</p>
+
+      <div class="bg-dark-800 rounded-xl border border-amber-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-amber-900/20 border-b border-amber-500/30"><span class="text-amber-400 font-semibold text-sm">📄 inema-mods/mods/marcador-sessao/tests/marcador.test.ts (trecho)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">    for (const surface of ['terminal', 'desktop'] as const) {
+      const ui = await $.ui.mount({
+        plugin: 'marcador-sessao',
+        surface,
+        component: 'Pane',
+        requestId: 'marcador-sessao',
+        viewport: VIEWPORT,
+        props: PANE_PROPS,
+      })
+      expect(await ui.find({ type: 'Text', text: 'rotas' })).toBeDefined()
+      await ui.press({ key: 'colar0' })
+      await ui.unmount()
+    }
+    expect(mundo.preenchidos).toHaveLength(2)</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-amber-400">O que olhar:</strong> o botão é achado pela <code>key</code>; o texto, pelo conteúdo. No fim, duas colagens: uma por superfície.</div>
+      </div>
+
+      <div class="rounded-2xl border border-amber-500/30 bg-dark-900/40 p-3 sm:p-4 mb-3 overflow-hidden">
+        <svg viewBox="0 0 800 210" class="w-full h-auto" role="img" aria-label="Um único corpo de teste à esquerda alimenta duas montagens à direita, uma no terminal e outra no desktop. Em cada uma o teste faz find, press e unmount. Embaixo, uma só conferência: duas colagens no prompt.">
+          <defs>
+            <pattern id="m42b-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#fbbf24" opacity="0.10"/></pattern>
+            <filter id="m42b-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <marker id="m42b-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38bdf8"/></marker>
+          </defs>
+          <rect x="0" y="0" width="800" height="210" fill="url(#m42b-grid)"/>
+          <g font-family="Inter,sans-serif" font-size="12" text-anchor="middle">
+            <g filter="url(#m42b-glow)"><rect x="30" y="70" width="190" height="60" rx="14" fill="#2a1d06" stroke="#fbbf24" stroke-width="2"/></g>
+            <text x="125" y="96" fill="#fbbf24" font-weight="600">um corpo de teste</text><text x="125" y="114" fill="#fde68a" font-size="11" font-family="JetBrains Mono,monospace">for (const surface …)</text>
+            <line class="wf-flow" x1="222" y1="90" x2="320" y2="50" stroke="#38bdf8" stroke-width="2" marker-end="url(#m42b-arrow)"/>
+            <line class="wf-flow" x1="222" y1="110" x2="320" y2="150" stroke="#38bdf8" stroke-width="2" marker-end="url(#m42b-arrow)"/>
+            <rect class="wf-a" x="325" y="22" width="250" height="56" rx="12" fill="#0b1f2e" stroke="#38bdf8" stroke-width="2"/><text x="450" y="45" fill="#bae6fd">mount: terminal</text><text x="450" y="64" fill="#7dd3fc" font-size="11" font-family="JetBrains Mono,monospace">find · press · unmount</text>
+            <rect class="wf-a" x="325" y="122" width="250" height="56" rx="12" fill="#0b1f2e" stroke="#38bdf8" stroke-width="2"/><text x="450" y="145" fill="#bae6fd">mount: desktop</text><text x="450" y="164" fill="#7dd3fc" font-size="11" font-family="JetBrains Mono,monospace">find · press · unmount</text>
+            <line x1="577" y1="50" x2="640" y2="95" stroke="#9ca3af" stroke-width="2" marker-end="url(#m42b-arrow)"/>
+            <line x1="577" y1="150" x2="640" y2="108" stroke="#9ca3af" stroke-width="2" marker-end="url(#m42b-arrow)"/>
+            <rect x="645" y="74" width="140" height="56" rx="12" fill="#1f2937" stroke="#6b7280" stroke-width="2"/><text x="715" y="98" fill="#e5e7eb">expect</text><text x="715" y="116" fill="#9ca3af" font-size="11">2 colagens</text>
+          </g>
+        </svg>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">Como ler o desenho:</strong> o mesmo código passa pelas duas superfícies. Se o mod usasse um elemento que o desktop não tem, a montagem do desktop recusaria a árvore e o teste falharia ali, não na mão do usuário.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-dark-800 rounded-xl p-6 border border-amber-500/30">
+          <h3 class="font-semibold text-amber-400 mb-3">✓ Ache assim</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ <code>Text</code> pelo texto: <code>{ type: 'Text', text: /usado/ }</code></li>
+            <li>✓ <code>Button</code> e <code>Box</code> pela <code>key</code></li>
+            <li>✓ Na faixa, um <code>ui.render</code> do teste por baixo devolvendo <code>{ type: 'Text', children: [''] }</code> (pegadinha 11)</li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ Não funciona</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ <code>Text</code> pela <code>key</code>: ela some na árvore desenhada (pegadinha 12)</li>
+            <li>✗ Testar só no terminal e publicar para o desktop</li>
+            <li>✗ Esquecer o <code>unmount()</code> entre as voltas</li>
+          </ul>
+        </div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 6 ===================== -->
+    <section id="topico-6" data-inema-topic="modulo-4-2#topico-6" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">6</span>
+        <h2 class="text-2xl font-bold flex-1">Leia uma falha de teste</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-2-t6-p1" class="text-neutral-300 mb-4 leading-relaxed">Uma falha real, de 05/10/2026, nesta máquina. Rodando <code>bash scripts/check.sh</code> no kit da Prompt Advisers (validate e test de cada plugin), o resultado foi <strong class="text-amber-400">123 de 124</strong> testes passando. Todos os validates deram ok.</p>
+      <p data-inema-block="m4-2-t6-p2" class="text-neutral-300 mb-6 leading-relaxed">O que falhou: o <code>terminal-pet</code>, com 12 passando e 1 falhando. O teste <code>"the whole sprite set stays far under the terminal's color-pair table"</code> estourou o limite de 5 s com a máquina carregada. E o <code>check.sh</code> parou ali.</p>
+
+      <div class="space-y-5 mb-6">
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">1</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Ache o plugin e o teste</h4> <p class="text-neutral-300 text-sm">O <code>check.sh</code> abre com <code>set -euo pipefail</code>: no primeiro plugin que falha, o laço para, e o que vem depois dele (aqui, o starter-mod) não roda. Por isso o registro diz "parou no terminal-pet".</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">2</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Separe tempo de asserção</h4> <p class="text-neutral-300 text-sm">Os tipos dizem: um teste falha quando lança, rejeita ou passa do seu tempo (5000 ms, ou <code>timeoutMs</code>). Aqui nenhum <code>expect</code> falhou; o tempo acabou.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">3</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Leia o corpo do teste</h4> <p class="text-neutral-300 text-sm">Ele não chama <code>$</code>: decodifica cada quadro do bichinho, a cada 10 ms ao longo de 6 s, para todos os humores e três níveis. É cálculo puro, e cálculo puro fica lento quando a CPU está ocupada.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">4</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Decida: bug ou ambiente?</h4> <p class="text-neutral-300 text-sm">Repita só aquele plugin com a máquina livre. Se passar, é ambiente. A correção mínima é dar tempo ao teste pesado: <code>test(nome, { timeoutMs: 15000 }, corpo)</code>, sem mexer no mod.</p></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-dark-800 rounded-xl p-6 border border-amber-500/30">
+          <h3 class="font-semibold text-amber-400 mb-3">✓ Sinais de tempo estourado</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ Passa sozinho, falha com a máquina ocupada</li>
+            <li>✓ Corpo com laços grandes e nenhum <code>await</code></li>
+            <li>✓ Nenhuma linha de <code>expect</code> citada</li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ Sinais de bug de verdade</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ Falha igual toda vez</li>
+            <li>✗ Mostra o valor esperado e o recebido</li>
+            <li>✗ Mensagem nomeando um mock que falta</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-dark-600 p-6 mb-6" data-inema-check="modulo-4-2#q1">
+        <p class="font-medium mb-4">Teste rápido (opcional): o teste do Rafa falha com <code>on(...) after the test first called $</code>. O que ele corrige?</p>
+        <div class="space-y-2">
+          <button type="button" data-inema-check-option="0" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">Aumenta o <code>timeoutMs</code> do teste.</button>
+          <button type="button" data-inema-check-option="1" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">Troca <code>$.session.start</code> por <code>Date.now()</code>.</button>
+          <button type="button" data-inema-check-option="2" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">Move todos os <code>on(...)</code> do teste para antes da primeira chamada a <code>$</code>.</button>
+        </div>
+        <div data-inema-check-feedback class="mt-4 text-sm" role="status" aria-live="polite"></div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== RESUMO ===================== -->
+    <section class="mb-12">
+      <div class="bg-gradient-to-br from-amber-900/40 via-dark-800 to-dark-800 rounded-xl border border-amber-500/30 p-8">
+        <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🎓</span> Resumo do módulo</h2>
+        <div class="space-y-4 mb-8">
+          <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-neutral-100">Engine real, nada por baixo</strong><span class="text-neutral-400"> — os hooks do teste fazem o papel dele.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-neutral-100">Mocks antes do $</strong><span class="text-neutral-400"> — o mundo.ts pendura todos de uma vez.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-neutral-100">test(nome, { options }, corpo)</strong><span class="text-neutral-400"> — simula o /config.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-neutral-100">mock.clock e settle</strong><span class="text-neutral-400"> — o tempo anda quando o teste manda.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-neutral-100">Tempo estourado não é asserção</strong><span class="text-neutral-400"> — leia antes de mexer no mod.</span></div></div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-4 mb-8">
+          <h3 class="font-semibold text-amber-400 mb-2">Próximo módulo:</h3>
+          <p class="text-neutral-300">4.3 — Depurar e as pegadinhas</p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="index.html" class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">← Voltar para a trilha</a>
+          <a href="modulo-4-3.html" class="flex-1 text-center px-6 py-3 bg-amber-600 text-white rounded-lg font-semibold hover:bg-amber-500 transition-colors">Módulo 4.3 →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="hidden lg:block">
+    <nav data-inema-toc aria-label="Índice da página" class="sticky top-24">
+      <p class="text-sm text-neutral-400 mb-3"><span data-inema-section-counter>Seção 1 de 6</span></p>
+      <ol class="space-y-2 text-sm">
+        <li><a href="#topico-1" class="text-neutral-400 hover:text-amber-400">1. O que simula</a></li>
+        <li><a href="#topico-2" class="text-neutral-400 hover:text-amber-400">2. Mocks antes do $</a></li>
+        <li><a href="#topico-3" class="text-neutral-400 hover:text-amber-400">3. Ponta a ponta</a></li>
+        <li><a href="#topico-4" class="text-neutral-400 hover:text-amber-400">4. Relógio</a></li>
+        <li><a href="#topico-5" class="text-neutral-400 hover:text-amber-400">5. Terminal e desktop</a></li>
+        <li><a href="#topico-6" class="text-neutral-400 hover:text-amber-400">6. Ler a falha</a></li>
+      </ol>
+    </nav>
+  </aside>
+  </div>
+<!--CHECKS-->
+        INEMA.registerCheck('modulo-4-2#q1', { answer: 2, explain: {
+          '0': 'Não é tempo: a mensagem diz que um mock foi pendurado depois que o teste já tinha chamado o $.',
+          '1': 'Date.now() lê o relógio da máquina e não tem nada a ver com a ordem dos mocks (e a pegadinha 7 pede $.clock.now()).',
+          '2': 'Isso. Pegadinha 18: todos os on(...) do teste vêm antes da primeira chamada a $. Comece por mundoDe(on) e só depois $.session.start.'
+        } });

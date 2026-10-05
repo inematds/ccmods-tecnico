@@ -1,0 +1,446 @@
+<!--TITLE: A cadeia: next, reescrever e responder -->
+  <nav aria-label="Trilha de navegação" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex items-center space-x-2 text-sm text-neutral-400">
+      <a href="../../index.html" class="hover:text-blue-400">Início</a><span>/</span>
+      <a href="index.html" class="hover:text-blue-400">Trilha 2</a><span>/</span>
+      <span class="text-blue-400">Módulo 2.2</span>
+    </div>
+  </nav>
+
+  <header class="bg-gradient-to-br from-blue-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600" data-inema-module="2-2" data-inema-track="2">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="inline-block px-3 py-1 bg-blue-500/20 text-blue-400 text-xs font-semibold rounded-full mb-4">MÓDULO 2.2</span>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-4">⛓️ A cadeia: next, reescrever e responder</h1>
+      <p class="text-lg text-neutral-400 max-w-3xl">Quem chama <code>next</code> decide. Todo hook escolhe entre três atitudes: deixar passar, mudar o que passa ou responder no lugar de todo o resto. Este módulo mostra as três, e o que acontece quando um hook falha ou demora.</p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 max-w-2xl">
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-blue-400">6</div><div class="text-xs text-neutral-400">Tópicos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-blue-400">~35</div><div class="text-xs text-neutral-400">Minutos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-blue-400">Médio</div><div class="text-xs text-neutral-400">Nível</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-blue-400">Fundamento</div><div class="text-xs text-neutral-400">Tipo</div></div>
+      </div>
+      <div data-inema-meter="modulo:2-2" class="mt-6 max-w-2xl" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso do módulo 2.2">
+        <div class="flex justify-between text-xs text-neutral-400 mb-1"><span data-inema-meter-frac>0 de 6</span><span data-inema-meter-pct>0%</span></div>
+        <div class="inema-bar"><div class="inema-bar__fill" data-inema-meter-fill></div></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:grid lg:grid-cols-[1fr_220px] lg:gap-10">
+  <main id="conteudo" class="min-w-0" data-inema-module="2-2" data-inema-track="2">
+
+    <!-- ===================== TOPICO 1 ===================== -->
+    <section id="topico-1" data-inema-topic="modulo-2-2#topico-1" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl">1</span>
+        <h2 class="text-2xl font-bold flex-1">Entenda a cadeia de plugins</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m2-2-t1-p1" class="text-neutral-300 mb-4 leading-relaxed">O Rafa tem três mods ligados, e os três penduram hook em <code>tool.call</code>. Quando o Claude pede um <code>Edit</code>, os três rodam. Não lado a lado: <strong class="text-blue-400">um dentro do outro</strong>, como camadas de cebola.</p>
+      <p data-inema-block="m2-2-t1-p2" class="text-neutral-300 mb-6 leading-relaxed">O evento entra pela camada de fora. Cada hook chama <code>next(e)</code> para entrar na camada seguinte. No miolo está o comportamento do próprio Claude Code. O resultado volta pelo mesmo caminho, de dentro para fora, e cada hook pode olhar para ele na volta.</p>
+
+      <div class="bg-blue-900/20 rounded-xl border border-blue-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-blue-400 mb-3 flex items-center"><span class="mr-2">🆕</span> Novo aqui? Três palavras da cadeia</h3>
+        <ul class="space-y-2 text-neutral-300 text-sm">
+          <li><strong>Cadeia</strong> — todos os hooks do mesmo evento, de todos os plugins, mais o comportamento do Claude Code no fim, ligados por <code>next</code>.</li>
+          <li><strong>Dispatch</strong> — uma passagem de um evento pela cadeia. Cada <code>Edit</code> é um dispatch de <code>tool.call</code>.</li>
+          <li><strong>Camada (tier)</strong> — os tipos dividem a cadeia em cinco: <code>prepend</code>, <code>user</code>, <code>append</code>, <code>builtin</code>, <code>core</code>. Os seus mods ficam em <code>user</code>.</li>
+        </ul>
+      </div>
+
+      <div class="rounded-2xl border border-blue-500/30 bg-dark-900/40 p-3 sm:p-4 mb-3 overflow-hidden">
+        <svg viewBox="0 0 800 270" class="w-full h-auto" role="img" aria-label="A cadeia como caixas uma dentro da outra. A mais de fora é prepend, os plugins gerenciados que o administrador põe antes. Dentro dela, user, onde ficam os mods que você instala. Depois append, os gerenciados que vêm depois, builtin, os plugins que vêm no próprio Claude Code, e no centro core, o comportamento do engine. Uma seta azul entra de fora para dentro com next de e, e uma seta clara volta de dentro para fora com o resultado.">
+          <defs>
+            <pattern id="m22a-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#60a5fa" opacity="0.10"/></pattern>
+            <filter id="m22a-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <marker id="m22a-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38bdf8"/></marker>
+          </defs>
+          <rect x="0" y="0" width="800" height="270" fill="url(#m22a-grid)"/>
+          <g font-family="JetBrains Mono,monospace" font-size="12">
+            <rect x="20" y="20" width="560" height="230" rx="16" fill="#111827" stroke="#6b7280" stroke-width="2"/><text x="36" y="42" fill="#9ca3af">prepend · gerenciados (antes)</text>
+            <g filter="url(#m22a-glow)"><rect x="50" y="52" width="500" height="186" rx="14" fill="#0f1b33" stroke="#60a5fa" stroke-width="2"/></g>
+            <text x="66" y="74" fill="#60a5fa" font-weight="600">user · os seus mods</text>
+            <rect x="80" y="84" width="440" height="144" rx="12" fill="#111827" stroke="#6b7280" stroke-width="2"/><text x="96" y="106" fill="#9ca3af">append · gerenciados (depois)</text>
+            <rect x="110" y="116" width="380" height="102" rx="10" fill="#111827" stroke="#6b7280" stroke-width="2"/><text x="126" y="138" fill="#9ca3af">builtin · plugins de fábrica</text>
+            <rect class="wf-a" x="200" y="150" width="200" height="56" rx="10" fill="#0b1f2e" stroke="#38bdf8" stroke-width="2"/><text x="300" y="175" text-anchor="middle" fill="#bae6fd">core</text><text x="300" y="194" text-anchor="middle" fill="#7dd3fc" font-family="Inter,sans-serif" font-size="11">permissão + ferramenta</text>
+          </g>
+          <g font-family="JetBrains Mono,monospace" font-size="12">
+            <line class="wf-flow" x1="780" y1="110" x2="600" y2="110" stroke="#38bdf8" stroke-width="2" marker-end="url(#m22a-arrow)"/>
+            <text x="690" y="100" text-anchor="middle" fill="#bae6fd">next(e) ↓</text>
+            <line x1="600" y1="180" x2="780" y2="180" stroke="#bfdbfe" stroke-width="2" marker-end="url(#m22a-arrow)"/>
+            <text x="690" y="205" text-anchor="middle" fill="#bfdbfe">resultado ↑</text>
+          </g>
+        </svg>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">Como ler o desenho:</strong> quanto mais de fora, mais autoridade. Um plugin gerenciado pela empresa (<code>prepend</code>) vê o evento antes do seu mod e pode encerrar a cadeia ali. O seu mod vê o evento antes dos plugins de fábrica e do engine. Na volta, a ordem se inverte.</p>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-primary mb-2 flex items-center"><span class="mr-2">💡</span> Não dependa da ordem entre dois mods seus</h3>
+        <p class="text-neutral-300 text-sm">Os dois ficam na mesma camada <code>user</code>. Escreva cada mod como se fosse o único: ele recebe um <code>e</code>, chama <code>next</code> e cuida do próprio resultado. O exemplo de quem convive bem na mesma tela é a faixa, no módulo 3.2.</p>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 2 ===================== -->
+    <section id="topico-2" data-inema-topic="modulo-2-2#topico-2" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl">2</span>
+        <h2 class="text-2xl font-bold flex-1">Observe e passe adiante</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m2-2-t2-p1" class="text-neutral-300 mb-4 leading-relaxed">A maioria dos hooks só observa. Anota, conta, desenha, e devolve o que veio de baixo sem mexer. Existem dois jeitos, e a diferença é <strong class="text-blue-400">quando</strong> o hook olha.</p>
+      <p data-inema-block="m2-2-t2-p2" class="text-neutral-300 mb-6 leading-relaxed">Antes do <code>next</code>, ele vê a intenção: o Claude quer editar este arquivo. Depois do <code>await next(e)</code>, ele vê o que aconteceu: editou, falhou ou foi negado. Os tipos chamam isso de escrever o hook "em pós-ordem".</p>
+
+      <div class="bg-dark-800 rounded-xl border border-blue-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-blue-900/20 border-b border-blue-500/30"><span class="text-blue-400 font-semibold text-sm">📄 Dois jeitos de observar (trechos reais)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">// plugin-authoring/examples/band.tsx — olha ANTES e passa
+on('prompt.submit', async ($, e, next) =&gt; {
+  startedAt = await $.clock.now()
+  tools = 0
+
+  return next(e)
+})
+
+// inema-mods/mods/recibo-sessao/hooks/register.tsx — olha DEPOIS
+on('tool.call', { tool: 'Edit' }, async ($, e, next) =&gt; {
+  const ran = await next(e)
+  if (ran.deny === undefined &amp;&amp; ran.isError !== true) await registrar($, e.file_path, 'editado')
+  return ran
+})</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-blue-400">O que olhar:</strong> o recibo só anota a edição se ela deu certo (sem <code>deny</code>, sem <code>isError</code>). Por isso precisa esperar o <code>next</code>. E devolve <code>ran</code> sem tocar: quem está acima recebe o resultado intacto.</div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-dark-800 rounded-xl p-6 border border-blue-500/30">
+          <h3 class="font-semibold text-blue-400 mb-3">✓ Observador bem-educado</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ Sempre devolve o que <code>next</code> devolveu</li>
+            <li>✓ Olha depois do <code>next</code> quando precisa do resultado</li>
+            <li>✓ Trabalho rápido: anotar no estado, não processar o mundo</li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ Observador que atrapalha</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ Esquece de devolver o resultado do <code>next</code></li>
+            <li>✗ Conta antes do <code>next</code> e soma as edições negadas</li>
+            <li>✗ Faz trabalho lento antes do <code>next</code> e atrasa a ferramenta</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-blue-900/20 rounded-xl border border-blue-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-blue-400 mb-2 flex items-center"><span class="mr-2">🆕</span> Novo aqui? Resultado do next</h3>
+        <p class="text-neutral-300 text-sm">Cada evento tem o seu. No <code>tool.call</code> vem a resposta da ferramenta, com <code>isError</code> e, se alguém negou, <code>deny</code>. No <code>turn.complete</code> vem <code>{ text }</code>. No <code>session.start</code> vem <code>{ cwd }</code>. O comentário do evento nos tipos diz qual é (módulo 2.1, tópico 6).</p>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 3 ===================== -->
+    <section id="topico-3" data-inema-topic="modulo-2-2#topico-3" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl">3</span>
+        <h2 class="text-2xl font-bold flex-1">Reescreva o que vem depois</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m2-2-t3-p1" class="text-neutral-300 mb-4 leading-relaxed">O <code>e</code> que você recebe é congelado: não dá para mudar um campo dele. Para mudar o que as camadas de baixo veem, você chama <code>next</code> com <strong class="text-blue-400">uma cópia alterada</strong>: <code>next({ ...e, campo: novo })</code>.</p>
+      <p data-inema-block="m2-2-t3-p2" class="text-neutral-300 mb-6 leading-relaxed">Mas só dentro do que o evento permite. Cada evento diz nos tipos o que pode ser reescrito. Mudar um campo travado faz o hook falhar e ser pulado. Mudar o retorno de um evento que só observa não muda nada.</p>
+
+      <div class="bg-dark-800 rounded-xl border border-blue-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-blue-900/20 border-b border-blue-500/30"><span class="text-blue-400 font-semibold text-sm">📄 inema-mods/mods/roteador-subagente/hooks/register.tsx (trecho)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">on('agent.spawn', async ($, e, next) =&gt; {
+  // Respeita o que foi pedido: modelo explícito, fork (sempre herda) e teammate.
+  if (e.model !== undefined || e.fork || e.isTeammate === true) return next(e)
+  const alvo = destino(await read($, modo), mapa, e.subagentType)
+  if (alvo === undefined) return next(e)
+  const r = await next({ ...e, model: alvo })
+  const id = r.agentId
+  if (id !== undefined) await update($, roteados, x =&gt; ({ ...x, [id]: alvo }))
+  return r
+})</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-blue-400">O que olhar:</strong> o mod só reescreve quando ninguém pediu modelo. Nos outros casos, passa o <code>e</code> intacto. Reescrever o que a pessoa pediu de forma explícita seria passar por cima dela.</div>
+      </div>
+
+      <div class="overflow-x-auto mb-6 rounded-xl border border-dark-600">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-dark-700/60 text-blue-400"><tr><th class="px-4 py-3 font-semibold">Evento</th><th class="px-4 py-3 font-semibold">O que dá para reescrever</th><th class="px-4 py-3 font-semibold">Efeito</th></tr></thead>
+          <tbody class="divide-y divide-dark-600">
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>prompt.submit</code></td><td class="px-4 py-3 text-neutral-300"><code>next({ ...e, text })</code></td><td class="px-4 py-3 text-neutral-300">o modelo e a tela recebem o texto novo</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>agent.spawn</code></td><td class="px-4 py-3 text-neutral-300"><code>next({ ...e, model })</code></td><td class="px-4 py-3 text-neutral-300">o subagente roda com outro modelo</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>ui.render</code></td><td class="px-4 py-3 text-neutral-300"><code>next({ ...e, props })</code></td><td class="px-4 py-3 text-neutral-300">o engine desenha com outras props</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>session.append</code></td><td class="px-4 py-3 text-neutral-300">só o <code>content</code> da mensagem</td><td class="px-4 py-3 text-neutral-300">mudar outro campo faz o hook falhar</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>turn.start</code></td><td class="px-4 py-3 text-neutral-300">nada</td><td class="px-4 py-3 text-neutral-300">só observa; outro retorno não muda nada</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">O que olhar na tabela:</strong> a última linha é tão importante quanto as outras. Antes de reescrever, confira nos tipos se o evento aceita. Se o comentário diz "Observe", ele não aceita.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-dark-800 rounded-xl p-6 border border-blue-500/30">
+          <h3 class="font-semibold text-blue-400 mb-3">✓ Reescrita respeitosa</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ muda só o que ninguém pediu de forma explícita, como o roteador</li>
+            <li>✓ confere nos tipos se o campo pode mudar</li>
+            <li>✓ avisa na tela quando muda algo que a pessoa vê</li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ Reescrita que atropela</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ troca o modelo que a pessoa escolheu</li>
+            <li>✗ mexe em campo travado do <code>session.append</code></li>
+            <li>✗ espera efeito ao devolver outra coisa no <code>turn.start</code></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-red-400 mb-2 flex items-center"><span class="mr-2">⚠️</span> Reescrever o prompt é poderoso e invisível</h3>
+        <p class="text-neutral-300 text-sm">Um <code>prompt.submit</code> que muda o texto altera o que o modelo lê sem a pessoa perceber. Faça isso só quando o mod disser claramente o que faz, e de preferência com um aviso na tela.</p>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 4 ===================== -->
+    <section id="topico-4" data-inema-topic="modulo-2-2#topico-4" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl">4</span>
+        <h2 class="text-2xl font-bold flex-1">Responda sem chamar next</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m2-2-t4-p1" class="text-neutral-300 mb-4 leading-relaxed">Um hook que devolve algo sem chamar <code>next</code> <strong class="text-blue-400">responde no lugar de todo o resto</strong>. As camadas de baixo não rodam: nem os outros mods, nem o engine. No <code>tool.call</code>, isso inclui o pedido de permissão e a ferramenta.</p>
+      <p data-inema-block="m2-2-t4-p2" class="text-neutral-300 mb-6 leading-relaxed">É assim que um mod barra uma ação. O <code>guarda-colisao</code> do kit INEMA decide antes de qualquer coisa. Se decidiu barrar, devolve a recusa e acabou.</p>
+
+      <div class="bg-dark-800 rounded-xl border border-blue-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-blue-900/20 border-b border-blue-500/30"><span class="text-blue-400 font-semibold text-sm">📄 inema-mods/mods/guarda-colisao/hooks/register.tsx (trecho)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">on('tool.call', { tool: 'Edit' }, async ($, e, next) =&gt; {
+  const barrar = await decidir($, e.file_path, cfg)
+  if (barrar) return barrar          // { deny: '...' } e nada abaixo roda
+  const ran = await next(e)
+  if (ran.deny === undefined &amp;&amp; ran.isError !== true) await marcar($, e.file_path, cfg)
+  return ran
+})</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-blue-400">O que olhar:</strong> <code>decidir</code> é uma função declarada no topo do arquivo, porque recebe <code>$</code> (pegadinha 1 do kit INEMA). Ela devolve <code>{ deny }</code> ou <code>undefined</code>.</div>
+      </div>
+
+      <div class="overflow-x-auto mb-6 rounded-xl border border-dark-600">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-dark-700/60 text-blue-400"><tr><th class="px-4 py-3 font-semibold">Evento</th><th class="px-4 py-3 font-semibold">Resposta sem next</th><th class="px-4 py-3 font-semibold">O que acontece</th></tr></thead>
+          <tbody class="divide-y divide-dark-600">
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>tool.call</code></td><td class="px-4 py-3 text-neutral-300"><code>{ deny: motivo }</code></td><td class="px-4 py-3 text-neutral-300">a ferramenta não roda; o modelo lê o motivo</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>tool.call</code></td><td class="px-4 py-3 text-neutral-300"><code>{ result }</code></td><td class="px-4 py-3 text-neutral-300">o mod responde pela ferramenta (sem pedir permissão)</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>prompt.submit</code></td><td class="px-4 py-3 text-neutral-300"><code>{ drop: motivo }</code></td><td class="px-4 py-3 text-neutral-300">o prompt não vira turno</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>command.run</code></td><td class="px-4 py-3 text-neutral-300"><code>{ text }</code></td><td class="px-4 py-3 text-neutral-300">o comando do mod responde, sem modelo</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-red-400 mb-2 flex items-center"><span class="mr-2">⚠️</span> Responder com { result } pula a permissão</h3>
+        <p class="text-neutral-300 text-sm">O pedido de permissão mora no <code>core</code>, que é a camada de dentro. Quem responde sem <code>next</code> nunca chega lá. Para ferramentas suas isso é o normal (módulo 3.4). Para ferramentas do Claude, como <code>Bash</code>, é atalho perigoso: prefira negar com motivo. Outro detalhe dos tipos: um hook que devolve enquanto o seu <code>next</code> ainda está pendente aborta o que roda abaixo.</p>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">🚫</div><div class="text-sm font-semibold text-blue-400">deny</div><p class="text-xs text-neutral-400 mt-1">recusa a ferramenta</p></div>
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">📦</div><div class="text-sm font-semibold text-blue-400">result</div><p class="text-xs text-neutral-400 mt-1">responde por ela</p></div>
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">🗑️</div><div class="text-sm font-semibold text-blue-400">drop</div><p class="text-xs text-neutral-400 mt-1">descarta o prompt</p></div>
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">💬</div><div class="text-sm font-semibold text-blue-400">text</div><p class="text-xs text-neutral-400 mt-1">responde o comando</p></div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 5 ===================== -->
+    <section id="topico-5" data-inema-topic="modulo-2-2#topico-5" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl">5</span>
+        <h2 class="text-2xl font-bold flex-1">Use .catch para falhar com segurança</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m2-2-t5-p1" class="text-neutral-300 mb-4 leading-relaxed">Hook que lança erro, devolve o que o evento não aceita ou passa do tempo é <strong class="text-blue-400">pulado</strong>. O engine chama <code>next(e)</code> por ele e a cadeia segue como se ele não existisse. Para um contador, ótimo. Para uma guarda, péssimo: falhar vira deixar passar.</p>
+      <p data-inema-block="m2-2-t5-p2" class="text-neutral-300 mb-6 leading-relaxed">O conserto é o <code>.catch</code> na própria registração: <code>on(...).catch(handler)</code>. Se o hook falhar, o handler roda no lugar dele, com a mesma forma <code>($, e, next)</code>, e a resposta dele vale como a do hook.</p>
+
+      <div class="bg-dark-800 rounded-xl border border-blue-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-blue-900/20 border-b border-blue-500/30"><span class="text-blue-400 font-semibold text-sm">📄 Exemplo da referência oficial (<code>plugin-authoring/reference.md</code>)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">on("session.append", ($, e, next) =&gt; next({ ...e, message: redact(e.message) }))
+  .catch(($, e, next) =&gt; next({ ...e, message: placeholderFor(e.message) }))</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-blue-400">O que olhar:</strong> o hook tenta esconder dados sensíveis. Se a função falhar, o <code>.catch</code> não deixa a mensagem original passar: troca por um texto neutro. Falha segura, não falha aberta.</div>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-blue-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-blue-900/20 border-b border-blue-500/30"><span class="text-blue-400 font-semibold text-sm">📄 A mesma ideia numa guarda (exemplo curto, forma tipada)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">import type { EngineInterface, Register } from 'claude-code'
+
+// recebe $, então fica no topo do arquivo (pegadinha 1)
+async function decidir($: EngineInterface, caminho: string) {
+  const fora = !caminho.startsWith(await $.session.cwd())
+  return fora ? { deny: 'Fora da pasta do projeto.' } : undefined
+}
+
+export const register: Register = (on, options) =&gt; {
+  on('tool.call', { tool: 'Write' }, async ($, e, next) =&gt; {
+    const barrar = await decidir($, e.file_path)
+    return barrar ?? next(e)
+  }).catch(($, e, next) =&gt; ({ deny: 'A guarda falhou; escrita barrada por segurança.' }))
+}</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-blue-400">O que olhar:</strong> sem o <code>.catch</code>, um erro em <code>decidir</code> faria o engine chamar <code>next(e)</code> e a escrita passaria. Com ele, a falha vira recusa com motivo. A comparação por texto do caminho é simplificada aqui; a forma robusta, com <code>realPath</code>, está no módulo 2.4.</div>
+      </div>
+
+      <div class="space-y-5 mb-6">
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center"><span class="text-blue-400 font-bold">1</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">O hook falha</h4><p class="text-neutral-300 text-sm">Lançou erro (<code>throw</code>) ou passou do orçamento (<code>timeout</code>).</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center"><span class="text-blue-400 font-bold">2</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">O handler roda do zero</h4><p class="text-neutral-300 text-sm"><code>next.error</code> diz o motivo; <code>next.called</code> diz se o hook já tinha chamado <code>next</code>. Aqui o <code>next</code> é seguro: se já foi chamado, devolve o mesmo resultado sem rodar nada de novo.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center"><span class="text-blue-400 font-bold">3</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Ele tem 1 segundo</h4><p class="text-neutral-300 text-sm">O prazo do handler é de 1.000 ms. Devolveu a tempo, vale. Devolveu <code>undefined</code> ou estourou, o hook conta como ausente.</p></div>
+        </div>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-primary mb-2 flex items-center"><span class="mr-2">💡</span> Três regras do .catch</h3>
+        <p class="text-neutral-300 text-sm">Um por registração (um segundo <code>.catch</code> lança erro). Só dentro do <code>register</code> (depois que ele retorna, também lança). Em evento de stream, o handler também é um gerador. O kit INEMA usa isso em todo mod que pergunta: sem tela para perguntar, o padrão é seguro e explícito, nunca seguir calado.</p>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 6 ===================== -->
+    <section id="topico-6" data-inema-topic="modulo-2-2#topico-6" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl">6</span>
+        <h2 class="text-2xl font-bold flex-1">Respeite o orçamento e o next.signal</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m2-2-t6-p1" class="text-neutral-300 mb-4 leading-relaxed">Cada hook tem <strong class="text-blue-400">10 segundos do próprio tempo</strong> por dispatch. O relógio para enquanto ele espera um <code>next</code> ou uma chamada ao <code>$</code>. Uma cadeia lenta abaixo, ou uma chamada longa ao engine, não gastam o orçamento do seu hook.</p>
+      <p data-inema-block="m2-2-t6-p2" class="text-neutral-300 mb-6 leading-relaxed">Com uma exceção: as esperas do relógio. <code>$.clock.sleep</code> conta. Um hook que dorme em laço para "esperar alguma coisa" paga cada soneca do mesmo orçamento. O tempo que resta está em <code>next.budget.remainingMs</code>.</p>
+
+      <div class="rounded-2xl border border-blue-500/30 bg-dark-900/40 p-3 sm:p-4 mb-3 overflow-hidden">
+        <svg viewBox="0 0 800 220" class="w-full h-auto" role="img" aria-label="Linha do tempo de um hook com orçamento de 10 segundos. Os trechos em que o próprio código roda gastam orçamento, em azul forte. Os trechos esperando next ou uma chamada do cifrão não gastam, em cinza. Um trecho de clock.sleep gasta, em azul forte com listras. Quando o orçamento acaba, next.signal aborta e o hook é tratado como ausente.">
+          <defs>
+            <pattern id="m22b-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#60a5fa" opacity="0.10"/></pattern>
+            <pattern id="m22b-stripes" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="4" height="8" fill="#60a5fa"/></pattern>
+            <marker id="m22b-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38bdf8"/></marker>
+          </defs>
+          <rect x="0" y="0" width="800" height="220" fill="url(#m22b-grid)"/>
+          <g font-family="Inter,sans-serif" font-size="11">
+            <rect x="40" y="70" width="90" height="40" rx="6" fill="#60a5fa"/><text x="85" y="128" text-anchor="middle" fill="#bfdbfe">seu código</text>
+            <rect x="130" y="70" width="200" height="40" rx="6" fill="#374151"/><text x="230" y="95" text-anchor="middle" fill="#e5e7eb" font-family="JetBrains Mono,monospace" font-size="12">await next(e)</text><text x="230" y="128" text-anchor="middle" fill="#9ca3af">não conta</text>
+            <rect x="330" y="70" width="70" height="40" rx="6" fill="#60a5fa"/><text x="365" y="128" text-anchor="middle" fill="#bfdbfe">seu código</text>
+            <rect x="400" y="70" width="150" height="40" rx="6" fill="#374151"/><text x="475" y="95" text-anchor="middle" fill="#e5e7eb" font-family="JetBrains Mono,monospace" font-size="12">await $.fs...</text><text x="475" y="128" text-anchor="middle" fill="#9ca3af">não conta</text>
+            <rect x="550" y="70" width="140" height="40" rx="6" fill="url(#m22b-stripes)" stroke="#60a5fa" stroke-width="2"/><text x="620" y="128" text-anchor="middle" fill="#bfdbfe">clock.sleep: conta</text>
+            <line x1="740" y1="40" x2="740" y2="150" stroke="#f87171" stroke-width="2" stroke-dasharray="5 4"/>
+            <text x="740" y="32" text-anchor="middle" fill="#fca5a5">10 s</text>
+            <line class="wf-flow" x1="690" y1="90" x2="734" y2="90" stroke="#38bdf8" stroke-width="2" marker-end="url(#m22b-arrow)"/>
+            <text x="400" y="180" text-anchor="middle" fill="#9ca3af" font-size="12">só o azul enche o orçamento; no limite, next.signal aborta e o hook conta como ausente</text>
+          </g>
+        </svg>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">Como ler o desenho:</strong> some só os trechos azuis. Esperar o <code>next</code> ou o engine é de graça. Dormir com o relógio não é. Quem chega na linha vermelha perde a vez: o <code>.catch</code> é chamado, se houver, ou o engine segue sem o hook.</p>
+
+      <p data-inema-block="m2-2-t6-p3" class="text-neutral-300 mb-4 leading-relaxed">O <code>next.signal</code> é um <code>AbortSignal</code> que dispara quando o dispatch é abandonado: a pessoa interrompeu, um hook acima já respondeu, ou o orçamento acabou. Passe esse sinal adiante, para a espera acabar junto.</p>
+      <div class="bg-dark-800 rounded-xl border border-blue-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-blue-900/20 border-b border-blue-500/30"><span class="text-blue-400 font-semibold text-sm">📄 Do comentário de <code>$.clock.sleep</code> nos tipos</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">await $.clock.sleep(500, { signal: next.signal })</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-blue-400">O que olhar:</strong> depois que o sinal dispara, o hook ainda tem 5 segundos para terminar. Passou disso, o engine registra que ele ficou para trás. Trabalho que precisa durar mais que um dispatch vai para outro lugar: módulo 2.4.</div>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-dark-600 p-6 mb-6" data-inema-check="modulo-2-2#q1">
+        <p class="font-medium mb-4">Teste rápido (opcional): o hook do Rafa em <code>tool.call</code> devolve <code>{ deny: 'não' }</code> sem chamar <code>next</code>. O que acontece com o pedido de permissão e com os mods abaixo dele?</p>
+        <div class="space-y-2">
+          <button type="button" data-inema-check-option="0" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">Rodam normalmente; o deny só vale no fim.</button>
+          <button type="button" data-inema-check-option="1" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">Nada abaixo roda; o deny é o resultado da chamada.</button>
+          <button type="button" data-inema-check-option="2" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">O engine pergunta à pessoa mesmo assim, por segurança.</button>
+        </div>
+        <div data-inema-check-feedback class="mt-4 text-sm" role="status" aria-live="polite"></div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">⏱️</div><div class="text-sm font-semibold text-blue-400">10 s</div><p class="text-xs text-neutral-400 mt-1">do próprio tempo</p></div>
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">🩹</div><div class="text-sm font-semibold text-blue-400">1 s</div><p class="text-xs text-neutral-400 mt-1">para o .catch</p></div>
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">🐢</div><div class="text-sm font-semibold text-blue-400">5 s</div><p class="text-xs text-neutral-400 mt-1">depois do signal</p></div>
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">📡</div><div class="text-sm font-semibold text-blue-400">next.signal</div><p class="text-xs text-neutral-400 mt-1">pare junto</p></div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== RESUMO ===================== -->
+    <section class="mb-12">
+      <div class="bg-gradient-to-br from-blue-900/40 via-dark-800 to-dark-800 rounded-xl border border-blue-500/30 p-8">
+        <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🎓</span> Resumo do módulo</h2>
+        <div class="space-y-4 mb-8">
+          <div class="flex items-start space-x-3"><span class="text-blue-400 mt-1">✓</span><div><strong class="text-neutral-100">A cadeia é uma cebola</strong><span class="text-neutral-400"> — prepend, user, append, builtin, core; next entra, o resultado volta.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-blue-400 mt-1">✓</span><div><strong class="text-neutral-100">Observar é devolver o que next devolveu</strong><span class="text-neutral-400"> — antes vê a intenção, depois vê o resultado.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-blue-400 mt-1">✓</span><div><strong class="text-neutral-100">next({ ...e, campo }) reescreve</strong><span class="text-neutral-400"> — só o que o evento permite.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-blue-400 mt-1">✓</span><div><strong class="text-neutral-100">Sem next, você responde por todos</strong><span class="text-neutral-400"> — deny, drop, result, text.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-blue-400 mt-1">✓</span><div><strong class="text-neutral-100">.catch e orçamento</strong><span class="text-neutral-400"> — falha segura, 10 s do próprio tempo, next.signal para parar junto.</span></div></div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-4 mb-8">
+          <h3 class="font-semibold text-blue-400 mb-2">Próximo módulo:</h3>
+          <p class="text-neutral-300">2.3 — Estado que sobrevive</p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="index.html" class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">← Voltar para a trilha</a>
+          <a href="modulo-2-3.html" class="flex-1 text-center px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-500 transition-colors">Módulo 2.3 →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="hidden lg:block">
+    <nav data-inema-toc aria-label="Índice da página" class="sticky top-24">
+      <p class="text-sm text-neutral-400 mb-3"><span data-inema-section-counter>Seção 1 de 6</span></p>
+      <ol class="space-y-2 text-sm">
+        <li><a href="#topico-1" class="text-neutral-400 hover:text-blue-400">1. A cadeia</a></li>
+        <li><a href="#topico-2" class="text-neutral-400 hover:text-blue-400">2. Observar</a></li>
+        <li><a href="#topico-3" class="text-neutral-400 hover:text-blue-400">3. Reescrever</a></li>
+        <li><a href="#topico-4" class="text-neutral-400 hover:text-blue-400">4. Responder</a></li>
+        <li><a href="#topico-5" class="text-neutral-400 hover:text-blue-400">5. .catch</a></li>
+        <li><a href="#topico-6" class="text-neutral-400 hover:text-blue-400">6. Orçamento</a></li>
+      </ol>
+    </nav>
+  </aside>
+  </div>
+<!--CHECKS-->
+        INEMA.registerCheck('modulo-2-2#q1', { answer: 1, explain: {
+          '0': 'Quem não chama next responde por todos: as camadas de baixo nunca recebem o evento.',
+          '1': 'Isso. O pedido de permissão mora no core, a camada de dentro. Sem next, ninguém abaixo roda e o deny vira o resultado que o modelo lê.',
+          '2': 'O engine só pergunta no core. Um deny acima dele encerra a chamada antes de chegar lá.'
+        } });

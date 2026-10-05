@@ -1,0 +1,187 @@
+<!--TITLE: Mods do Claude Code — o curso técnico | INEMA.CLUB -->
+  <!-- HERO -->
+  <header class="bg-gradient-to-br from-emerald-900/20 via-dark-800 to-dark-900 border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:grid lg:grid-cols-[1.1fr_1fr] lg:gap-12 lg:items-center">
+      <div>
+        <span class="inline-block px-3 py-1 bg-primary/10 text-primary border border-primary/30 text-xs font-semibold rounded-full mb-5">CURSO GRATUITO · 4 TRILHAS · 16 MÓDULOS</span>
+        <h1 class="text-4xl sm:text-5xl font-bold mb-5 leading-tight">Mods do Claude Code<br><span class="text-primary">— o curso técnico</span></h1>
+        <p class="text-lg text-neutral-300 max-w-xl mb-8">Escreva, teste e distribua mods do Claude Code: plugins de <em>function hooks</em> que mudam o que o Claude vê, desenha e faz. Do primeiro <code>register</code> ao marketplace, com código real dos kits e cada comando conferido na versão 2.1.289.</p>
+        <div class="flex flex-col sm:flex-row justify-start gap-3">
+          <a href="curso/trilha1/index.html" class="inline-flex items-center justify-start px-6 py-3 bg-primary text-black rounded-lg font-semibold hover:bg-yellow-300 transition-colors">Começar pela Trilha 1 →</a>
+          <a id="continuar" href="#" class="hidden items-center justify-start px-6 py-3 bg-dark-700 text-neutral-100 rounded-lg font-semibold hover:bg-dark-600 transition-colors">↻ Continuar de onde parei</a>
+          <button type="button" data-inema-journey-open class="inline-flex items-center justify-start px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">◷ Minha jornada</button>
+        </div>
+        <div data-inema-meter="curso" class="mt-8 max-w-md" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso do curso">
+          <div class="flex justify-between text-xs text-neutral-400 mb-1"><span data-inema-meter-frac>0 de 96</span><span data-inema-meter-pct>0%</span></div>
+          <div class="inema-bar"><div class="inema-bar__fill" data-inema-meter-fill></div></div>
+        </div>
+      </div>
+      <div class="mt-10 lg:mt-0 rounded-2xl border border-primary/30 bg-dark-900/40 p-3 overflow-hidden">
+        <svg viewBox="0 0 460 340" class="w-full h-auto" role="img" aria-label="No centro, um mod: a função register ligando hooks. À esquerda, três eventos chegam a ele: tool.call, command.run e ui.render. À direita, o que o mod faz: decide numa ferramenta, responde um comando sem modelo e desenha uma faixa ou painel. Embaixo, a esteira de entrega: validate, test e marketplace.">
+          <defs>
+            <pattern id="lp-grid" width="30" height="30" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#FACC15" opacity="0.10"/></pattern>
+            <filter id="lp-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <rect x="0" y="0" width="460" height="340" fill="url(#lp-grid)"/>
+          <g font-family="Inter,sans-serif" font-size="12" text-anchor="middle">
+            <rect x="16" y="50" width="120" height="34" rx="10" fill="#0e2018" stroke="#34d399" stroke-width="2"/><text x="76" y="72" fill="#a7f3d0">tool.call</text>
+            <rect x="16" y="110" width="120" height="34" rx="10" fill="#0f1b33" stroke="#60a5fa" stroke-width="2"/><text x="76" y="132" fill="#bfdbfe">command.run</text>
+            <rect x="16" y="170" width="120" height="34" rx="10" fill="#1e1233" stroke="#c084fc" stroke-width="2"/><text x="76" y="192" fill="#e9d5ff">ui.render</text>
+            <line class="wf-flow" x1="136" y1="67" x2="176" y2="110" stroke="#34d399" stroke-width="2"/>
+            <line class="wf-flow" x1="136" y1="127" x2="176" y2="127" stroke="#60a5fa" stroke-width="2"/>
+            <line class="wf-flow" x1="136" y1="187" x2="176" y2="145" stroke="#c084fc" stroke-width="2"/>
+            <g filter="url(#lp-glow)"><rect x="176" y="90" width="120" height="74" rx="16" fill="#1f1a07" stroke="#FACC15" stroke-width="2"/></g>
+            <text x="236" y="122" fill="#FACC15" font-weight="600" font-size="14">seu mod</text>
+            <text x="236" y="142" fill="#fde68a" font-size="11">register(on, options)</text>
+            <line class="wf-flow" x1="296" y1="110" x2="330" y2="67" stroke="#38bdf8" stroke-width="2"/>
+            <rect class="wf-a" x="324" y="50" width="122" height="34" rx="8" fill="#0b1f2e" stroke="#38bdf8" stroke-width="1.8"/><text x="385" y="72" fill="#bae6fd">🛡️ decide</text>
+            <line class="wf-flow" x1="296" y1="127" x2="324" y2="127" stroke="#38bdf8" stroke-width="2"/>
+            <rect class="wf-a" x="324" y="110" width="122" height="34" rx="8" fill="#0b1f2e" stroke="#38bdf8" stroke-width="1.8"/><text x="385" y="132" fill="#bae6fd">⌨️ /comando</text>
+            <line class="wf-flow" x1="296" y1="145" x2="330" y2="187" stroke="#38bdf8" stroke-width="2"/>
+            <rect class="wf-a" x="324" y="170" width="122" height="34" rx="8" fill="#0b1f2e" stroke="#38bdf8" stroke-width="1.8"/><text x="385" y="192" fill="#bae6fd">🪟 faixa · painel</text>
+            <rect x="40" y="262" width="110" height="34" rx="10" fill="#2a1d06" stroke="#fbbf24" stroke-width="1.8"/><text x="95" y="284" fill="#fde68a">validate ✔</text>
+            <rect x="175" y="262" width="110" height="34" rx="10" fill="#2a1d06" stroke="#fbbf24" stroke-width="1.8"/><text x="230" y="284" fill="#fde68a">test 0 fail</text>
+            <rect x="310" y="262" width="110" height="34" rx="10" fill="#2a1d06" stroke="#fbbf24" stroke-width="1.8"/><text x="365" y="284" fill="#fde68a">marketplace</text>
+            <line x1="150" y1="279" x2="175" y2="279" stroke="#fbbf24" stroke-width="2"/>
+            <line x1="285" y1="279" x2="310" y2="279" stroke="#fbbf24" stroke-width="2"/>
+            <line x1="236" y1="164" x2="236" y2="258" stroke="#FACC15" stroke-width="1.6" stroke-dasharray="4 3"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </header>
+
+  <main id="conteudo" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+
+    <!-- A IDEIA -->
+    <section class="mb-16">
+      <div class="bg-gradient-to-br from-emerald-900/30 to-dark-800 rounded-xl border border-emerald-500/30 p-8">
+        <h2 class="text-2xl font-bold mb-4">A ideia que atravessa o curso</h2>
+        <p class="text-xl text-neutral-100 mb-4">Um mod é <strong class="text-emerald-400">três arquivos e uma função.</strong></p>
+        <p class="text-neutral-300 mb-4">Um <code>plugin.json</code>, um <code>hooks.json</code> e um módulo que exporta <code>register(on, options)</code>. Cada hook tem a forma <code>($, e, next)</code> e entra numa cadeia com os outros plugins e o próprio Claude Code. Quem chama <code>next</code> deixa passar; quem não chama decide.</p>
+        <p class="text-neutral-300">Com isso você conta o que o Claude toca, nega um comando perigoso, desenha uma faixa acima do prompt, abre um painel com botões e cria comandos que respondem <strong>sem gastar modelo</strong> — e prova tudo com <code>claude plugin test</code>.</p>
+      </div>
+    </section>
+
+    <!-- PARA QUEM -->
+    <section class="mb-16">
+      <h2 class="text-2xl font-bold mb-6">Para quem é</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+          <div class="text-3xl mb-3">👨‍💻</div>
+          <h3 class="font-semibold text-lg mb-2">Rafa, 34 — dev de uma agência pequena</h3>
+          <p class="text-neutral-300 text-sm">Usa o Claude Code todo dia. Quer ver o que o Claude toca no repositório, ser perguntado antes de algo ser apagado e não perder trabalho entre sessões. É ele quem aparece nos exemplos do curso.</p>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+          <div class="text-3xl mb-3">🧑‍🔧</div>
+          <h3 class="font-semibold text-lg mb-2">Você, se programa (ou quase)</h3>
+          <p class="text-neutral-300 text-sm">Sabe usar o terminal, já leu JavaScript ou TypeScript e já usou o Claude Code. Não precisa conhecer a API de mods: cada termo (hook, <code>$</code>, <code>next</code>, dispatch, superfície, matcher, atom...) é definido na primeira vez que aparece.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- O QUE VOCE VAI CONSTRUIR -->
+    <section class="mb-16">
+      <h2 class="text-2xl font-bold mb-6">O que você vai construir</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-dark-800 rounded-xl p-5 border border-dark-600"><div class="text-2xl mb-2">🚀</div><div class="font-semibold mb-1">Um contador com comando</div><p class="text-xs text-neutral-400">O <code>/readcount</code> do starter-mod, rodando por <code>claude -p</code> sem chamar o modelo.</p></div>
+        <div class="bg-dark-800 rounded-xl p-5 border border-dark-600"><div class="text-2xl mb-2">💾</div><div class="font-semibold mb-1">Estado que não some</div><p class="text-xs text-neutral-400">Contrato tipado, <code>$.state</code> na sessão e <code>$.store</code> entre sessões.</p></div>
+        <div class="bg-dark-800 rounded-xl p-5 border border-dark-600"><div class="text-2xl mb-2">🪟</div><div class="font-semibold mb-1">Faixa e painel</div><p class="text-xs text-neutral-400">Desenho com <code>ui.render</code>, botões com hotkey e teste em terminal e desktop.</p></div>
+        <div class="bg-dark-800 rounded-xl p-5 border border-dark-600"><div class="text-2xl mb-2">🛡️</div><div class="font-semibold mb-1">Uma guarda</div><p class="text-xs text-neutral-400">Interceptar <code>tool.call</code>, negar com motivo e perguntar ao humano antes de apagar.</p></div>
+      </div>
+    </section>
+
+    <!-- TRILHAS -->
+    <section class="mb-16">
+      <h2 class="text-2xl font-bold mb-6">As 4 trilhas</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <a href="curso/trilha1/index.html" class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-emerald-500/30 p-6 transition-all">
+          <div class="flex items-center justify-between mb-3"><span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs font-semibold rounded-full">TRILHA 1</span><span class="text-xs text-neutral-500">4 módulos · ~2h20</span></div>
+          <h3 class="text-xl font-bold mb-2 group-hover:text-emerald-400 transition-colors">🧬 Anatomia</h3>
+          <p class="text-neutral-400 text-sm mb-4">O que é um mod por dentro, a estrutura de arquivos e o manifesto, carregar, recarregar e instalar, e o seu primeiro mod: comando e contador.</p>
+          <div data-inema-meter="trilha:1" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso da trilha 1"><div class="flex justify-between text-xs text-neutral-500 mb-1"><span data-inema-meter-frac>0 de 24</span><span data-inema-meter-pct>0%</span></div><div class="inema-bar"><div class="inema-bar__fill" data-inema-meter-fill></div></div></div>
+        </a>
+        <a href="curso/trilha2/index.html" class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-blue-500/30 p-6 transition-all">
+          <div class="flex items-center justify-between mb-3"><span class="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs font-semibold rounded-full">TRILHA 2</span><span class="text-xs text-neutral-500">4 módulos · ~2h20</span></div>
+          <h3 class="text-xl font-bold mb-2 group-hover:text-blue-400 transition-colors">⚡ Eventos e estado</h3>
+          <p class="text-neutral-400 text-sm mb-4">O mapa de eventos, a cadeia com <code>next</code>, estado que sobrevive ao reload e trabalho fora do dispatch com relógio, arquivos e processos.</p>
+          <div data-inema-meter="trilha:2" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso da trilha 2"><div class="flex justify-between text-xs text-neutral-500 mb-1"><span data-inema-meter-frac>0 de 24</span><span data-inema-meter-pct>0%</span></div><div class="inema-bar"><div class="inema-bar__fill" data-inema-meter-fill></div></div></div>
+        </a>
+        <a href="curso/trilha3/index.html" class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-purple-500/30 p-6 transition-all">
+          <div class="flex items-center justify-between mb-3"><span class="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs font-semibold rounded-full">TRILHA 3</span><span class="text-xs text-neutral-500">4 módulos · ~2h20</span></div>
+          <h3 class="text-xl font-bold mb-2 group-hover:text-purple-400 transition-colors">🖥️ Telas e comandos</h3>
+          <p class="text-neutral-400 text-sm mb-4"><code>ui.render</code> e as superfícies, faixa, status e avisos, painéis e botões, comandos de barra, ferramentas para o modelo e configuração.</p>
+          <div data-inema-meter="trilha:3" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso da trilha 3"><div class="flex justify-between text-xs text-neutral-500 mb-1"><span data-inema-meter-frac>0 de 24</span><span data-inema-meter-pct>0%</span></div><div class="inema-bar"><div class="inema-bar__fill" data-inema-meter-fill></div></div></div>
+        </a>
+        <a href="curso/trilha4/index.html" class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-amber-500/30 p-6 transition-all">
+          <div class="flex items-center justify-between mb-3"><span class="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-xs font-semibold rounded-full">TRILHA 4</span><span class="text-xs text-neutral-500">4 módulos · ~2h20</span></div>
+          <h3 class="text-xl font-bold mb-2 group-hover:text-amber-400 transition-colors">🛡️ Controlar, testar e distribuir</h3>
+          <p class="text-neutral-400 text-sm mb-4">Mods que mudam o fluxo, testes com <code>claude plugin test</code>, depuração e as pegadinhas, marketplace e o projeto final.</p>
+          <div data-inema-meter="trilha:4" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso da trilha 4"><div class="flex justify-between text-xs text-neutral-500 mb-1"><span data-inema-meter-frac>0 de 24</span><span data-inema-meter-pct>0%</span></div><div class="inema-bar"><div class="inema-bar__fill" data-inema-meter-fill></div></div></div>
+        </a>
+      </div>
+    </section>
+
+    <!-- PROJETO FINAL -->
+    <section class="mb-16">
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-8">
+        <h2 class="text-2xl font-bold mb-4 text-primary">🏁 Projeto final: o seu mod</h2>
+        <p class="text-neutral-300 mb-4">Um mod próprio, como o do Rafa: um comando <code>/x</code>, uma faixa ou um painel, estado em <code>$.state</code>, teste com <code>claude plugin test</code> (mocks antes do <code>$</code>), <code>claude plugin validate</code> OK, um botão ou comando para desligar e um README.</p>
+        <p class="text-neutral-400 text-sm">A prova: <code>claude plugin test &lt;pasta&gt;</code> com <code>0 fail</code> e <code>claude -p "/&lt;comando&gt;" --plugin-dir &lt;pasta&gt;</code> respondendo sem modelo. Detalhes no módulo 4.4.</p>
+      </div>
+    </section>
+
+    <!-- VERSAO CONFERIDA -->
+    <section class="mb-16">
+      <div class="bg-dark-800 rounded-xl border border-amber-500/30 p-6">
+        <h2 class="text-xl font-bold mb-3">⚠️ Versão conferida</h2>
+        <p class="text-neutral-300 text-sm mb-3">Tudo neste curso foi conferido no <strong>Claude Code 2.1.289</strong>, em <strong>05/10/2026</strong>, numa máquina Linux ARM64. A API de mods está em <strong>acesso antecipado</strong> e muda entre versões.</p>
+        <p class="text-neutral-300 text-sm">A autoridade é o arquivo de tipos da <em>sua</em> instalação: <code>.claude-plugin/types/claude-code/index.d.ts</code>, que o Claude Code escreve dentro da pasta do mod quando ele carrega. O curso ensina a ler esse arquivo; nenhum nome é prometido para sempre.</p>
+      </div>
+    </section>
+
+    <!-- KITS E PRE-REQUISITOS -->
+    <section class="mb-16">
+      <h2 class="text-2xl font-bold mb-6">O que você precisa</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+          <div class="text-2xl mb-2">🧰</div>
+          <h3 class="font-semibold mb-2">Claude Mods Starter Kit</h3>
+          <p class="text-neutral-300 text-sm">Kit da <strong>Prompt Advisers</strong> (licença MIT): 10 plugins, o modelo <code>starter-mod</code> e scripts de checagem. Cópia usada no curso: <a href="https://github.com/inematds/claude-mods-starter-kit" target="_blank" class="text-sky-400 hover:text-sky-300">github.com/inematds/claude-mods-starter-kit</a>.</p>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+          <div class="text-2xl mb-2">🇧🇷</div>
+          <h3 class="font-semibold mb-2">inema-mods</h3>
+          <p class="text-neutral-300 text-sm">18 mods em português, testados, com o guia <code>COMO-FAZER-UM-MOD.md</code> e as 23 pegadinhas: <a href="https://github.com/inematds/inema-mods" target="_blank" class="text-sky-400 hover:text-sky-300">github.com/inematds/inema-mods</a>.</p>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+          <div class="text-2xl mb-2">💻</div>
+          <h3 class="font-semibold mb-2">Na sua máquina</h3>
+          <p class="text-neutral-300 text-sm">Claude Code instalado (confira com <code>claude --version</code>), git e um editor. TypeScript ajuda a partir da trilha 2, mas não precisa de compilação: o Claude Code carrega <code>.ts</code> e <code>.tsx</code> direto.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROXIMOS PASSOS -->
+    <section class="mb-16">
+      <h2 class="text-2xl font-bold mb-6">Depois do curso</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <a href="https://inematds.github.io/cchooks/" target="_blank" class="bg-dark-800 rounded-xl p-5 border border-dark-600 hover:border-primary/30 transition-all"><div class="font-semibold mb-1">🪝 cchooks</div><p class="text-xs text-neutral-400">Os hooks clássicos do <code>settings.json</code>, a fundo.</p></a>
+        <a href="https://inematds.github.io/makeclaudex/" target="_blank" class="bg-dark-800 rounded-xl p-5 border border-dark-600 hover:border-primary/30 transition-all"><div class="font-semibold mb-1">🏭 MakeClaudeX</div><p class="text-xs text-neutral-400">Plugins de produção para o Claude Code.</p></a>
+        <a href="https://inematds.github.io/curso-agent-runtime/" target="_blank" class="bg-dark-800 rounded-xl p-5 border border-dark-600 hover:border-primary/30 transition-all"><div class="font-semibold mb-1">🧭 curso-agent-runtime</div><p class="text-xs text-neutral-400">Trilha 4: guarda e painel para agentes que usam ferramentas.</p></a>
+        <div class="bg-dark-800 rounded-xl p-5 border border-dark-600 opacity-80"><div class="font-semibold mb-1">🌱 Curso básico de mods</div><p class="text-xs text-neutral-400">Para quem não programa. Em breve.</p></div>
+      </div>
+    </section>
+
+    <!-- COMO ESTUDAR -->
+    <section class="mb-16">
+      <h2 class="text-2xl font-bold mb-6">Como estudar aqui</h2>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-dark-800 rounded-xl p-5 border border-dark-600"><div class="text-2xl mb-2">●</div><div class="font-semibold mb-1">Marque como lido</div><p class="text-xs text-neutral-400">Cada tópico tem um botão. O progresso aparece aqui, na trilha e no módulo.</p></div>
+        <div class="bg-dark-800 rounded-xl p-5 border border-dark-600"><div class="text-2xl mb-2">?</div><div class="font-semibold mb-1">Marque dúvidas</div><p class="text-xs text-neutral-400">"Tenho dúvida" guarda o tópico para você revisar depois.</p></div>
+        <div class="bg-dark-800 rounded-xl p-5 border border-dark-600"><div class="text-2xl mb-2">🖍️</div><div class="font-semibold mb-1">Grife e anote</div><p class="text-xs text-neutral-400">Selecione um trecho do texto para grifar ou escrever uma nota.</p></div>
+        <div class="bg-dark-800 rounded-xl p-5 border border-dark-600"><div class="text-2xl mb-2">◷</div><div class="font-semibold mb-1">Minha jornada</div><p class="text-xs text-neutral-400">Progresso, dúvidas e notas num lugar só. Exporte em arquivo para não perder.</p></div>
+      </div>
+      <p class="text-neutral-500 text-xs mt-4">Tudo fica salvo só no seu navegador. Nada é enviado para servidor nenhum.</p>
+    </section>
+  </main>

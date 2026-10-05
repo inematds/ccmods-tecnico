@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="inema-course" content="ccmt">
+  <title>Estado que sobrevive | Mods do Claude Code — técnico</title>
+  <meta name="description" content="Curso técnico gratuito do INEMA.CLUB: escreva, teste e distribua mods do Claude Code — register, eventos, cadeia com next, estado, faixa, painéis, comandos, guardas e claude plugin test.">
+
+  <!-- ANTI-FOUC: bloqueante, ANTES do Tailwind -->
+  <script>
+  (function () {
+    try {
+      var html = document.documentElement;
+      var DEF = { theme: 'inema-dark', font: 'inter', fontScale: 100, lineWidth: 68, leading: 1.7, accent: 'emerald' };
+      function clone(o) { var r = {}; for (var x in o) r[x] = o[x]; return r; }
+      var p = clone(DEF);
+      try {
+        var raw = localStorage.getItem('inema.prefs');
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') { for (var k in DEF) if (parsed[k] != null) p[k] = parsed[k]; }
+        } else {
+          var legacy = localStorage.getItem('theme');
+          if (legacy === 'light') p.theme = 'claro'; else if (legacy === 'dark') p.theme = 'inema-dark';
+        }
+      } catch (e) { p = clone(DEF); }
+      var THEMES = {
+        'inema-dark': { dark: true,  attr: null,        cs: 'dark'  },
+        'claro':      { dark: false, attr: null,        cs: 'light' },
+        'sepia':      { dark: false, attr: 'sepia',     cs: 'light' },
+        'foco':       { dark: null,  attr: 'foco',      cs: null    },
+        'contraste':  { dark: true,  attr: 'contraste', cs: 'dark'  }
+      };
+      var t = THEMES[p.theme] || THEMES['inema-dark'];
+      if (t.dark === true) html.classList.add('dark'); else if (t.dark === false) html.classList.remove('dark');
+      if (t.attr) html.setAttribute('data-theme', t.attr); else html.removeAttribute('data-theme');
+      html.style.colorScheme = (t.cs ? t.cs : (html.classList.contains('dark') ? 'dark' : 'light'));
+      html.setAttribute('data-font', p.font || 'inter');
+      html.setAttribute('data-accent', p.accent || 'emerald');
+      var s = html.style; var scale = (+p.fontScale || 100);
+      s.setProperty('--inema-font-scale', (scale / 100).toString());
+      s.setProperty('font-size', scale + '%');
+      s.setProperty('--measure', (+p.lineWidth || 68) + 'ch');
+      s.setProperty('--lh-body', (+p.leading || 1.7).toString());
+      var fam = p.font === 'system' ? 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif'
+        : (p.font === 'leitura' ? '"Atkinson Hyperlegible", "Inter", system-ui, sans-serif' : '"Inter", system-ui, sans-serif');
+      s.setProperty('--font-body', fam);
+      var ACC = { emerald: [152,76,45], blue: [217,91,60], purple: [258,90,66], amber: [38,92,50], teal: [174,72,41], rose: [350,89,60] };
+      var a = ACC[p.accent] || ACC.emerald;
+      s.setProperty('--accent-h', a[0]+''); s.setProperty('--accent-s', a[1]+'%'); s.setProperty('--accent-l', a[2]+'%');
+      s.setProperty('--accent', 'hsl('+a[0]+' '+a[1]+'% '+a[2]+'%)');
+    } catch (err) { try { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme = 'dark'; } catch(e){} }
+  })();
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class', theme: { extend: { colors: {
+      primary: '#FACC15', dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' } } } } }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/learn.css">
+
+  <!-- Manifesto do curso (OBRIGATORIO em TODA pagina, identico) -->
+  <script type="application/json" data-inema-manifest>
+  {"course":"ccmt","tracks":[{"n":"1","title":"Anatomia","modules":[{"id":"1-1","title":"O que é um mod por dentro","topics":6,"href":"curso/trilha1/modulo-1-1.html"},{"id":"1-2","title":"Estrutura de arquivos e manifesto","topics":6,"href":"curso/trilha1/modulo-1-2.html"},{"id":"1-3","title":"Carregar, recarregar e instalar","topics":6,"href":"curso/trilha1/modulo-1-3.html"},{"id":"1-4","title":"Seu primeiro mod: comando e contador","topics":6,"href":"curso/trilha1/modulo-1-4.html"}]},{"n":"2","title":"Eventos e estado","modules":[{"id":"2-1","title":"O mapa de eventos","topics":6,"href":"curso/trilha2/modulo-2-1.html"},{"id":"2-2","title":"A cadeia: next, reescrever e responder","topics":6,"href":"curso/trilha2/modulo-2-2.html"},{"id":"2-3","title":"Estado que sobrevive","topics":6,"href":"curso/trilha2/modulo-2-3.html"},{"id":"2-4","title":"Trabalho fora do dispatch","topics":6,"href":"curso/trilha2/modulo-2-4.html"}]},{"n":"3","title":"Telas e comandos","modules":[{"id":"3-1","title":"ui.render e as superfícies","topics":6,"href":"curso/trilha3/modulo-3-1.html"},{"id":"3-2","title":"Faixa, status e avisos","topics":6,"href":"curso/trilha3/modulo-3-2.html"},{"id":"3-3","title":"Painéis e botões","topics":6,"href":"curso/trilha3/modulo-3-3.html"},{"id":"3-4","title":"Comandos, ferramentas e configuração","topics":6,"href":"curso/trilha3/modulo-3-4.html"}]},{"n":"4","title":"Controlar e distribuir","modules":[{"id":"4-1","title":"Mods que mudam o fluxo","topics":6,"href":"curso/trilha4/modulo-4-1.html"},{"id":"4-2","title":"Testar com claude plugin test","topics":6,"href":"curso/trilha4/modulo-4-2.html"},{"id":"4-3","title":"Depurar e as pegadinhas","topics":6,"href":"curso/trilha4/modulo-4-3.html"},{"id":"4-4","title":"Distribuir e projeto final","topics":6,"href":"curso/trilha4/modulo-4-4.html"}]}]}
+  </script>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .dark body { background-color: #111827; }
+
+    /* Light mode - base */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-200 { color: #1f2937; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #6b7280; }
+    html:not(.dark) .text-white { color: #111827; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* Light mode - acentos das 5 trilhas (emerald, blue, purple, amber, teal) */
+    html:not(.dark) .text-emerald-400 { color: #059669; }
+    html:not(.dark) .bg-emerald-500\/20 { background-color: rgba(5, 150, 105, 0.12); }
+    html:not(.dark) .bg-emerald-500\/10 { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .bg-emerald-900\/20 { background-color: rgba(5, 150, 105, 0.07); }
+    html:not(.dark) .border-emerald-500\/30 { border-color: rgba(5, 150, 105, 0.25); }
+    html:not(.dark) .hover\:bg-emerald-500\/30:hover { background-color: rgba(5, 150, 105, 0.18); }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:bg-emerald-500\/10:hover { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-emerald-400 { color: #059669; }
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .bg-blue-500\/20 { background-color: rgba(37, 99, 235, 0.12); }
+    html:not(.dark) .bg-blue-500\/10 { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .bg-blue-900\/20 { background-color: rgba(37, 99, 235, 0.07); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37, 99, 235, 0.25); }
+    html:not(.dark) .hover\:bg-blue-500\/30:hover { background-color: rgba(37, 99, 235, 0.18); }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:bg-blue-500\/10:hover { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-blue-400 { color: #2563eb; }
+    html:not(.dark) .text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .bg-purple-500\/20 { background-color: rgba(124, 58, 237, 0.12); }
+    html:not(.dark) .bg-purple-500\/10 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .bg-purple-900\/20 { background-color: rgba(124, 58, 237, 0.07); }
+    html:not(.dark) .border-purple-500\/30 { border-color: rgba(124, 58, 237, 0.25); }
+    html:not(.dark) .hover\:bg-purple-500\/30:hover { background-color: rgba(124, 58, 237, 0.18); }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+    html:not(.dark) .hover\:bg-purple-500\/10:hover { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .text-amber-400 { color: #92400e; }
+    html:not(.dark) .bg-amber-500\/20 { background-color: rgba(217, 119, 6, 0.12); }
+    html:not(.dark) .bg-amber-500\/10 { background-color: rgba(217, 119, 6, 0.08); }
+    html:not(.dark) .bg-amber-900\/20 { background-color: rgba(217, 119, 6, 0.07); }
+    html:not(.dark) .border-amber-500\/30 { border-color: rgba(217, 119, 6, 0.25); }
+    html:not(.dark) .hover\:bg-amber-500\/30:hover { background-color: rgba(217, 119, 6, 0.18); }
+    html:not(.dark) .hover\:text-amber-400:hover { color: #92400e; }
+    html:not(.dark) .hover\:bg-amber-500\/10:hover { background-color: rgba(217, 119, 6, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-amber-400 { color: #92400e; }
+    html:not(.dark) .text-teal-400 { color: #0d9488; }
+    html:not(.dark) .bg-teal-500\/20 { background-color: rgba(13, 148, 136, 0.12); }
+    html:not(.dark) .bg-teal-500\/10 { background-color: rgba(13, 148, 136, 0.08); }
+    html:not(.dark) .bg-teal-900\/20 { background-color: rgba(13, 148, 136, 0.07); }
+    html:not(.dark) .border-teal-500\/30 { border-color: rgba(13, 148, 136, 0.25); }
+    html:not(.dark) .hover\:bg-teal-500\/30:hover { background-color: rgba(13, 148, 136, 0.18); }
+    html:not(.dark) .hover\:text-teal-400:hover { color: #0d9488; }
+    html:not(.dark) .hover\:bg-teal-500\/10:hover { background-color: rgba(13, 148, 136, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-teal-400 { color: #0d9488; }
+
+    /* Light mode - remove gradientes e cores especiais */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .border-primary\/30 { border-color: rgba(161, 98, 7, 0.22); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.25); }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+
+    /* Light mode - nav */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+
+    /* Dark mode - bordas suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* Alvos de ancora abaixo do nav sticky */
+    [data-inema-topic], [id^="modulo-"], [id^="topico-"] { scroll-margin-top: 72px; }
+
+    /* SVG light mode + animacao */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @keyframes wf-dash { to { stroke-dashoffset: -24; } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s} .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s} .wf-a:nth-child(5){animation-delay:1s}
+      .wf-flow { stroke-dasharray: 6 6; animation: wf-dash 1.2s linear infinite; }
+    }
+
+    /* Topicos expansiveis */
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    /* Popover de aparência ancorado à direita e fora do layout quando fechado (sem transbordo) */
+    .inema-appearance-pop { right: 0; }
+    main code, main pre { overflow-wrap: anywhere; }
+    main .flex-1 { min-width: 0; }
+    .inema-appearance-pop:not([data-open="true"]) { visibility: hidden; display: none; }
+  </style>
+</head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen">
+  <a href="#conteudo" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[60] focus:px-4 focus:py-2 focus:bg-primary focus:text-black focus:rounded-lg">Pular para o conteúdo</a>
+
+  <nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-14">
+        <div class="flex items-center space-x-1.5 sm:space-x-3">
+          <a href="../../index.html" class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300">
+            <span class="text-2xl">🧩</span>
+            <span class="font-bold text-lg hidden lg:inline">Mods técnico</span>
+          </a>
+          <span class="text-neutral-600 hidden sm:inline">|</span>
+          <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 text-sm font-medium">INEMA.CLUB</a>
+          <span class="text-neutral-600">-</span>
+          <a href="https://inema.pro" target="_blank" class="text-amber-700 hover:text-amber-600 dark:text-slate-300 dark:hover:text-slate-200 text-sm font-medium">PRO</a>
+        </div>
+        <div class="flex items-center sm:space-x-1">
+          <a href="../trilha1/index.html" class="px-1.5 sm:px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors">
+            <span class="xl:hidden">T1</span><span class="hidden xl:inline">Anatomia</span>
+          </a>
+          <a href="index.html" class="px-1.5 sm:px-2.5 py-1.5 rounded-lg text-sm font-semibold text-blue-400 bg-blue-500/10">
+            <span class="xl:hidden">T2</span><span class="hidden xl:inline">Eventos e estado</span>
+          </a>
+          <a href="../trilha3/index.html" class="px-1.5 sm:px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors">
+            <span class="xl:hidden">T3</span><span class="hidden xl:inline">Telas e comandos</span>
+          </a>
+          <a href="../trilha4/index.html" class="px-1.5 sm:px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-amber-400 hover:bg-amber-500/10 transition-colors">
+            <span class="xl:hidden">T4</span><span class="hidden xl:inline">Controlar e distribuir</span>
+          </a>
+          <button type="button" data-inema-journey-open class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-sm text-neutral-300 hover:text-neutral-100 transition-colors" title="Minha jornada">
+            <span aria-hidden="true">◷</span><span class="hidden md:inline">Jornada</span>
+            <span class="inema-journey-badge" data-inema-journey-badge data-count="0"></span>
+          </button>
+          <div class="relative">
+            <button type="button" data-inema-appearance-toggle="#aparencia" aria-expanded="false" aria-controls="aparencia" class="p-2 rounded-lg text-neutral-300 hover:text-neutral-100 transition-colors" title="Aparência">
+              <span aria-hidden="true" class="text-sm font-semibold">Aa</span><span class="sr-only">Aparência</span>
+            </button>
+            <div id="aparencia" data-inema-appearance class="inema-appearance-pop">
+              <div class="inema-segment" aria-label="Tema">
+                <button type="button" data-inema-set-theme="inema-dark">Escuro</button>
+                <button type="button" data-inema-set-theme="claro">Claro</button>
+                <button type="button" data-inema-set-theme="sepia">Sépia</button>
+                <button type="button" data-inema-set-theme="foco">Foco</button>
+                <button type="button" data-inema-set-theme="contraste">Alto contraste</button>
+              </div>
+              <div class="inema-segment" aria-label="Fonte">
+                <button type="button" data-inema-set-font="inter">Inter</button>
+                <button type="button" data-inema-set-font="system">Sistema</button>
+                <button type="button" data-inema-set-font="leitura">Leitura</button>
+              </div>
+              <div class="inema-segment" aria-label="Tamanho do texto">
+                <button type="button" data-inema-set-fontscale="100">A</button>
+                <button type="button" data-inema-set-fontscale="112">A+</button>
+                <button type="button" data-inema-set-fontscale="125">A++</button>
+              </div>
+              <div class="inema-segment" aria-label="Largura da linha">
+                <button type="button" data-inema-set-linewidth="60">Estreito</button>
+                <button type="button" data-inema-set-linewidth="68">Médio</button>
+                <button type="button" data-inema-set-linewidth="75">Largo</button>
+              </div>
+              <div class="inema-segment" aria-label="Entrelinha">
+                <button type="button" data-inema-set-leading="1.45">Compacto</button>
+                <button type="button" data-inema-set-leading="1.7">Confortável</button>
+              </div>
+            </div>
+          </div>
+          <button id="theme-toggle" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors" aria-label="Alternar tema claro/escuro">
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <nav aria-label="Trilha de navegação" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex items-center space-x-2 text-sm text-neutral-400">
+      <a href="../../index.html" class="hover:text-blue-400">Início</a><span>/</span>
+      <a href="index.html" class="hover:text-blue-400">Trilha 2</a><span>/</span>
+      <span class="text-blue-400">Módulo 2.3</span>
+    </div>
+  </nav>
+
+  <header class="bg-gradient-to-br from-blue-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600" data-inema-module="2-3" data-inema-track="2">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="inline-block px-3 py-1 bg-blue-500/20 text-blue-400 text-xs font-semibold rounded-full mb-4">MÓDULO 2.3</span>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-4">💾 Estado que sobrevive</h1>
+      <p class="text-lg text-neutral-400 max-w-3xl">Variável some no reload. Você salva o arquivo do mod, ele recarrega, e o contador volta a zero. Este módulo mostra onde guardar cada dado para ele durar o tempo certo: até o reload, até o fim da sessão ou para sempre.</p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 max-w-2xl">
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-blue-400">6</div><div class="text-xs text-neutral-400">Tópicos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-blue-400">~35</div><div class="text-xs text-neutral-400">Minutos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-blue-400">Médio</div><div class="text-xs text-neutral-400">Nível</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-blue-400">Prático</div><div class="text-xs text-neutral-400">Tipo</div></div>
+      </div>
+      <div data-inema-meter="modulo:2-3" class="mt-6 max-w-2xl" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso do módulo 2.3">
+        <div class="flex justify-between text-xs text-neutral-400 mb-1"><span data-inema-meter-frac>0 de 6</span><span data-inema-meter-pct>0%</span></div>
+        <div class="inema-bar"><div class="inema-bar__fill" data-inema-meter-fill></div></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:grid lg:grid-cols-[1fr_220px] lg:gap-10">
+  <main id="conteudo" class="min-w-0" data-inema-module="2-3" data-inema-track="2">
+
+    <!-- ===================== TOPICO 1 ===================== -->
+    <section id="topico-1" data-inema-topic="modulo-2-3#topico-1" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl">1</span>
+        <h2 class="text-2xl font-bold flex-1">Veja a variável de módulo sumir</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m2-3-t1-p1" class="text-neutral-300 mb-4 leading-relaxed">O <code>starter-mod</code> do módulo 1.4 guarda o contador numa variável: <code>let count = 0</code>, dentro do <code>register</code>. Funciona, até você salvar o arquivo. No reload, o <code>register</code> roda de novo <strong class="text-blue-400">num ambiente novo</strong>, e a variável nasce zerada.</p>
+      <p data-inema-block="m2-3-t1-p2" class="text-neutral-300 mb-6 leading-relaxed">Isso não é defeito. É o jeito de o código novo entrar sem reiniciar a sessão. Mas tudo o que estava só na memória do módulo vai embora junto: variáveis, timers, caches. Vale a pena ver acontecer uma vez.</p>
+
+      <div class="bg-blue-900/20 rounded-xl border border-blue-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-blue-400 mb-2 flex items-center"><span class="mr-2">🆕</span> Novo aqui? Hot-reload e variável de módulo</h3>
+        <p class="text-neutral-300 text-sm"><strong>Hot-reload</strong> é a recarga do mod quando você salva um arquivo da pasta vigiada (módulo 1.3). <strong>Variável de módulo</strong> é qualquer <code>let</code> ou <code>const</code> que vive no arquivo do mod ou dentro do <code>register</code>: ela existe só enquanto aquele ambiente existir.</p>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-blue-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-blue-900/20 border-b border-blue-500/30"><span class="text-blue-400 font-semibold text-sm">🎯 Objetivo: ver o contador do starter-mod zerar no reload</span></div>
+        <div class="p-5">
+          <p class="text-sm text-neutral-400 mb-3">Na pasta do Claude Mods Starter Kit (da Prompt Advisers, licença MIT), abra uma sessão com o mod carregado da pasta:</p>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">claude --plugin-dir templates/starter-mod</pre>
+          <p class="text-sm text-neutral-400 mt-4 mb-3">Dentro da sessão, um passo de cada vez:</p>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">Leia o README.md e me diga o título.
+/readcount
+(no editor: acrescente um espaço no comentário da 1ª linha de templates/starter-mod/hooks/starter.mjs e salve)
+/readcount</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-blue-400">Como verificar:</strong> o primeiro <code>/readcount</code> mostra pelo menos uma leitura. Depois de salvar, o segundo <code>/readcount</code> volta para <code>0</code> (resultado esperado, não medido nesta máquina). Se não voltar, confira se a sessão foi aberta com <code>--plugin-dir</code>: só pasta vigiada recarrega.</div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-dark-800 rounded-xl p-6 border border-blue-500/30">
+          <h3 class="font-semibold text-blue-400 mb-3">✓ Pode ficar em variável</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ Constantes e opções lidas do <code>options</code></li>
+            <li>✓ Contas de um turno só, como o <code>startedAt</code> e o <code>tools</code> do <code>band.tsx</code></li>
+            <li>✓ Algo que, se zerar, ninguém nota</li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ Não pode ficar em variável</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ O que a tela desenha</li>
+            <li>✗ Listas que crescem na sessão, como o recibo</li>
+            <li>✗ Preferências da pessoa (ligado/desligado)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 2 ===================== -->
+    <section id="topico-2" data-inema-topic="modulo-2-3#topico-2" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl">2</span>
+        <h2 class="text-2xl font-bold flex-1">Declare o contrato em types/index.d.ts</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m2-3-t2-p1" class="text-neutral-300 mb-4 leading-relaxed">O lugar certo para o que precisa sobreviver ao reload é o <code>$.state</code>: valores que o host guarda durante a sessão, cada um com nome e versão. Antes de usar, você <strong class="text-blue-400">declara o formato</strong> num arquivo de tipos do mod.</p>
+      <p data-inema-block="m2-3-t2-p2" class="text-neutral-300 mb-6 leading-relaxed">Esse arquivo é o contrato. Ele diz ao TypeScript, ao <code>claude plugin validate</code> e a outros mods quais chaves o seu mod guarda e de que tipo. O <code>plugin.json</code> aponta para ele com <code>"types"</code>.</p>
+
+      <div class="bg-blue-900/20 rounded-xl border border-blue-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-blue-400 mb-2 flex items-center"><span class="mr-2">🆕</span> Novo aqui? PluginState</h3>
+        <p class="text-neutral-300 text-sm"><code>PluginState</code> é uma interface do módulo <code>'claude-code'</code> que cada mod amplia com <code>declare module</code>. A chave de fora é o nome do mod; dentro dela, cada chave é um valor guardado.</p>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-blue-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-blue-900/20 border-b border-blue-500/30"><span class="text-blue-400 font-semibold text-sm">📄 inema-mods/mods/recibo-sessao/types/index.d.ts (inteiro)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">export type Entrada = {
+  caminho: string
+  acao: 'criado' | 'editado'
+  turno: number
+  hora: number
+}
+
+declare module 'claude-code' {
+  interface PluginState {
+    'recibo-sessao': { entradas: Entrada[]; turno: number }
+  }
+}</pre>
+          <p class="text-xs text-neutral-500 mt-4 mb-2">E a linha no <code>.claude-plugin/plugin.json</code> do mesmo mod:</p>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">"types": "./types/index.d.ts",</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-blue-400">O que olhar:</strong> o arquivo exporta um tipo (<code>Entrada</code>) e o item do mod (<code>'recibo-sessao': { ... }</code>) é um objeto escrito ali mesmo. As duas coisas são exigências, não estilo.</div>
+      </div>
+
+      <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-red-400 mb-2 flex items-center"><span class="mr-2">⚠️</span> Duas pegadinhas do kit INEMA</h3>
+        <p class="text-neutral-300 text-sm"><strong>13:</strong> o contrato precisa exportar ao menos um tipo; um <code>export {}</code> vazio faz o validate falhar. <strong>21:</strong> em <code>PluginState</code>, o item do mod tem de ser um objeto literal; apontar para um tipo com nome (<code>'recibo-sessao': MeuEstado</code>) dá "not declared".</p>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-blue-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-blue-900/20 border-b border-blue-500/30"><span class="text-blue-400 font-semibold text-sm">🎯 Objetivo: provar que o contrato bate com o código</span></div>
+        <div class="p-5">
+          <p class="text-sm text-neutral-400 mb-3">Na pasta do inema-mods, troque <code>&lt;caminho do tsc&gt;</code> pelo <code>tsc</code> da sua máquina:</p>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">TSC=&lt;caminho do tsc&gt; scripts/checar-mod.sh mods/recibo-sessao</pre>
+          <p class="text-xs text-neutral-500 mt-4 mb-2">Saída real (05/10/2026):</p>
+          <pre class="font-mono text-xs text-neutral-400 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">== recibo-sessao
+  validate: ok
+  tsc: ok
+  test: ok (6 linhas de aprovação)</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-blue-400">Como verificar:</strong> as três linhas terminam em <code>ok</code>. A linha <code>tsc</code> é a que confere o contrato: se você mudar <code>turno: number</code> para <code>turno: string</code> no <code>index.d.ts</code>, ela deixa de dar <code>ok</code>. Desfaça a mudança depois do teste.</div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 3 ===================== -->
+    <section id="topico-3" data-inema-topic="modulo-2-3#topico-3" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl">3</span>
+        <h2 class="text-2xl font-bold flex-1">Use atom, read e update</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m2-3-t3-p1" class="text-neutral-300 mb-4 leading-relaxed">Dá para usar <code>$.state.get</code> e <code>$.state.set</code> direto. Mas o próprio <code>'claude-code'</code> traz três funções que deixam o código curto e seguro: <strong class="text-blue-400"><code>atom</code>, <code>read</code> e <code>update</code></strong>. O exemplo oficial da faixa usa as três.</p>
+      <p data-inema-block="m2-3-t3-p2" class="text-neutral-300 mb-6 leading-relaxed">Repare no desenho do arquivo: o que a tela mostra (<code>last</code>, <code>isHidden</code>) está em átomos. As contas do turno (<code>startedAt</code>, <code>tools</code>) estão em variáveis, porque perder isso num reload não faz falta.</p>
+
+      <div class="bg-blue-900/20 rounded-xl border border-blue-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-blue-400 mb-3 flex items-center"><span class="mr-2">🆕</span> Novo aqui? As três funções</h3>
+        <ul class="space-y-2 text-neutral-300 text-sm">
+          <li><strong><code>atom(ref, inicial)</code></strong> — um valor com nome (<code>{ plugin, key }</code>, os dois literais) e valor inicial. Declare no topo do arquivo.</li>
+          <li><strong><code>read($, átomo)</code></strong> — lê o valor; dentro de um <code>ui.render</code>, também inscreve aquele desenho para ser refeito quando o valor mudar.</li>
+          <li><strong><code>update($, átomo, fn)</code></strong> — lê, aplica <code>fn</code> e grava com checagem de versão; se outro escreveu no meio, tenta de novo.</li>
+        </ul>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-blue-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-blue-900/20 border-b border-blue-500/30"><span class="text-blue-400 font-semibold text-sm">📄 plugin-authoring/examples/band.tsx (exemplo oficial, inteiro)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">import { atom, read, update } from 'claude-code'
+import type { Register } from 'claude-code'
+
+import type { Turn } from '../types'
+
+const last = atom({ plugin: 'turn-band', key: 'last' } as const, null)
+const isHidden = atom({ plugin: 'turn-band', key: 'isHidden' } as const, false)
+
+export const register: Register = on =&gt; {
+  let startedAt = 0
+  let tools = 0
+
+  on('prompt.submit', async ($, e, next) =&gt; {
+    startedAt = await $.clock.now()
+    tools = 0
+
+    return next(e)
+  })
+
+  on('tool.call', ($, e, next) =&gt; {
+    tools += 1
+
+    return next(e)
+  })
+
+  on('turn.complete', async ($, e, next) =&gt; {
+    const seconds = Math.round(((await $.clock.now()) - startedAt) / 1000)
+    const turn: Turn = { seconds, tools }
+    await update($, last, () =&gt; turn)
+
+    if (seconds &gt; 120) {
+      $.ui.toast(`That turn took ${seconds}s`)
+    }
+
+    return next(e)
+  })
+
+  on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) =&gt; {
+    const turn = await read($, last)
+    const isQuiet = e.props.hasSurvey || turn === null || (await read($, isHidden))
+
+    if (isQuiet) {
+      return next(e)
+    }
+
+    const { Box, Button, Text } = $.ui.resolve(e)
+
+    return (
+      &lt;Box&gt;
+        &lt;Text dimColor&gt;
+          Last turn: {turn.seconds}s, {turn.tools} tool calls{' '}
+        &lt;/Text&gt;
+        &lt;Button
+          key="hide"
+          label="Hide"
+          onPress={() =&gt; update($, isHidden, () =&gt; true)}
+        /&gt;
+      &lt;/Box&gt;
+    )
+  })
+}</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-blue-400">O que olhar:</strong> o <code>turn.complete</code> escreve com <code>update</code>; o <code>ui.render</code> só lê com <code>read</code>; o botão escreve de dentro do <code>onPress</code>. Ninguém chama <code>$.ui.invalidate</code>: a leitura no desenho já inscreve a faixa. O contrato está em <code>examples/band-state.d.ts</code>, igual ao do recibo.</div>
+      </div>
+
+      <div class="space-y-5 mb-6">
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center"><span class="text-blue-400 font-bold">1</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Declare o átomo no topo</h4><p class="text-neutral-300 text-sm"><code>atom({ plugin, key } as const, inicial)</code>, com <code>plugin</code> e <code>key</code> literais, iguais ao contrato.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center"><span class="text-blue-400 font-bold">2</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Escreva num evento</h4><p class="text-neutral-300 text-sm"><code>update($, last, () =&gt; turn)</code> no <code>turn.complete</code>.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center"><span class="text-blue-400 font-bold">3</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Leia no desenho</h4><p class="text-neutral-300 text-sm"><code>read($, last)</code> no <code>ui.render</code> inscreve a faixa naquele valor.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center"><span class="text-blue-400 font-bold">4</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Escreva num handler</h4><p class="text-neutral-300 text-sm">O <code>onPress</code> chama <code>update</code>; o host redesenha quem leu, sem <code>$.ui.invalidate</code>.</p></div>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-blue-500/30 bg-dark-900/40 p-3 sm:p-4 mb-3 overflow-hidden">
+        <svg viewBox="0 0 800 230" class="w-full h-auto" role="img" aria-label="Fluxo do estado no exemplo da faixa. À esquerda, o hook de turn.complete e o onPress do botão escrevem com update no estado guardado pelo host, ao centro. À direita, o hook de ui.render lê com read, o que inscreve a faixa. Quando o valor muda, o host redesenha a faixa sozinho. Uma seta riscada mostra que o ui.render nunca escreve no estado.">
+          <defs>
+            <pattern id="m23a-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#60a5fa" opacity="0.10"/></pattern>
+            <filter id="m23a-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <marker id="m23a-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38bdf8"/></marker>
+          </defs>
+          <rect x="0" y="0" width="800" height="230" fill="url(#m23a-grid)"/>
+          <g font-family="JetBrains Mono,monospace" font-size="12" text-anchor="middle">
+            <rect x="20" y="30" width="190" height="50" rx="10" fill="#1f2937" stroke="#6b7280" stroke-width="2"/><text x="115" y="60" fill="#e5e7eb">turn.complete</text>
+            <rect x="20" y="120" width="190" height="50" rx="10" fill="#1f2937" stroke="#6b7280" stroke-width="2"/><text x="115" y="150" fill="#e5e7eb">onPress do botão</text>
+            <line class="wf-flow" x1="212" y1="55" x2="300" y2="95" stroke="#38bdf8" stroke-width="2" marker-end="url(#m23a-arrow)"/>
+            <line class="wf-flow" x1="212" y1="145" x2="300" y2="110" stroke="#38bdf8" stroke-width="2" marker-end="url(#m23a-arrow)"/>
+            <text x="252" y="190" fill="#bae6fd">update</text>
+            <g filter="url(#m23a-glow)"><rect x="305" y="70" width="190" height="64" rx="12" fill="#0f1b33" stroke="#60a5fa" stroke-width="2"/></g>
+            <text x="400" y="98" fill="#60a5fa" font-weight="600">$.state</text><text x="400" y="118" fill="#bfdbfe" font-family="Inter,sans-serif" font-size="11">guardado pelo host</text>
+            <line class="wf-flow" x1="497" y1="102" x2="585" y2="102" stroke="#38bdf8" stroke-width="2" marker-end="url(#m23a-arrow)"/>
+            <text x="541" y="92" fill="#bae6fd">read</text>
+            <rect class="wf-a" x="590" y="70" width="190" height="64" rx="12" fill="#0b1f2e" stroke="#38bdf8" stroke-width="2"/><text x="685" y="98" fill="#bae6fd">ui.render</text><text x="685" y="118" fill="#7dd3fc" font-family="Inter,sans-serif" font-size="11">desenha a faixa</text>
+            <path d="M 685 136 C 685 190, 420 200, 410 140" fill="none" stroke="#f87171" stroke-width="2" stroke-dasharray="5 4"/>
+            <text x="560" y="210" fill="#fca5a5" font-family="Inter,sans-serif" font-size="11">✗ nunca escreve ao desenhar</text>
+          </g>
+        </svg>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">Como ler o desenho:</strong> as setas azuis da esquerda são escritas, vindas de eventos ou de botões. A seta da direita é leitura. A linha vermelha é proibida: um <code>$.state.set</code> durante o desenho é negado pelo engine. Escreva sempre de um evento ou de um handler.</p>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 4 ===================== -->
+    <section id="topico-4" data-inema-topic="modulo-2-3#topico-4" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl">4</span>
+        <h2 class="text-2xl font-bold flex-1">Guarde entre sessões com $.store</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m2-3-t4-p1" class="text-neutral-300 mb-4 leading-relaxed">O <code>$.state</code> sobrevive ao reload, mas é da sessão. Fechou o Claude Code, acabou. Para durar entre sessões existe o <code>$.store</code>: <strong class="text-blue-400">um arquivo JSON só do seu mod</strong>, na pasta de configuração do Claude Code da pessoa.</p>
+      <p data-inema-block="m2-3-t4-p2" class="text-neutral-300 mb-6 leading-relaxed">O padrão do kit INEMA junta os dois: no <code>session.start</code>, lê do <code>$.store</code> e põe no átomo; quando a pessoa muda a preferência, grava nos dois. O desenho continua lendo só do átomo.</p>
+
+      <div class="bg-dark-800 rounded-xl border border-blue-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-blue-900/20 border-b border-blue-500/30"><span class="text-blue-400 font-semibold text-sm">📄 inema-mods/mods/bichinho/hooks/register.tsx (trechos)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">async function carregarLigado($: EngineInterface) {
+  const salvo = await $.store.get(CHAVE_LIGADO).catch(() =&gt; undefined)
+  await update($, ligado, () =&gt; salvo !== false)
+}
+
+// ... no command.run do /bichinho:
+    if (arg === 'off' || arg === 'on') {
+      const valor = arg === 'on'
+      await update($, ligado, () =&gt; valor)
+      await $.store.set(CHAVE_LIGADO, valor)
+      return { text: valor ? 'Bichinho acordado.' : 'Bichinho foi dormir (use /bichinho on para acordar).' }
+    }</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-blue-400">O que olhar:</strong> <code>carregarLigado</code> está no topo do arquivo e é chamada no <code>session.start</code>. Se não há nada salvo, o padrão é ligado (<code>salvo !== false</code>). O <code>.catch</code> evita que um store ilegível derrube o início da sessão.</div>
+      </div>
+
+      <div class="overflow-x-auto mb-6 rounded-xl border border-dark-600">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-dark-700/60 text-blue-400"><tr><th class="px-4 py-3 font-semibold">Método</th><th class="px-4 py-3 font-semibold">Faz</th><th class="px-4 py-3 font-semibold">Detalhe dos tipos</th></tr></thead>
+          <tbody class="divide-y divide-dark-600">
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>$.store.get(chave)</code> </td><td class="px-4 py-3 text-neutral-300">lê</td><td class="px-4 py-3 text-neutral-300"><code>undefined</code> se nunca gravou</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>$.store.set(chave, valor)</code> </td><td class="px-4 py-3 text-neutral-300">grava</td><td class="px-4 py-3 text-neutral-300">só JSON; até 4 MiB no total</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>$.store.delete(chave)</code> </td><td class="px-4 py-3 text-neutral-300">apaga</td><td class="px-4 py-3 text-neutral-300">—</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>$.store.keys()</code> </td><td class="px-4 py-3 text-neutral-300">lista as chaves</td><td class="px-4 py-3 text-neutral-300">na ordem em que foram criadas</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-primary mb-2 flex items-center"><span class="mr-2">💡</span> O que volta não é o que foi</h3>
+        <p class="text-neutral-300 text-sm">O <code>get</code> devolve o valor depois de passar por JSON: uma <code>Date</code> volta como texto ISO, um <code>Map</code> ou <code>Set</code> volta como <code>{}</code>, campo <code>undefined</code> some. Guarde números e textos simples. E lembre: o que você grava testando ao vivo fica gravado; volte ao padrão depois.</p>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 5 ===================== -->
+    <section id="topico-5" data-inema-topic="modulo-2-3#topico-5" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl">5</span>
+        <h2 class="text-2xl font-bold flex-1">Use o relógio do engine</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m2-3-t5-p1" class="text-neutral-300 mb-4 leading-relaxed">Muito estado tem hora: quando o arquivo foi editado, quanto o turno durou. A tentação é <code>Date.now()</code>. Não use. A hora vem de <strong class="text-blue-400"><code>await $.clock.now()</code></strong>, que devolve os milissegundos do relógio do engine.</p>
+      <p data-inema-block="m2-3-t5-p2" class="text-neutral-300 mb-6 leading-relaxed">O motivo aparece no teste (módulo 4.2): o <code>claude plugin test</code> controla esse relógio. Ele avança o tempo na hora que o teste quer, e o resultado é sempre o mesmo. Com <code>Date.now()</code>, o teste depende da hora em que roda. É a pegadinha 7 do kit INEMA.</p>
+
+      <div class="bg-dark-800 rounded-xl border border-blue-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-blue-900/20 border-b border-blue-500/30"><span class="text-blue-400 font-semibold text-sm">📄 inema-mods/mods/recibo-sessao/hooks/register.tsx (trecho)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">async function registrar($: EngineInterface, caminho: string, acao: Entrada['acao']) {
+  const n = await read($, turno)
+  const hora = await $.clock.now()
+  await update($, entradas, lista =&gt; [...lista, { caminho, acao, turno: n, hora }].slice(-500))
+}</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-blue-400">O que olhar:</strong> três coisas boas em quatro linhas. A função recebe <code>$</code> e está no topo. A hora vem do engine. E a lista tem teto (<code>.slice(-500)</code>), para o estado não crescer sem fim numa sessão longa.</div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-dark-800 rounded-xl p-6 border border-blue-500/30">
+          <h3 class="font-semibold text-blue-400 mb-3">✓ Faça</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ <code>const agora = await $.clock.now()</code> </li>
+            <li>✓ Guardar a hora como número no estado</li>
+            <li>✓ Converter para texto só na hora de mostrar</li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ Evite</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ <code>Date.now()</code> ou <code>new Date()</code> sem argumento</li>
+            <li>✗ Guardar <code>Date</code> no <code>$.store</code> (volta como texto)</li>
+            <li>✗ Testar data perto da meia-noite: use meio-dia UTC (pegadinha 23)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 6 ===================== -->
+    <section id="topico-6" data-inema-topic="modulo-2-3#topico-6" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xl">6</span>
+        <h2 class="text-2xl font-bold flex-1">Escolha onde cada dado mora</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m2-3-t6-p1" class="text-neutral-300 mb-6 leading-relaxed">Agora são três lugares, e cada um dura um tempo. A escolha é uma pergunta só: <strong class="text-blue-400">se isso sumir, quem percebe?</strong> Ninguém: variável. A tela: <code>$.state</code>. A pessoa amanhã: <code>$.store</code>, com cópia no <code>$.state</code> se a tela também mostra.</p>
+
+      <div class="rounded-2xl border border-blue-500/30 bg-dark-900/40 p-3 sm:p-4 mb-3 overflow-hidden">
+        <svg viewBox="0 0 800 220" class="w-full h-auto" role="img" aria-label="Quanto dura cada lugar. Uma linha do tempo com a sessão 1, um reload no meio dela, o fim da sessão 1 e a sessão 2. A barra da variável de módulo acaba no reload. A barra do cifrão state atravessa o reload e acaba no fim da sessão. A barra do cifrão store atravessa tudo e continua na sessão 2.">
+          <defs>
+            <pattern id="m23b-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#60a5fa" opacity="0.10"/></pattern>
+          </defs>
+          <rect x="0" y="0" width="800" height="220" fill="url(#m23b-grid)"/>
+          <g font-family="Inter,sans-serif" font-size="11">
+            <line x1="330" y1="20" x2="330" y2="190" stroke="#fbbf24" stroke-width="2" stroke-dasharray="5 4"/><text x="330" y="206" text-anchor="middle" fill="#fde68a">reload</text>
+            <line x1="540" y1="20" x2="540" y2="190" stroke="#f87171" stroke-width="2" stroke-dasharray="5 4"/><text x="540" y="206" text-anchor="middle" fill="#fca5a5">fim da sessão 1</text>
+            <text x="250" y="32" text-anchor="middle" fill="#9ca3af">sessão 1</text><text x="670" y="32" text-anchor="middle" fill="#9ca3af">sessão 2</text>
+            <text x="20" y="72" fill="#e5e7eb" font-family="JetBrains Mono,monospace" font-size="12">variável</text>
+            <rect x="140" y="58" width="190" height="20" rx="6" fill="#6b7280"/>
+            <text x="20" y="112" fill="#bfdbfe" font-family="JetBrains Mono,monospace" font-size="12">$.state</text>
+            <rect x="140" y="98" width="400" height="20" rx="6" fill="#60a5fa"/>
+            <text x="20" y="152" fill="#bae6fd" font-family="JetBrains Mono,monospace" font-size="12">$.store</text>
+            <rect class="wf-a" x="140" y="138" width="640" height="20" rx="6" fill="#38bdf8"/>
+          </g>
+        </svg>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">Como ler o desenho:</strong> cada barra é quanto um dado vive. A cinza morre no reload (amarelo). A azul passa pelo reload e morre no fim da sessão (vermelho). Só a última chega à sessão 2.</p>
+
+      <div class="overflow-x-auto mb-6 rounded-xl border border-dark-600">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-dark-700/60 text-blue-400"><tr><th class="px-4 py-3 font-semibold">Dado do Rafa</th><th class="px-4 py-3 font-semibold">Lugar</th><th class="px-4 py-3 font-semibold">Por quê</th></tr></thead>
+          <tbody class="divide-y divide-dark-600">
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">hora em que o turno começou</td><td class="px-4 py-3 text-neutral-300">variável</td><td class="px-4 py-3 text-neutral-300">vale só até o fim do turno</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">arquivos editados nesta sessão</td><td class="px-4 py-3 text-neutral-300"><code>$.state</code></td><td class="px-4 py-3 text-neutral-300">a tela mostra; é desta sessão</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">faixa ligada ou desligada</td><td class="px-4 py-3 text-neutral-300"><code>$.store</code> + <code>$.state</code></td><td class="px-4 py-3 text-neutral-300">preferência que a tela também lê</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">um relatório para abrir depois</td><td class="px-4 py-3 text-neutral-300">arquivo, com <code>$.fs.write</code> </td><td class="px-4 py-3 text-neutral-300">é para a pessoa ler fora do Claude (módulo 2.4)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-blue-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-blue-900/20 border-b border-blue-500/30"><span class="text-blue-400 font-semibold text-sm">🎯 Objetivo: ver que o $.state nasce vazio a cada sessão</span></div>
+        <div class="p-5">
+          <p class="text-sm text-neutral-400 mb-3">Na pasta do inema-mods (o comando responde sem chamar o modelo):</p>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">claude -p "/recibo" --plugin-dir mods/recibo-sessao</pre>
+          <p class="text-xs text-neutral-500 mt-4 mb-2">Saída real (05/10/2026):</p>
+          <pre class="font-mono text-xs text-neutral-400 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">recibo-sessao: Nesta sessão: nenhum arquivo criado ou alterado.</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-blue-400">Como verificar:</strong> a resposta diz "nenhum arquivo", mesmo que você tenha editado arquivos numa sessão anterior. Cada <code>claude -p</code> é uma sessão nova, e o recibo guarda a lista em <code>$.state</code>, não em <code>$.store</code>. É a escolha certa para um recibo "desta sessão".</div>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-dark-600 p-6 mb-6" data-inema-check="modulo-2-3#q1">
+        <p class="font-medium mb-4">Teste rápido (opcional): o Rafa quer um botão "esconder" na faixa que continue escondido amanhã. Onde ele guarda esse liga/desliga?</p>
+        <div class="space-y-2">
+          <button type="button" data-inema-check-option="0" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">Numa variável <code>let escondido</code> dentro do <code>register</code>.</button>
+          <button type="button" data-inema-check-option="1" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">Só num átomo do <code>$.state</code>.</button>
+          <button type="button" data-inema-check-option="2" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">Num átomo para a faixa ler, e no <code>$.store</code> para durar; carregado no <code>session.start</code>.</button>
+        </div>
+        <div data-inema-check-feedback class="mt-4 text-sm" role="status" aria-live="polite"></div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== RESUMO ===================== -->
+    <section class="mb-12">
+      <div class="bg-gradient-to-br from-blue-900/40 via-dark-800 to-dark-800 rounded-xl border border-blue-500/30 p-8">
+        <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🎓</span> Resumo do módulo</h2>
+        <div class="space-y-4 mb-8">
+          <div class="flex items-start space-x-3"><span class="text-blue-400 mt-1">✓</span><div><strong class="text-neutral-100">Variável de módulo morre no reload</strong><span class="text-neutral-400"> — serve só para o que ninguém sente falta.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-blue-400 mt-1">✓</span><div><strong class="text-neutral-100">O contrato vem antes</strong><span class="text-neutral-400"> — types/index.d.ts, "types" no plugin.json, um tipo exportado, objeto literal.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-blue-400 mt-1">✓</span><div><strong class="text-neutral-100">atom, read, update</strong><span class="text-neutral-400"> — eventos e botões escrevem; o desenho só lê.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-blue-400 mt-1">✓</span><div><strong class="text-neutral-100">$.store atravessa sessões</strong><span class="text-neutral-400"> — JSON, carregado no session.start para o átomo.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-blue-400 mt-1">✓</span><div><strong class="text-neutral-100">A hora vem de $.clock.now()</strong><span class="text-neutral-400"> — nunca de Date.now().</span></div></div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-4 mb-8">
+          <h3 class="font-semibold text-blue-400 mb-2">Próximo módulo:</h3>
+          <p class="text-neutral-300">2.4 — Trabalho fora do dispatch</p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="index.html" class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">← Voltar para a trilha</a>
+          <a href="modulo-2-4.html" class="flex-1 text-center px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-500 transition-colors">Módulo 2.4 →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="hidden lg:block">
+    <nav data-inema-toc aria-label="Índice da página" class="sticky top-24">
+      <p class="text-sm text-neutral-400 mb-3"><span data-inema-section-counter>Seção 1 de 6</span></p>
+      <ol class="space-y-2 text-sm">
+        <li><a href="#topico-1" class="text-neutral-400 hover:text-blue-400">1. Variável some</a></li>
+        <li><a href="#topico-2" class="text-neutral-400 hover:text-blue-400">2. Contrato</a></li>
+        <li><a href="#topico-3" class="text-neutral-400 hover:text-blue-400">3. atom/read/update</a></li>
+        <li><a href="#topico-4" class="text-neutral-400 hover:text-blue-400">4. $.store</a></li>
+        <li><a href="#topico-5" class="text-neutral-400 hover:text-blue-400">5. Relógio</a></li>
+        <li><a href="#topico-6" class="text-neutral-400 hover:text-blue-400">6. Onde mora</a></li>
+      </ol>
+    </nav>
+  </aside>
+  </div>
+
+  <footer class="border-t border-dark-600 py-8 mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+      <p>Mods do Claude Code — técnico · 2026 | <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300">INEMA.CLUB</a> - <a href="https://inema.pro" target="_blank" class="text-amber-700 hover:text-amber-600 dark:text-slate-300 dark:hover:text-slate-200">PRO</a></p>
+      <p class="mt-2 text-xs">Kits usados no curso: <a href="https://github.com/inematds/inema-mods" target="_blank" class="text-sky-400 hover:text-sky-300">inematds/inema-mods</a> · <a href="https://github.com/promptadvisers/claude-mods-starter-kit" target="_blank" class="text-sky-400 hover:text-sky-300">Claude Mods Starter Kit</a> (Prompt Advisers, MIT)</p>
+    </div>
+  </footer>
+
+  <script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const _html = document.documentElement;
+    if (!_html.classList.contains('dark')) { themeToggleDarkIcon.classList.remove('hidden'); }
+    else { themeToggleLightIcon.classList.remove('hidden'); }
+    themeToggle.addEventListener('click', () => {
+      if (window.INEMA && INEMA.setPref) { INEMA.setPref('theme', _html.classList.contains('dark') ? 'claro' : 'inema-dark'); }
+      else { _html.classList.toggle('dark'); }
+      themeToggleDarkIcon.classList.toggle('hidden', _html.classList.contains('dark'));
+      themeToggleLightIcon.classList.toggle('hidden', !_html.classList.contains('dark'));
+      try { localStorage.setItem('theme', _html.classList.contains('dark') ? 'dark' : 'light'); } catch (e) {}
+    });
+    function toggleTopic(button) {
+      const item = button.closest('.topic-item');
+      const exp = item.querySelector('.topic-explanation');
+      const card = button.closest('[id^="modulo-"]') || document;
+      card.querySelectorAll('.topic-explanation.active').forEach(e => { if (e !== exp) { e.classList.remove('active'); const b = e.parentElement.querySelector('[aria-controls]'); if (b) b.setAttribute('aria-expanded', 'false'); } });
+      exp.classList.toggle('active');
+      button.setAttribute('aria-expanded', exp.classList.contains('active') ? 'true' : 'false');
+    }
+    let _lastModalTrigger = null;
+    function openModal(id){ const m=document.getElementById(id); if(m){ _lastModalTrigger=document.activeElement; m.classList.remove('hidden'); document.body.style.overflow='hidden'; const c=m.querySelector('button'); if(c) c.focus(); } }
+    function closeModal(){ document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden')); document.body.style.overflow='auto'; if(_lastModalTrigger){ _lastModalTrigger.focus(); _lastModalTrigger=null; } }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  </script>
+  <script src="../../assets/learn.js"></script>
+  <script>
+    if (window.INEMA && typeof window.INEMA.init === 'function') { window.INEMA.init(); }
+  </script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (window.INEMA && INEMA.registerCheck) {
+
+        INEMA.registerCheck('modulo-2-3#q1', { answer: 2, explain: {
+          '0': 'A variável zera no próximo reload e não existe na sessão de amanhã.',
+          '1': 'O $.state sobrevive ao reload, mas acaba com a sessão. Amanhã a faixa voltaria a aparecer.',
+          '2': 'Isso. A faixa lê do átomo (e se redesenha sozinha); o $.store guarda para a próxima sessão, e o session.start copia de um para o outro, como no bichinho.'
+        } });
+      }
+    });
+  </script>
+</body>
+</html>

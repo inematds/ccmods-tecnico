@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="inema-course" content="ccmt">
+  <title>Distribuir e projeto final | Mods do Claude Code — técnico</title>
+  <meta name="description" content="Curso técnico gratuito do INEMA.CLUB: escreva, teste e distribua mods do Claude Code — register, eventos, cadeia com next, estado, faixa, painéis, comandos, guardas e claude plugin test.">
+
+  <!-- ANTI-FOUC: bloqueante, ANTES do Tailwind -->
+  <script>
+  (function () {
+    try {
+      var html = document.documentElement;
+      var DEF = { theme: 'inema-dark', font: 'inter', fontScale: 100, lineWidth: 68, leading: 1.7, accent: 'emerald' };
+      function clone(o) { var r = {}; for (var x in o) r[x] = o[x]; return r; }
+      var p = clone(DEF);
+      try {
+        var raw = localStorage.getItem('inema.prefs');
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') { for (var k in DEF) if (parsed[k] != null) p[k] = parsed[k]; }
+        } else {
+          var legacy = localStorage.getItem('theme');
+          if (legacy === 'light') p.theme = 'claro'; else if (legacy === 'dark') p.theme = 'inema-dark';
+        }
+      } catch (e) { p = clone(DEF); }
+      var THEMES = {
+        'inema-dark': { dark: true,  attr: null,        cs: 'dark'  },
+        'claro':      { dark: false, attr: null,        cs: 'light' },
+        'sepia':      { dark: false, attr: 'sepia',     cs: 'light' },
+        'foco':       { dark: null,  attr: 'foco',      cs: null    },
+        'contraste':  { dark: true,  attr: 'contraste', cs: 'dark'  }
+      };
+      var t = THEMES[p.theme] || THEMES['inema-dark'];
+      if (t.dark === true) html.classList.add('dark'); else if (t.dark === false) html.classList.remove('dark');
+      if (t.attr) html.setAttribute('data-theme', t.attr); else html.removeAttribute('data-theme');
+      html.style.colorScheme = (t.cs ? t.cs : (html.classList.contains('dark') ? 'dark' : 'light'));
+      html.setAttribute('data-font', p.font || 'inter');
+      html.setAttribute('data-accent', p.accent || 'emerald');
+      var s = html.style; var scale = (+p.fontScale || 100);
+      s.setProperty('--inema-font-scale', (scale / 100).toString());
+      s.setProperty('font-size', scale + '%');
+      s.setProperty('--measure', (+p.lineWidth || 68) + 'ch');
+      s.setProperty('--lh-body', (+p.leading || 1.7).toString());
+      var fam = p.font === 'system' ? 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif'
+        : (p.font === 'leitura' ? '"Atkinson Hyperlegible", "Inter", system-ui, sans-serif' : '"Inter", system-ui, sans-serif');
+      s.setProperty('--font-body', fam);
+      var ACC = { emerald: [152,76,45], blue: [217,91,60], purple: [258,90,66], amber: [38,92,50], teal: [174,72,41], rose: [350,89,60] };
+      var a = ACC[p.accent] || ACC.emerald;
+      s.setProperty('--accent-h', a[0]+''); s.setProperty('--accent-s', a[1]+'%'); s.setProperty('--accent-l', a[2]+'%');
+      s.setProperty('--accent', 'hsl('+a[0]+' '+a[1]+'% '+a[2]+'%)');
+    } catch (err) { try { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme = 'dark'; } catch(e){} }
+  })();
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class', theme: { extend: { colors: {
+      primary: '#FACC15', dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' } } } } }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/learn.css">
+
+  <!-- Manifesto do curso (OBRIGATORIO em TODA pagina, identico) -->
+  <script type="application/json" data-inema-manifest>
+  {"course":"ccmt","tracks":[{"n":"1","title":"Anatomia","modules":[{"id":"1-1","title":"O que é um mod por dentro","topics":6,"href":"curso/trilha1/modulo-1-1.html"},{"id":"1-2","title":"Estrutura de arquivos e manifesto","topics":6,"href":"curso/trilha1/modulo-1-2.html"},{"id":"1-3","title":"Carregar, recarregar e instalar","topics":6,"href":"curso/trilha1/modulo-1-3.html"},{"id":"1-4","title":"Seu primeiro mod: comando e contador","topics":6,"href":"curso/trilha1/modulo-1-4.html"}]},{"n":"2","title":"Eventos e estado","modules":[{"id":"2-1","title":"O mapa de eventos","topics":6,"href":"curso/trilha2/modulo-2-1.html"},{"id":"2-2","title":"A cadeia: next, reescrever e responder","topics":6,"href":"curso/trilha2/modulo-2-2.html"},{"id":"2-3","title":"Estado que sobrevive","topics":6,"href":"curso/trilha2/modulo-2-3.html"},{"id":"2-4","title":"Trabalho fora do dispatch","topics":6,"href":"curso/trilha2/modulo-2-4.html"}]},{"n":"3","title":"Telas e comandos","modules":[{"id":"3-1","title":"ui.render e as superfícies","topics":6,"href":"curso/trilha3/modulo-3-1.html"},{"id":"3-2","title":"Faixa, status e avisos","topics":6,"href":"curso/trilha3/modulo-3-2.html"},{"id":"3-3","title":"Painéis e botões","topics":6,"href":"curso/trilha3/modulo-3-3.html"},{"id":"3-4","title":"Comandos, ferramentas e configuração","topics":6,"href":"curso/trilha3/modulo-3-4.html"}]},{"n":"4","title":"Controlar e distribuir","modules":[{"id":"4-1","title":"Mods que mudam o fluxo","topics":6,"href":"curso/trilha4/modulo-4-1.html"},{"id":"4-2","title":"Testar com claude plugin test","topics":6,"href":"curso/trilha4/modulo-4-2.html"},{"id":"4-3","title":"Depurar e as pegadinhas","topics":6,"href":"curso/trilha4/modulo-4-3.html"},{"id":"4-4","title":"Distribuir e projeto final","topics":6,"href":"curso/trilha4/modulo-4-4.html"}]}]}
+  </script>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .dark body { background-color: #111827; }
+
+    /* Light mode - base */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-200 { color: #1f2937; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #6b7280; }
+    html:not(.dark) .text-white { color: #111827; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* Light mode - acentos das 5 trilhas (emerald, blue, purple, amber, teal) */
+    html:not(.dark) .text-emerald-400 { color: #059669; }
+    html:not(.dark) .bg-emerald-500\/20 { background-color: rgba(5, 150, 105, 0.12); }
+    html:not(.dark) .bg-emerald-500\/10 { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .bg-emerald-900\/20 { background-color: rgba(5, 150, 105, 0.07); }
+    html:not(.dark) .border-emerald-500\/30 { border-color: rgba(5, 150, 105, 0.25); }
+    html:not(.dark) .hover\:bg-emerald-500\/30:hover { background-color: rgba(5, 150, 105, 0.18); }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:bg-emerald-500\/10:hover { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-emerald-400 { color: #059669; }
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .bg-blue-500\/20 { background-color: rgba(37, 99, 235, 0.12); }
+    html:not(.dark) .bg-blue-500\/10 { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .bg-blue-900\/20 { background-color: rgba(37, 99, 235, 0.07); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37, 99, 235, 0.25); }
+    html:not(.dark) .hover\:bg-blue-500\/30:hover { background-color: rgba(37, 99, 235, 0.18); }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:bg-blue-500\/10:hover { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-blue-400 { color: #2563eb; }
+    html:not(.dark) .text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .bg-purple-500\/20 { background-color: rgba(124, 58, 237, 0.12); }
+    html:not(.dark) .bg-purple-500\/10 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .bg-purple-900\/20 { background-color: rgba(124, 58, 237, 0.07); }
+    html:not(.dark) .border-purple-500\/30 { border-color: rgba(124, 58, 237, 0.25); }
+    html:not(.dark) .hover\:bg-purple-500\/30:hover { background-color: rgba(124, 58, 237, 0.18); }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+    html:not(.dark) .hover\:bg-purple-500\/10:hover { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .text-amber-400 { color: #92400e; }
+    html:not(.dark) .bg-amber-500\/20 { background-color: rgba(217, 119, 6, 0.12); }
+    html:not(.dark) .bg-amber-500\/10 { background-color: rgba(217, 119, 6, 0.08); }
+    html:not(.dark) .bg-amber-900\/20 { background-color: rgba(217, 119, 6, 0.07); }
+    html:not(.dark) .border-amber-500\/30 { border-color: rgba(217, 119, 6, 0.25); }
+    html:not(.dark) .hover\:bg-amber-500\/30:hover { background-color: rgba(217, 119, 6, 0.18); }
+    html:not(.dark) .hover\:text-amber-400:hover { color: #92400e; }
+    html:not(.dark) .hover\:bg-amber-500\/10:hover { background-color: rgba(217, 119, 6, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-amber-400 { color: #92400e; }
+    html:not(.dark) .text-teal-400 { color: #0d9488; }
+    html:not(.dark) .bg-teal-500\/20 { background-color: rgba(13, 148, 136, 0.12); }
+    html:not(.dark) .bg-teal-500\/10 { background-color: rgba(13, 148, 136, 0.08); }
+    html:not(.dark) .bg-teal-900\/20 { background-color: rgba(13, 148, 136, 0.07); }
+    html:not(.dark) .border-teal-500\/30 { border-color: rgba(13, 148, 136, 0.25); }
+    html:not(.dark) .hover\:bg-teal-500\/30:hover { background-color: rgba(13, 148, 136, 0.18); }
+    html:not(.dark) .hover\:text-teal-400:hover { color: #0d9488; }
+    html:not(.dark) .hover\:bg-teal-500\/10:hover { background-color: rgba(13, 148, 136, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-teal-400 { color: #0d9488; }
+
+    /* Light mode - remove gradientes e cores especiais */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .border-primary\/30 { border-color: rgba(161, 98, 7, 0.22); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.25); }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+
+    /* Light mode - nav */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+
+    /* Dark mode - bordas suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* Alvos de ancora abaixo do nav sticky */
+    [data-inema-topic], [id^="modulo-"], [id^="topico-"] { scroll-margin-top: 72px; }
+
+    /* SVG light mode + animacao */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @keyframes wf-dash { to { stroke-dashoffset: -24; } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s} .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s} .wf-a:nth-child(5){animation-delay:1s}
+      .wf-flow { stroke-dasharray: 6 6; animation: wf-dash 1.2s linear infinite; }
+    }
+
+    /* Topicos expansiveis */
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    /* Popover de aparência ancorado à direita e fora do layout quando fechado (sem transbordo) */
+    .inema-appearance-pop { right: 0; }
+    main code, main pre { overflow-wrap: anywhere; }
+    main .flex-1 { min-width: 0; }
+    .inema-appearance-pop:not([data-open="true"]) { visibility: hidden; display: none; }
+  </style>
+</head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen">
+  <a href="#conteudo" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[60] focus:px-4 focus:py-2 focus:bg-primary focus:text-black focus:rounded-lg">Pular para o conteúdo</a>
+
+  <nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-14">
+        <div class="flex items-center space-x-1.5 sm:space-x-3">
+          <a href="../../index.html" class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300">
+            <span class="text-2xl">🧩</span>
+            <span class="font-bold text-lg hidden lg:inline">Mods técnico</span>
+          </a>
+          <span class="text-neutral-600 hidden sm:inline">|</span>
+          <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 text-sm font-medium">INEMA.CLUB</a>
+          <span class="text-neutral-600">-</span>
+          <a href="https://inema.pro" target="_blank" class="text-amber-700 hover:text-amber-600 dark:text-slate-300 dark:hover:text-slate-200 text-sm font-medium">PRO</a>
+        </div>
+        <div class="flex items-center sm:space-x-1">
+          <a href="../trilha1/index.html" class="px-1.5 sm:px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors">
+            <span class="xl:hidden">T1</span><span class="hidden xl:inline">Anatomia</span>
+          </a>
+          <a href="../trilha2/index.html" class="px-1.5 sm:px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors">
+            <span class="xl:hidden">T2</span><span class="hidden xl:inline">Eventos e estado</span>
+          </a>
+          <a href="../trilha3/index.html" class="px-1.5 sm:px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors">
+            <span class="xl:hidden">T3</span><span class="hidden xl:inline">Telas e comandos</span>
+          </a>
+          <a href="index.html" class="px-1.5 sm:px-2.5 py-1.5 rounded-lg text-sm font-semibold text-amber-400 bg-amber-500/10">
+            <span class="xl:hidden">T4</span><span class="hidden xl:inline">Controlar e distribuir</span>
+          </a>
+          <button type="button" data-inema-journey-open class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-sm text-neutral-300 hover:text-neutral-100 transition-colors" title="Minha jornada">
+            <span aria-hidden="true">◷</span><span class="hidden md:inline">Jornada</span>
+            <span class="inema-journey-badge" data-inema-journey-badge data-count="0"></span>
+          </button>
+          <div class="relative">
+            <button type="button" data-inema-appearance-toggle="#aparencia" aria-expanded="false" aria-controls="aparencia" class="p-2 rounded-lg text-neutral-300 hover:text-neutral-100 transition-colors" title="Aparência">
+              <span aria-hidden="true" class="text-sm font-semibold">Aa</span><span class="sr-only">Aparência</span>
+            </button>
+            <div id="aparencia" data-inema-appearance class="inema-appearance-pop">
+              <div class="inema-segment" aria-label="Tema">
+                <button type="button" data-inema-set-theme="inema-dark">Escuro</button>
+                <button type="button" data-inema-set-theme="claro">Claro</button>
+                <button type="button" data-inema-set-theme="sepia">Sépia</button>
+                <button type="button" data-inema-set-theme="foco">Foco</button>
+                <button type="button" data-inema-set-theme="contraste">Alto contraste</button>
+              </div>
+              <div class="inema-segment" aria-label="Fonte">
+                <button type="button" data-inema-set-font="inter">Inter</button>
+                <button type="button" data-inema-set-font="system">Sistema</button>
+                <button type="button" data-inema-set-font="leitura">Leitura</button>
+              </div>
+              <div class="inema-segment" aria-label="Tamanho do texto">
+                <button type="button" data-inema-set-fontscale="100">A</button>
+                <button type="button" data-inema-set-fontscale="112">A+</button>
+                <button type="button" data-inema-set-fontscale="125">A++</button>
+              </div>
+              <div class="inema-segment" aria-label="Largura da linha">
+                <button type="button" data-inema-set-linewidth="60">Estreito</button>
+                <button type="button" data-inema-set-linewidth="68">Médio</button>
+                <button type="button" data-inema-set-linewidth="75">Largo</button>
+              </div>
+              <div class="inema-segment" aria-label="Entrelinha">
+                <button type="button" data-inema-set-leading="1.45">Compacto</button>
+                <button type="button" data-inema-set-leading="1.7">Confortável</button>
+              </div>
+            </div>
+          </div>
+          <button id="theme-toggle" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors" aria-label="Alternar tema claro/escuro">
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <nav aria-label="Trilha de navegação" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex items-center space-x-2 text-sm text-neutral-400">
+      <a href="../../index.html" class="hover:text-amber-400">Início</a><span>/</span>
+      <a href="index.html" class="hover:text-amber-400">Trilha 4</a><span>/</span>
+      <span class="text-amber-400">Módulo 4.4</span>
+    </div>
+  </nav>
+
+  <header class="bg-gradient-to-br from-amber-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600" data-inema-module="4-4" data-inema-track="4">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="inline-block px-3 py-1 bg-amber-500/20 text-amber-400 text-xs font-semibold rounded-full mb-4">MÓDULO 4.4</span>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-4">📦 Distribuir e projeto final</h1>
+      <p class="text-lg text-neutral-400 max-w-3xl">O mod funciona, passa nos testes e responde no <code>claude -p</code>. Falta outra pessoa conseguir instalar. Este módulo mostra o marketplace, a publicação num repositório, como atualizar sem quebrar quem usa e o que revisar antes de abrir o código. No fim, o projeto final do curso.</p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 max-w-2xl">
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">6</div><div class="text-xs text-neutral-400">Tópicos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">~35</div><div class="text-xs text-neutral-400">Minutos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">Avançado</div><div class="text-xs text-neutral-400">Nível</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">Prático</div><div class="text-xs text-neutral-400">Tipo</div></div>
+      </div>
+      <div data-inema-meter="modulo:4-4" class="mt-6 max-w-2xl" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso do módulo 4.4">
+        <div class="flex justify-between text-xs text-neutral-400 mb-1"><span data-inema-meter-frac>0 de 6</span><span data-inema-meter-pct>0%</span></div>
+        <div class="inema-bar"><div class="inema-bar__fill" data-inema-meter-fill></div></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:grid lg:grid-cols-[1fr_220px] lg:gap-10">
+  <main id="conteudo" class="min-w-0" data-inema-module="4-4" data-inema-track="4">
+
+    <div class="bg-amber-900/20 rounded-xl border border-amber-500/30 p-5 mb-10 text-sm text-neutral-300">
+      <strong class="text-amber-400">Versão conferida:</strong> os arquivos mostrados aqui são os reais dos kits em 05/10/2026, com o <strong>Claude Code 2.1.289</strong>. Os comandos de instalação vêm da documentação do kit; mostramos o que se espera deles, sem saída inventada.
+    </div>
+
+    <!-- ===================== TOPICO 1 ===================== -->
+    <section id="topico-1" data-inema-topic="modulo-4-4#topico-1" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">1</span>
+        <h2 class="text-2xl font-bold flex-1">Monte o marketplace.json</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-4-t1-p1" class="text-neutral-300 mb-4 leading-relaxed">Para outra pessoa instalar, o mod precisa estar num <strong class="text-amber-400">marketplace</strong>: um catálogo que diz quais plugins existem e onde está cada um. É um arquivo só, <code>.claude-plugin/marketplace.json</code>, na raiz do repositório.</p>
+      <p data-inema-block="m4-4-t1-p2" class="text-neutral-300 mb-6 leading-relaxed">O kit da Prompt Advisers (MIT) é um bom modelo: um repositório, um marketplace, dez plugins em <code>plugins/</code>.</p>
+
+      <div class="bg-amber-900/20 rounded-xl border border-amber-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-amber-400 mb-2 flex items-center"><span class="mr-2">🆕</span> Novo aqui? Marketplace</h3>
+        <p class="text-neutral-300 text-sm">O <strong>marketplace</strong> é a lista de plugins que o Claude Code sabe instalar. Você o adiciona uma vez (de uma pasta ou de um repositório) e depois instala plugins dele pelo nome <code>&lt;plugin&gt;@&lt;marketplace&gt;</code>. O nome depois do <code>@</code> é o <code>name</code> do <code>marketplace.json</code>, não o nome do repositório.</p>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-amber-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-amber-900/20 border-b border-amber-500/30"><span class="text-amber-400 font-semibold text-sm">📄 claude-mods-starter-kit/.claude-plugin/marketplace.json (começo)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">{
+  "name": "claude-mods-kit",
+  "owner": {
+    "name": "Prompt Advisers"
+  },
+  "plugins": [
+    {
+      "name": "terminal-pet",
+      "source": "./plugins/terminal-pet",
+      "description": "A pixel-art crab above the prompt that reacts live to what Claude is doing. /pet for commands."
+    },
+    {
+      "name": "coral-skin",
+      "source": "./plugins/coral-skin",
+      "description": "Coral, ink and cream reskin of Claude Code with risk-coded tool rows. Toggle with /skin."
+    },</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-amber-400">O que olhar:</strong> <code>source</code> é um caminho relativo à raiz do repositório, sempre começando por <code>./</code>. O <code>name</code> de cada entrada é o mesmo do <code>plugin.json</code> daquele plugin.</div>
+      </div>
+
+      <div class="overflow-x-auto mb-6 rounded-xl border border-dark-600">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-dark-700/60 text-amber-400"><tr><th class="px-4 py-3 font-semibold">Campo</th><th class="px-4 py-3 font-semibold">No kit</th><th class="px-4 py-3 font-semibold">No mod do Rafa</th></tr></thead>
+          <tbody class="divide-y divide-dark-600">
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>name</code></td><td class="px-4 py-3 text-neutral-300"><code>claude-mods-kit</code></td><td class="px-4 py-3 text-neutral-300"><code>rafa-mods</code></td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>owner.name</code></td><td class="px-4 py-3 text-neutral-300">Prompt Advisers</td><td class="px-4 py-3 text-neutral-300">o nome dele ou da agência</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>plugins[].source</code></td><td class="px-4 py-3 text-neutral-300"><code>./plugins/&lt;nome&gt;</code></td><td class="px-4 py-3 text-neutral-300"><code>./mods/&lt;nome&gt;</code></td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>plugins[].description</code></td><td class="px-4 py-3 text-neutral-300">uma frase, com o comando</td><td class="px-4 py-3 text-neutral-300">idem, em português</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 2 ===================== -->
+    <section id="topico-2" data-inema-topic="modulo-4-4#topico-2" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">2</span>
+        <h2 class="text-2xl font-bold flex-1">Publique num repositório</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-4-t2-p1" class="text-neutral-300 mb-4 leading-relaxed">Com o <code>marketplace.json</code> na raiz, o repositório inteiro vira o marketplace. Quem quer instalar faz <strong class="text-amber-400">duas coisas</strong>: adiciona o marketplace pelo <code>dono/repo</code> e instala o plugin pelo nome.</p>
+      <p data-inema-block="m4-4-t2-p2" class="text-neutral-300 mb-6 leading-relaxed">O <code>--scope</code> diz onde a instalação vale: <code>user</code> (todos os seus projetos), <code>project</code> (o projeto, e quem clonar o repositório) ou <code>local</code> (só você, só neste projeto). O módulo 1.3 detalha cada um.</p>
+
+      <div class="rounded-2xl border border-amber-500/30 bg-dark-900/40 p-3 sm:p-4 mb-3 overflow-hidden">
+        <svg viewBox="0 0 800 210" class="w-full h-auto" role="img" aria-label="Caminho da distribuição em quatro passos: o repositório com marketplace.json na raiz; o comando marketplace add, que registra o catálogo; o comando install, que copia o plugin escolhido; e a sessão nova, onde o mod carrega.">
+          <defs>
+            <pattern id="m44a-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#fbbf24" opacity="0.10"/></pattern>
+            <filter id="m44a-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <marker id="m44a-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38bdf8"/></marker>
+          </defs>
+          <rect x="0" y="0" width="800" height="210" fill="url(#m44a-grid)"/>
+          <g font-family="Inter,sans-serif" font-size="12" text-anchor="middle">
+            <g filter="url(#m44a-glow)"><rect x="20" y="70" width="160" height="70" rx="12" fill="#2a1d06" stroke="#fbbf24" stroke-width="2"/></g>
+            <text x="100" y="96" fill="#fbbf24" font-weight="600">repositório</text><text x="100" y="114" fill="#fde68a" font-size="11">marketplace.json</text><text x="100" y="130" fill="#fde68a" font-size="11">mods/&lt;nome&gt;/</text>
+            <line class="wf-flow" x1="182" y1="105" x2="213" y2="105" stroke="#38bdf8" stroke-width="2" marker-end="url(#m44a-arrow)"/>
+            <rect class="wf-a" x="218" y="70" width="170" height="70" rx="12" fill="#0b1f2e" stroke="#38bdf8" stroke-width="2"/><text x="303" y="98" fill="#bae6fd">marketplace add</text><text x="303" y="117" fill="#7dd3fc" font-size="11">registra o catálogo</text>
+            <line class="wf-flow" x1="390" y1="105" x2="421" y2="105" stroke="#38bdf8" stroke-width="2" marker-end="url(#m44a-arrow)"/>
+            <rect class="wf-a" x="426" y="70" width="170" height="70" rx="12" fill="#0b1f2e" stroke="#38bdf8" stroke-width="2"/><text x="511" y="98" fill="#bae6fd">install</text><text x="511" y="117" fill="#7dd3fc" font-size="11">plugin@marketplace</text>
+            <line class="wf-flow" x1="598" y1="105" x2="629" y2="105" stroke="#38bdf8" stroke-width="2" marker-end="url(#m44a-arrow)"/>
+            <rect x="634" y="70" width="146" height="70" rx="12" fill="#1f2937" stroke="#6b7280" stroke-width="2"/><text x="707" y="98" fill="#e5e7eb">sessão nova</text><text x="707" y="117" fill="#9ca3af" font-size="11">o mod carrega</text>
+            <text x="400" y="180" fill="#9ca3af" font-size="11">o --scope escolhe onde vale: user, project ou local</text>
+          </g>
+        </svg>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">Como ler o desenho:</strong> só a caixa âmbar é trabalho seu. As duas azuis são os comandos de quem instala. A caixa cinza lembra que a instalação vale para a próxima sessão, não para a que já está aberta.</p>
+
+      <div class="bg-dark-800 rounded-xl border border-amber-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-amber-900/20 border-b border-amber-500/30"><span class="text-amber-400 font-semibold text-sm">🎯 Objetivo: instalar um mod do kit pelo marketplace</span></div>
+        <div class="p-5">
+          <p class="text-sm text-neutral-400 mb-3">No terminal, em qualquer pasta (o espelho INEMA do kit):</p>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">claude plugin marketplace add inematds/claude-mods-starter-kit --scope user
+claude plugin install terminal-pet@claude-mods-kit --scope user</pre>
+          <p class="text-xs text-neutral-500 mt-4 mb-2">Resultado esperado (pela documentação do kit):</p>
+          <p class="text-sm text-neutral-400">o marketplace <code>claude-mods-kit</code> fica registrado e o <code>terminal-pet</code> aparece em <code>claude plugin list</code>. Abra uma sessão nova para o caranguejo aparecer acima do prompt.</p>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-amber-400">Como verificar:</strong> rode <code>claude plugin list</code> e procure <code>terminal-pet</code>. Para desfazer: <code>claude plugin disable terminal-pet@claude-mods-kit --scope user</code>.</div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-dark-800 rounded-xl p-6 border border-amber-500/30">
+          <h3 class="font-semibold text-amber-400 mb-3">✓ Repositório pronto</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ <code>.claude-plugin/marketplace.json</code> na raiz</li>
+            <li>✓ Uma pasta por mod, cada uma com o seu <code>plugin.json</code></li>
+            <li>✓ <code>claude plugin validate</code> ok na raiz e em cada mod</li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ Erros comuns</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ Instalar com o nome do repositório depois do <code>@</code></li>
+            <li>✗ <code>source</code> sem <code>./</code> ou apontando para fora do repositório</li>
+            <li>✗ Esperar o mod na sessão que já estava aberta</li>
+          </ul>
+        </div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 3 ===================== -->
+    <section id="topico-3" data-inema-topic="modulo-4-4#topico-3" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">3</span>
+        <h2 class="text-2xl font-bold flex-1">Atualize sem quebrar quem usa</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-4-t3-p1" class="text-neutral-300 mb-4 leading-relaxed">A referência oficial separa dois casos. Um marketplace que é uma <strong>pasta</strong> sua, com <code>source</code> relativo, é lido da própria pasta: edite, rode <code>/reload-plugins</code> e pronto, sem versão nova nem reinstalar.</p>
+      <p data-inema-block="m4-4-t3-p2" class="text-neutral-300 mb-6 leading-relaxed">Todo o resto (marketplace vindo de repositório, URL, git, npm) roda a <strong class="text-amber-400">cópia feita na instalação</strong>. Uma mudança sua só chega a quem usa como versão ou commit novo, por <code>claude plugin update</code> e depois <code>/reload-plugins</code>.</p>
+
+      <div class="space-y-5 mb-6">
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">1</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Suba a versão no plugin.json</h4> <p class="text-neutral-300 text-sm">De <code>"version": "0.1.0"</code> para <code>"0.1.1"</code> numa correção. O <code>model-router</code> do kit, por exemplo, está em <code>0.1.1</code>.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">2</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Rode o checar antes do commit</h4> <p class="text-neutral-300 text-sm">validate, tsc e test, como no módulo 4.3. Quem instala recebe exatamente o que você publicou.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">3</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Publique no repositório</h4> <p class="text-neutral-300 text-sm">Commit e push. O marketplace é o próprio repositório.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">4</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Quem usa atualiza</h4> <p class="text-neutral-300 text-sm"><code>claude plugin update</code>, depois <code>/reload-plugins</code> na sessão. <code>claude plugin list</code> mostra em <code>Read from:</code> de onde cada plugin é lido.</p></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-dark-800 rounded-xl p-6 border border-amber-500/30">
+          <h3 class="font-semibold text-amber-400 mb-3">✓ Muda sem quebrar</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ Campo novo no <code>userConfig</code>, com <code>default</code></li>
+            <li>✓ Argumento novo num comando que já existe</li>
+            <li>✓ Texto de mensagem mais claro</li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ Quebra quem usa</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ Renomear o comando (e colidir com outro)</li>
+            <li>✗ Trocar a chave de um valor salvo em <code>$.store</code></li>
+            <li>✗ Mudar o <code>name</code> do plugin</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6">
+        <h3 class="text-lg font-semibold text-primary mb-2 flex items-center"><span class="mr-2">💡</span> Desenvolva pela pasta, publique pelo repositório</h3>
+        <p class="text-neutral-300 text-sm">Enquanto mexe, use <code>--plugin-dir</code> (hot-reload) ou um marketplace de pasta (<code>/reload-plugins</code>). Só quando passar no checar, suba a versão e publique. Assim quem instalou pelo repositório nunca recebe um meio-termo.</p>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 4 ===================== -->
+    <section id="topico-4" data-inema-topic="modulo-4-4#topico-4" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">4</span>
+        <h2 class="text-2xl font-bold flex-1">Revise antes de compartilhar</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-4-t4-p1" class="text-neutral-300 mb-4 leading-relaxed">O guia <code>guides/BUILD-YOUR-OWN.md</code> do kit tem uma seção "Review before sharing" que resume o cuidado: um plugin público é <strong class="text-amber-400">código que outras pessoas vão rodar</strong>, com as permissões do Claude Code delas. As ações dele precisam ser fáceis de inspecionar.</p>
+      <p data-inema-block="m4-4-t4-p2" class="text-neutral-300 mb-6 leading-relaxed">Na prática, o Rafa revisa a pasta do mod duas vezes: uma procurando o que <strong>tirar</strong>, outra conferindo o que precisa <strong>estar</strong>.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ Tire do repositório</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ Arquivos de settings</li>
+            <li>✗ Transcrições de conversa, handoffs, marcadores</li>
+            <li>✗ Caminhos pessoais (<code>/home/rafa/...</code>)</li>
+            <li>✗ Chaves e tokens</li>
+            <li>✗ Prints com dados pessoais e caches gerados</li>
+          </ul>
+        </div>
+        <div class="bg-dark-800 rounded-xl p-6 border border-amber-500/30">
+          <h3 class="font-semibold text-amber-400 mb-3">✓ Deixe no repositório</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ O código-fonte e os testes</li>
+            <li>✓ Instruções de instalar, ligar e desligar</li>
+            <li>✓ Uma data clara de compatibilidade (a versão do Claude Code)</li>
+            <li>✓ A licença preservada</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-red-400 mb-2 flex items-center"><span class="mr-2">⚠️</span> O .claude-plugin/types/ é gerado</h3>
+        <p class="text-neutral-300 text-sm">Quando o mod carrega por <code>--plugin-dir</code>, o Claude Code escreve os tipos da sua versão em <code>.claude-plugin/types/</code>. Eles são da sua instalação, não do mod: quem instalar recebe os da versão dela. Confira se a pasta entra ou não no commit, de propósito.</p>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-amber-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-amber-900/20 border-b border-amber-500/30"><span class="text-amber-400 font-semibold text-sm">🎯 Objetivo: uma revisão de vazamento antes do push</span></div>
+        <div class="p-5">
+          <p class="text-sm text-neutral-400 mb-3">Abra <code>claude</code> na raiz do seu repositório de mods e cole:</p>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">Leia todos os arquivos de mods/ e .claude-plugin/marketplace.json. Liste qualquer caminho pessoal, chave, token, e-mail, transcrição de conversa ou arquivo de settings que encontrar, com o arquivo e a linha. Não altere nada.</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-amber-400">Como verificar:</strong> a resposta lista arquivo e linha de cada achado, ou diz que não achou nada. Corrija você mesmo cada item e peça a revisão de novo até a lista vir vazia.</div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 5 ===================== -->
+    <section id="topico-5" data-inema-topic="modulo-4-4#topico-5" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">5</span>
+        <h2 class="text-2xl font-bold flex-1">Faça o projeto final</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-4-t5-p1" class="text-neutral-300 mb-4 leading-relaxed">O projeto final junta as quatro trilhas num <strong class="text-amber-400">mod seu</strong>. O exemplo é o do Rafa: ver o que o Claude toca no repositório e não perder trabalho entre sessões. Escolha a sua ideia, mas cumpra os sete itens.</p>
+
+      <div class="rounded-2xl border border-amber-500/30 bg-dark-900/40 p-3 sm:p-4 mb-3 overflow-hidden">
+        <svg viewBox="0 0 800 230" class="w-full h-auto" role="img" aria-label="O mod do projeto final no centro, ligado a sete peças: comando de barra, faixa ou painel, estado em cifrão state, botão ou comando de desligar, README, testes com claude plugin test e validate. Embaixo, as duas provas: zero falhas no test e o comando respondendo no claude -p.">
+          <defs>
+            <pattern id="m44b-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#fbbf24" opacity="0.10"/></pattern>
+            <filter id="m44b-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <rect x="0" y="0" width="800" height="230" fill="url(#m44b-grid)"/>
+          <g font-family="Inter,sans-serif" font-size="12" text-anchor="middle">
+            <g filter="url(#m44b-glow)"><rect x="320" y="70" width="160" height="56" rx="14" fill="#2a1d06" stroke="#fbbf24" stroke-width="2"/></g>
+            <text x="400" y="94" fill="#fbbf24" font-weight="600">seu mod</text><text x="400" y="112" fill="#fde68a" font-size="11">projeto final</text>
+            <g stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 3">
+              <line x1="320" y1="84" x2="190" y2="34"/><line x1="320" y1="98" x2="190" y2="98"/><line x1="320" y1="112" x2="190" y2="160"/>
+              <line x1="480" y1="84" x2="610" y2="34"/><line x1="480" y1="98" x2="610" y2="98"/><line x1="480" y1="112" x2="610" y2="160"/>
+              <line x1="400" y1="68" x2="400" y2="36"/>
+            </g>
+            <rect class="wf-a" x="80" y="16" width="110" height="34" rx="8" fill="#0b1f2e" stroke="#38bdf8" stroke-width="1.5"/><text x="135" y="38" fill="#bae6fd">/comando</text>
+            <rect class="wf-a" x="80" y="81" width="110" height="34" rx="8" fill="#0b1f2e" stroke="#38bdf8" stroke-width="1.5"/><text x="135" y="103" fill="#bae6fd">faixa ou painel</text>
+            <rect class="wf-a" x="80" y="143" width="110" height="34" rx="8" fill="#0b1f2e" stroke="#38bdf8" stroke-width="1.5"/><text x="135" y="165" fill="#bae6fd">$.state</text>
+            <rect class="wf-a" x="345" y="2" width="110" height="34" rx="8" fill="#0b1f2e" stroke="#38bdf8" stroke-width="1.5"/><text x="400" y="24" fill="#bae6fd">desligar</text>
+            <rect class="wf-a" x="610" y="16" width="110" height="34" rx="8" fill="#0b1f2e" stroke="#38bdf8" stroke-width="1.5"/><text x="665" y="38" fill="#bae6fd">testes</text>
+            <rect class="wf-a" x="610" y="81" width="110" height="34" rx="8" fill="#0b1f2e" stroke="#38bdf8" stroke-width="1.5"/><text x="665" y="103" fill="#bae6fd">validate ok</text>
+            <rect class="wf-a" x="610" y="143" width="110" height="34" rx="8" fill="#0b1f2e" stroke="#38bdf8" stroke-width="1.5"/><text x="665" y="165" fill="#bae6fd">README</text>
+            <text x="400" y="214" fill="#fde68a" font-family="JetBrains Mono,monospace" font-size="11">prova: 0 fail  ·  claude -p "/comando" responde</text>
+          </g>
+        </svg>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">Como ler o desenho:</strong> as sete caixas azuis são os requisitos; cada uma vem de um módulo do curso. A linha âmbar embaixo é a prova: sem ela, o projeto não está pronto.</p>
+
+      <div class="overflow-x-auto mb-6 rounded-xl border border-dark-600">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-dark-700/60 text-amber-400"><tr><th class="px-4 py-3 font-semibold">Requisito</th><th class="px-4 py-3 font-semibold">Onde você aprendeu</th></tr></thead>
+          <tbody class="divide-y divide-dark-600">
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Comando <code>/x</code> que responde sem modelo</td><td class="px-4 py-3 text-neutral-300">1.4 e 3.4</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Faixa ou painel</td><td class="px-4 py-3 text-neutral-300">3.2 e 3.3</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Estado em <code>$.state</code> (com contrato)</td><td class="px-4 py-3 text-neutral-300">2.3</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Teste com <code>claude plugin test</code>, mocks antes do <code>$</code></td><td class="px-4 py-3 text-neutral-300">4.2</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>claude plugin validate</code> ok</td><td class="px-4 py-3 text-neutral-300">1.2 e 4.3</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Botão ou comando de desligar</td><td class="px-4 py-3 text-neutral-300">3.3 e 4.1</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">README: o que faz, como ligar e desligar, opções, limites</td><td class="px-4 py-3 text-neutral-300">este módulo</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-amber-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-amber-900/20 border-b border-amber-500/30"><span class="text-amber-400 font-semibold text-sm">🎯 Objetivo: provar que o projeto final está pronto</span></div>
+        <div class="p-5">
+          <p class="text-sm text-neutral-400 mb-3">No terminal, troque <code>&lt;pasta&gt;</code> pela pasta do seu mod e <code>&lt;comando&gt;</code> pelo nome do seu comando:</p>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">claude plugin validate &lt;pasta&gt;
+claude plugin test &lt;pasta&gt;
+claude -p "/&lt;comando&gt;" --plugin-dir &lt;pasta&gt;</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-amber-400">Como verificar:</strong> o validate termina em <code>✔ Validation passed</code>; o test mostra <code>0 fail</code>; e o <code>claude -p</code> devolve a resposta do seu comando prefixada com o nome do plugin, como o <code>recibo-sessao:</code> do módulo 4.3. Os três juntos são a prova do projeto.</div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 6 ===================== -->
+    <section id="topico-6" data-inema-topic="modulo-4-4#topico-6" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">6</span>
+        <h2 class="text-2xl font-bold flex-1">Siga para os próximos passos</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-4-t6-p1" class="text-neutral-300 mb-4 leading-relaxed">Você terminou o curso técnico. Daqui, três direções: <strong class="text-amber-400">mais fundo</strong> nos hooks clássicos e nos plugins de produção, <strong>mais perto da guarda</strong> com o agent runtime, ou <strong>de volta ao código</strong> dos dois kits, agora lendo como autor.</p>
+      <p data-inema-block="m4-4-t6-p2" class="text-neutral-300 mb-6 leading-relaxed">E lembre a regra do começo: a API está em acesso antecipado. A cada versão nova do Claude Code, rode o checar nos seus mods e leia o arquivo de tipos antes de culpar o código.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+          <div class="text-3xl mb-3">🪝</div>
+          <h3 class="font-semibold text-lg mb-2">Automação &amp; Hooks no Claude Code</h3>
+          <p class="text-neutral-300 text-sm mb-3">Os hooks clássicos do <code>settings.json</code>, que o mod enxerga como <code>classic.&lt;Nome&gt;</code>.</p>
+          <p class="text-xs text-neutral-400"><a href="https://inematds.github.io/cchooks/" target="_blank" class="text-sky-400 hover:text-sky-300">inematds.github.io/cchooks</a></p>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+          <div class="text-3xl mb-3">🏭</div>
+          <h3 class="font-semibold text-lg mb-2">Plugins de produção</h3>
+          <p class="text-neutral-300 text-sm mb-3">O passo seguinte ao mod: plugins do Claude Code pensados para uso em produção.</p>
+          <p class="text-xs text-neutral-400"><a href="https://inematds.github.io/makeclaudex/" target="_blank" class="text-sky-400 hover:text-sky-300">inematds.github.io/makeclaudex</a></p>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+          <div class="text-3xl mb-3">🛡️</div>
+          <h3 class="font-semibold text-lg mb-2">Curso INEMA Agent Runtime</h3>
+          <p class="text-neutral-300 text-sm mb-3">A trilha 4 trata de guarda e painel para agentes, o mesmo terreno do módulo 4.1.</p>
+          <p class="text-xs text-neutral-400"><a href="https://inematds.github.io/curso-agent-runtime/" target="_blank" class="text-sky-400 hover:text-sky-300">inematds.github.io/curso-agent-runtime</a></p>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+          <div class="text-3xl mb-3">🌱</div>
+          <h3 class="font-semibold text-lg mb-2">Curso básico de mods</h3>
+          <p class="text-neutral-300 text-sm mb-3">A versão para quem não programa.</p>
+          <p class="text-xs text-amber-400 font-semibold">Em breve</p>
+        </div>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-primary mb-2 flex items-center"><span class="mr-2">💡</span> Os dois kits continuam sendo o melhor material</h3>
+        <p class="text-neutral-300 text-sm">Leia os mods que você ainda não abriu: <a href="https://github.com/inematds/inema-mods" target="_blank" class="text-sky-400 hover:text-sky-300">github.com/inematds/inema-mods</a> (18 mods em português) e <a href="https://github.com/inematds/claude-mods-starter-kit" target="_blank" class="text-sky-400 hover:text-sky-300">github.com/inematds/claude-mods-starter-kit</a> (o Claude Mods Starter Kit, da Prompt Advisers, licença MIT). Cada um tem testes: eles mostram o comportamento melhor que qualquer README.</p>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-dark-600 p-6 mb-6" data-inema-check="modulo-4-4#q1">
+        <p class="font-medium mb-4">Teste rápido (opcional): o Rafa publicou uma correção no repositório do marketplace dele. Um colega que instalou pelo repositório ainda vê o comportamento antigo. O que falta?</p>
+        <div class="space-y-2">
+          <button type="button" data-inema-check-option="0" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">Nada: o hot-reload leva a mudança sozinho para quem instalou.</button>
+          <button type="button" data-inema-check-option="1" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">Rodar <code>claude plugin init</code> de novo na pasta do mod.</button>
+          <button type="button" data-inema-check-option="2" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">Versão nova publicada, e o colega rodar <code>claude plugin update</code> e depois <code>/reload-plugins</code>.</button>
+        </div>
+        <div data-inema-check-feedback class="mt-4 text-sm" role="status" aria-live="polite"></div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== RESUMO ===================== -->
+    <section class="mb-12">
+      <div class="bg-gradient-to-br from-amber-900/40 via-dark-800 to-dark-800 rounded-xl border border-amber-500/30 p-8">
+        <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🎓</span> Resumo do módulo</h2>
+        <div class="space-y-4 mb-8">
+          <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-neutral-100">marketplace.json na raiz</strong><span class="text-neutral-400"> — name, owner e plugins[].source.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-neutral-100">marketplace add + install</strong><span class="text-neutral-400"> — plugin@marketplace, com --scope.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-neutral-100">Repositório chega por versão nova</strong><span class="text-neutral-400"> — update e /reload-plugins.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-neutral-100">Revise antes do push</strong><span class="text-neutral-400"> — sem settings, transcrições, caminhos, chaves.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-neutral-100">Projeto final com prova</strong><span class="text-neutral-400"> — 0 fail e o comando no claude -p.</span></div></div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-4 mb-8">
+          <h3 class="font-semibold text-amber-400 mb-2">Fim do curso:</h3>
+          <p class="text-neutral-300">Você completou as quatro trilhas de Mods do Claude Code — o curso técnico.</p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="index.html" class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">← Voltar para a trilha</a>
+          <a href="../../index.html" class="flex-1 text-center px-6 py-3 bg-amber-600 text-white rounded-lg font-semibold hover:bg-amber-500 transition-colors">Voltar ao início do curso →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="hidden lg:block">
+    <nav data-inema-toc aria-label="Índice da página" class="sticky top-24">
+      <p class="text-sm text-neutral-400 mb-3"><span data-inema-section-counter>Seção 1 de 6</span></p>
+      <ol class="space-y-2 text-sm">
+        <li><a href="#topico-1" class="text-neutral-400 hover:text-amber-400">1. marketplace.json</a></li>
+        <li><a href="#topico-2" class="text-neutral-400 hover:text-amber-400">2. Publicar</a></li>
+        <li><a href="#topico-3" class="text-neutral-400 hover:text-amber-400">3. Atualizar</a></li>
+        <li><a href="#topico-4" class="text-neutral-400 hover:text-amber-400">4. Revisar</a></li>
+        <li><a href="#topico-5" class="text-neutral-400 hover:text-amber-400">5. Projeto final</a></li>
+        <li><a href="#topico-6" class="text-neutral-400 hover:text-amber-400">6. Próximos passos</a></li>
+      </ol>
+    </nav>
+  </aside>
+  </div>
+
+  <footer class="border-t border-dark-600 py-8 mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+      <p>Mods do Claude Code — técnico · 2026 | <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300">INEMA.CLUB</a> - <a href="https://inema.pro" target="_blank" class="text-amber-700 hover:text-amber-600 dark:text-slate-300 dark:hover:text-slate-200">PRO</a></p>
+      <p class="mt-2 text-xs">Kits usados no curso: <a href="https://github.com/inematds/inema-mods" target="_blank" class="text-sky-400 hover:text-sky-300">inematds/inema-mods</a> · <a href="https://github.com/promptadvisers/claude-mods-starter-kit" target="_blank" class="text-sky-400 hover:text-sky-300">Claude Mods Starter Kit</a> (Prompt Advisers, MIT)</p>
+    </div>
+  </footer>
+
+  <script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const _html = document.documentElement;
+    if (!_html.classList.contains('dark')) { themeToggleDarkIcon.classList.remove('hidden'); }
+    else { themeToggleLightIcon.classList.remove('hidden'); }
+    themeToggle.addEventListener('click', () => {
+      if (window.INEMA && INEMA.setPref) { INEMA.setPref('theme', _html.classList.contains('dark') ? 'claro' : 'inema-dark'); }
+      else { _html.classList.toggle('dark'); }
+      themeToggleDarkIcon.classList.toggle('hidden', _html.classList.contains('dark'));
+      themeToggleLightIcon.classList.toggle('hidden', !_html.classList.contains('dark'));
+      try { localStorage.setItem('theme', _html.classList.contains('dark') ? 'dark' : 'light'); } catch (e) {}
+    });
+    function toggleTopic(button) {
+      const item = button.closest('.topic-item');
+      const exp = item.querySelector('.topic-explanation');
+      const card = button.closest('[id^="modulo-"]') || document;
+      card.querySelectorAll('.topic-explanation.active').forEach(e => { if (e !== exp) { e.classList.remove('active'); const b = e.parentElement.querySelector('[aria-controls]'); if (b) b.setAttribute('aria-expanded', 'false'); } });
+      exp.classList.toggle('active');
+      button.setAttribute('aria-expanded', exp.classList.contains('active') ? 'true' : 'false');
+    }
+    let _lastModalTrigger = null;
+    function openModal(id){ const m=document.getElementById(id); if(m){ _lastModalTrigger=document.activeElement; m.classList.remove('hidden'); document.body.style.overflow='hidden'; const c=m.querySelector('button'); if(c) c.focus(); } }
+    function closeModal(){ document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden')); document.body.style.overflow='auto'; if(_lastModalTrigger){ _lastModalTrigger.focus(); _lastModalTrigger=null; } }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  </script>
+  <script src="../../assets/learn.js"></script>
+  <script>
+    if (window.INEMA && typeof window.INEMA.init === 'function') { window.INEMA.init(); }
+  </script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (window.INEMA && INEMA.registerCheck) {
+
+        INEMA.registerCheck('modulo-4-4#q1', { answer: 2, explain: {
+          '0': 'O hot-reload vale para pastas que a sessão vigia (--plugin-dir, marketplace de pasta). Quem instalou de um repositório roda a cópia feita na instalação.',
+          '1': 'O claude plugin init cria outro tipo de plugin (command hooks), não atualiza um mod instalado.',
+          '2': 'Isso. Plugin vindo de repositório roda a cópia instalada: a mudança chega como versão nova, por claude plugin update e depois /reload-plugins.'
+        } });
+      }
+    });
+  </script>
+</body>
+</html>

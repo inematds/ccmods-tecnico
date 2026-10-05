@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="inema-course" content="ccmt">
+  <title>Mods que mudam o fluxo | Mods do Claude Code — técnico</title>
+  <meta name="description" content="Curso técnico gratuito do INEMA.CLUB: escreva, teste e distribua mods do Claude Code — register, eventos, cadeia com next, estado, faixa, painéis, comandos, guardas e claude plugin test.">
+
+  <!-- ANTI-FOUC: bloqueante, ANTES do Tailwind -->
+  <script>
+  (function () {
+    try {
+      var html = document.documentElement;
+      var DEF = { theme: 'inema-dark', font: 'inter', fontScale: 100, lineWidth: 68, leading: 1.7, accent: 'emerald' };
+      function clone(o) { var r = {}; for (var x in o) r[x] = o[x]; return r; }
+      var p = clone(DEF);
+      try {
+        var raw = localStorage.getItem('inema.prefs');
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') { for (var k in DEF) if (parsed[k] != null) p[k] = parsed[k]; }
+        } else {
+          var legacy = localStorage.getItem('theme');
+          if (legacy === 'light') p.theme = 'claro'; else if (legacy === 'dark') p.theme = 'inema-dark';
+        }
+      } catch (e) { p = clone(DEF); }
+      var THEMES = {
+        'inema-dark': { dark: true,  attr: null,        cs: 'dark'  },
+        'claro':      { dark: false, attr: null,        cs: 'light' },
+        'sepia':      { dark: false, attr: 'sepia',     cs: 'light' },
+        'foco':       { dark: null,  attr: 'foco',      cs: null    },
+        'contraste':  { dark: true,  attr: 'contraste', cs: 'dark'  }
+      };
+      var t = THEMES[p.theme] || THEMES['inema-dark'];
+      if (t.dark === true) html.classList.add('dark'); else if (t.dark === false) html.classList.remove('dark');
+      if (t.attr) html.setAttribute('data-theme', t.attr); else html.removeAttribute('data-theme');
+      html.style.colorScheme = (t.cs ? t.cs : (html.classList.contains('dark') ? 'dark' : 'light'));
+      html.setAttribute('data-font', p.font || 'inter');
+      html.setAttribute('data-accent', p.accent || 'emerald');
+      var s = html.style; var scale = (+p.fontScale || 100);
+      s.setProperty('--inema-font-scale', (scale / 100).toString());
+      s.setProperty('font-size', scale + '%');
+      s.setProperty('--measure', (+p.lineWidth || 68) + 'ch');
+      s.setProperty('--lh-body', (+p.leading || 1.7).toString());
+      var fam = p.font === 'system' ? 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif'
+        : (p.font === 'leitura' ? '"Atkinson Hyperlegible", "Inter", system-ui, sans-serif' : '"Inter", system-ui, sans-serif');
+      s.setProperty('--font-body', fam);
+      var ACC = { emerald: [152,76,45], blue: [217,91,60], purple: [258,90,66], amber: [38,92,50], teal: [174,72,41], rose: [350,89,60] };
+      var a = ACC[p.accent] || ACC.emerald;
+      s.setProperty('--accent-h', a[0]+''); s.setProperty('--accent-s', a[1]+'%'); s.setProperty('--accent-l', a[2]+'%');
+      s.setProperty('--accent', 'hsl('+a[0]+' '+a[1]+'% '+a[2]+'%)');
+    } catch (err) { try { document.documentElement.classList.add('dark'); document.documentElement.style.colorScheme = 'dark'; } catch(e){} }
+  })();
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class', theme: { extend: { colors: {
+      primary: '#FACC15', dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' } } } } }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/learn.css">
+
+  <!-- Manifesto do curso (OBRIGATORIO em TODA pagina, identico) -->
+  <script type="application/json" data-inema-manifest>
+  {"course":"ccmt","tracks":[{"n":"1","title":"Anatomia","modules":[{"id":"1-1","title":"O que é um mod por dentro","topics":6,"href":"curso/trilha1/modulo-1-1.html"},{"id":"1-2","title":"Estrutura de arquivos e manifesto","topics":6,"href":"curso/trilha1/modulo-1-2.html"},{"id":"1-3","title":"Carregar, recarregar e instalar","topics":6,"href":"curso/trilha1/modulo-1-3.html"},{"id":"1-4","title":"Seu primeiro mod: comando e contador","topics":6,"href":"curso/trilha1/modulo-1-4.html"}]},{"n":"2","title":"Eventos e estado","modules":[{"id":"2-1","title":"O mapa de eventos","topics":6,"href":"curso/trilha2/modulo-2-1.html"},{"id":"2-2","title":"A cadeia: next, reescrever e responder","topics":6,"href":"curso/trilha2/modulo-2-2.html"},{"id":"2-3","title":"Estado que sobrevive","topics":6,"href":"curso/trilha2/modulo-2-3.html"},{"id":"2-4","title":"Trabalho fora do dispatch","topics":6,"href":"curso/trilha2/modulo-2-4.html"}]},{"n":"3","title":"Telas e comandos","modules":[{"id":"3-1","title":"ui.render e as superfícies","topics":6,"href":"curso/trilha3/modulo-3-1.html"},{"id":"3-2","title":"Faixa, status e avisos","topics":6,"href":"curso/trilha3/modulo-3-2.html"},{"id":"3-3","title":"Painéis e botões","topics":6,"href":"curso/trilha3/modulo-3-3.html"},{"id":"3-4","title":"Comandos, ferramentas e configuração","topics":6,"href":"curso/trilha3/modulo-3-4.html"}]},{"n":"4","title":"Controlar e distribuir","modules":[{"id":"4-1","title":"Mods que mudam o fluxo","topics":6,"href":"curso/trilha4/modulo-4-1.html"},{"id":"4-2","title":"Testar com claude plugin test","topics":6,"href":"curso/trilha4/modulo-4-2.html"},{"id":"4-3","title":"Depurar e as pegadinhas","topics":6,"href":"curso/trilha4/modulo-4-3.html"},{"id":"4-4","title":"Distribuir e projeto final","topics":6,"href":"curso/trilha4/modulo-4-4.html"}]}]}
+  </script>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .dark body { background-color: #111827; }
+
+    /* Light mode - base */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-200 { color: #1f2937; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #6b7280; }
+    html:not(.dark) .text-white { color: #111827; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* Light mode - acentos das 5 trilhas (emerald, blue, purple, amber, teal) */
+    html:not(.dark) .text-emerald-400 { color: #059669; }
+    html:not(.dark) .bg-emerald-500\/20 { background-color: rgba(5, 150, 105, 0.12); }
+    html:not(.dark) .bg-emerald-500\/10 { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .bg-emerald-900\/20 { background-color: rgba(5, 150, 105, 0.07); }
+    html:not(.dark) .border-emerald-500\/30 { border-color: rgba(5, 150, 105, 0.25); }
+    html:not(.dark) .hover\:bg-emerald-500\/30:hover { background-color: rgba(5, 150, 105, 0.18); }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:bg-emerald-500\/10:hover { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-emerald-400 { color: #059669; }
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .bg-blue-500\/20 { background-color: rgba(37, 99, 235, 0.12); }
+    html:not(.dark) .bg-blue-500\/10 { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .bg-blue-900\/20 { background-color: rgba(37, 99, 235, 0.07); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37, 99, 235, 0.25); }
+    html:not(.dark) .hover\:bg-blue-500\/30:hover { background-color: rgba(37, 99, 235, 0.18); }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:bg-blue-500\/10:hover { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-blue-400 { color: #2563eb; }
+    html:not(.dark) .text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .bg-purple-500\/20 { background-color: rgba(124, 58, 237, 0.12); }
+    html:not(.dark) .bg-purple-500\/10 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .bg-purple-900\/20 { background-color: rgba(124, 58, 237, 0.07); }
+    html:not(.dark) .border-purple-500\/30 { border-color: rgba(124, 58, 237, 0.25); }
+    html:not(.dark) .hover\:bg-purple-500\/30:hover { background-color: rgba(124, 58, 237, 0.18); }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+    html:not(.dark) .hover\:bg-purple-500\/10:hover { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .text-amber-400 { color: #92400e; }
+    html:not(.dark) .bg-amber-500\/20 { background-color: rgba(217, 119, 6, 0.12); }
+    html:not(.dark) .bg-amber-500\/10 { background-color: rgba(217, 119, 6, 0.08); }
+    html:not(.dark) .bg-amber-900\/20 { background-color: rgba(217, 119, 6, 0.07); }
+    html:not(.dark) .border-amber-500\/30 { border-color: rgba(217, 119, 6, 0.25); }
+    html:not(.dark) .hover\:bg-amber-500\/30:hover { background-color: rgba(217, 119, 6, 0.18); }
+    html:not(.dark) .hover\:text-amber-400:hover { color: #92400e; }
+    html:not(.dark) .hover\:bg-amber-500\/10:hover { background-color: rgba(217, 119, 6, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-amber-400 { color: #92400e; }
+    html:not(.dark) .text-teal-400 { color: #0d9488; }
+    html:not(.dark) .bg-teal-500\/20 { background-color: rgba(13, 148, 136, 0.12); }
+    html:not(.dark) .bg-teal-500\/10 { background-color: rgba(13, 148, 136, 0.08); }
+    html:not(.dark) .bg-teal-900\/20 { background-color: rgba(13, 148, 136, 0.07); }
+    html:not(.dark) .border-teal-500\/30 { border-color: rgba(13, 148, 136, 0.25); }
+    html:not(.dark) .hover\:bg-teal-500\/30:hover { background-color: rgba(13, 148, 136, 0.18); }
+    html:not(.dark) .hover\:text-teal-400:hover { color: #0d9488; }
+    html:not(.dark) .hover\:bg-teal-500\/10:hover { background-color: rgba(13, 148, 136, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-teal-400 { color: #0d9488; }
+
+    /* Light mode - remove gradientes e cores especiais */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .border-primary\/30 { border-color: rgba(161, 98, 7, 0.22); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.25); }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+
+    /* Light mode - nav */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+
+    /* Dark mode - bordas suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* Alvos de ancora abaixo do nav sticky */
+    [data-inema-topic], [id^="modulo-"], [id^="topico-"] { scroll-margin-top: 72px; }
+
+    /* SVG light mode + animacao */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @keyframes wf-dash { to { stroke-dashoffset: -24; } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s} .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s} .wf-a:nth-child(5){animation-delay:1s}
+      .wf-flow { stroke-dasharray: 6 6; animation: wf-dash 1.2s linear infinite; }
+    }
+
+    /* Topicos expansiveis */
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+    /* Popover de aparência ancorado à direita e fora do layout quando fechado (sem transbordo) */
+    .inema-appearance-pop { right: 0; }
+    main code, main pre { overflow-wrap: anywhere; }
+    main .flex-1 { min-width: 0; }
+    .inema-appearance-pop:not([data-open="true"]) { visibility: hidden; display: none; }
+  </style>
+</head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen">
+  <a href="#conteudo" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[60] focus:px-4 focus:py-2 focus:bg-primary focus:text-black focus:rounded-lg">Pular para o conteúdo</a>
+
+  <nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-14">
+        <div class="flex items-center space-x-1.5 sm:space-x-3">
+          <a href="../../index.html" class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300">
+            <span class="text-2xl">🧩</span>
+            <span class="font-bold text-lg hidden lg:inline">Mods técnico</span>
+          </a>
+          <span class="text-neutral-600 hidden sm:inline">|</span>
+          <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 text-sm font-medium">INEMA.CLUB</a>
+          <span class="text-neutral-600">-</span>
+          <a href="https://inema.pro" target="_blank" class="text-amber-700 hover:text-amber-600 dark:text-slate-300 dark:hover:text-slate-200 text-sm font-medium">PRO</a>
+        </div>
+        <div class="flex items-center sm:space-x-1">
+          <a href="../trilha1/index.html" class="px-1.5 sm:px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors">
+            <span class="xl:hidden">T1</span><span class="hidden xl:inline">Anatomia</span>
+          </a>
+          <a href="../trilha2/index.html" class="px-1.5 sm:px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors">
+            <span class="xl:hidden">T2</span><span class="hidden xl:inline">Eventos e estado</span>
+          </a>
+          <a href="../trilha3/index.html" class="px-1.5 sm:px-2.5 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors">
+            <span class="xl:hidden">T3</span><span class="hidden xl:inline">Telas e comandos</span>
+          </a>
+          <a href="index.html" class="px-1.5 sm:px-2.5 py-1.5 rounded-lg text-sm font-semibold text-amber-400 bg-amber-500/10">
+            <span class="xl:hidden">T4</span><span class="hidden xl:inline">Controlar e distribuir</span>
+          </a>
+          <button type="button" data-inema-journey-open class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-sm text-neutral-300 hover:text-neutral-100 transition-colors" title="Minha jornada">
+            <span aria-hidden="true">◷</span><span class="hidden md:inline">Jornada</span>
+            <span class="inema-journey-badge" data-inema-journey-badge data-count="0"></span>
+          </button>
+          <div class="relative">
+            <button type="button" data-inema-appearance-toggle="#aparencia" aria-expanded="false" aria-controls="aparencia" class="p-2 rounded-lg text-neutral-300 hover:text-neutral-100 transition-colors" title="Aparência">
+              <span aria-hidden="true" class="text-sm font-semibold">Aa</span><span class="sr-only">Aparência</span>
+            </button>
+            <div id="aparencia" data-inema-appearance class="inema-appearance-pop">
+              <div class="inema-segment" aria-label="Tema">
+                <button type="button" data-inema-set-theme="inema-dark">Escuro</button>
+                <button type="button" data-inema-set-theme="claro">Claro</button>
+                <button type="button" data-inema-set-theme="sepia">Sépia</button>
+                <button type="button" data-inema-set-theme="foco">Foco</button>
+                <button type="button" data-inema-set-theme="contraste">Alto contraste</button>
+              </div>
+              <div class="inema-segment" aria-label="Fonte">
+                <button type="button" data-inema-set-font="inter">Inter</button>
+                <button type="button" data-inema-set-font="system">Sistema</button>
+                <button type="button" data-inema-set-font="leitura">Leitura</button>
+              </div>
+              <div class="inema-segment" aria-label="Tamanho do texto">
+                <button type="button" data-inema-set-fontscale="100">A</button>
+                <button type="button" data-inema-set-fontscale="112">A+</button>
+                <button type="button" data-inema-set-fontscale="125">A++</button>
+              </div>
+              <div class="inema-segment" aria-label="Largura da linha">
+                <button type="button" data-inema-set-linewidth="60">Estreito</button>
+                <button type="button" data-inema-set-linewidth="68">Médio</button>
+                <button type="button" data-inema-set-linewidth="75">Largo</button>
+              </div>
+              <div class="inema-segment" aria-label="Entrelinha">
+                <button type="button" data-inema-set-leading="1.45">Compacto</button>
+                <button type="button" data-inema-set-leading="1.7">Confortável</button>
+              </div>
+            </div>
+          </div>
+          <button id="theme-toggle" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors" aria-label="Alternar tema claro/escuro">
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <nav aria-label="Trilha de navegação" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex items-center space-x-2 text-sm text-neutral-400">
+      <a href="../../index.html" class="hover:text-amber-400">Início</a><span>/</span>
+      <a href="index.html" class="hover:text-amber-400">Trilha 4</a><span>/</span>
+      <span class="text-amber-400">Módulo 4.1</span>
+    </div>
+  </nav>
+
+  <header class="bg-gradient-to-br from-amber-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600" data-inema-module="4-1" data-inema-track="4">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="inline-block px-3 py-1 bg-amber-500/20 text-amber-400 text-xs font-semibold rounded-full mb-4">MÓDULO 4.1</span>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-4">🛡️ Mods que mudam o fluxo</h1>
+      <p class="text-lg text-neutral-400 max-w-3xl">Até aqui o mod observou e desenhou. Agora ele decide: barra uma chamada de ferramenta, pergunta ao humano antes de apagar, troca o modelo de um subagente. Tudo isso sem passar por cima das permissões que a pessoa já configurou.</p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 max-w-2xl">
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">6</div><div class="text-xs text-neutral-400">Tópicos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">~35</div><div class="text-xs text-neutral-400">Minutos</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">Avançado</div><div class="text-xs text-neutral-400">Nível</div></div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600"><div class="text-xl font-bold text-amber-400">Prático</div><div class="text-xs text-neutral-400">Tipo</div></div>
+      </div>
+      <div data-inema-meter="modulo:4-1" class="mt-6 max-w-2xl" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso do módulo 4.1">
+        <div class="flex justify-between text-xs text-neutral-400 mb-1"><span data-inema-meter-frac>0 de 6</span><span data-inema-meter-pct>0%</span></div>
+        <div class="inema-bar"><div class="inema-bar__fill" data-inema-meter-fill></div></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:grid lg:grid-cols-[1fr_220px] lg:gap-10">
+  <main id="conteudo" class="min-w-0" data-inema-module="4-1" data-inema-track="4">
+
+    <div class="bg-amber-900/20 rounded-xl border border-amber-500/30 p-5 mb-10 text-sm text-neutral-300">
+      <strong class="text-amber-400">Versão conferida:</strong> os trechos deste módulo vêm do <strong>Claude Code 2.1.289</strong> (05/10/2026), da referência oficial e dos mods do <code>inema-mods</code>. A API está em acesso antecipado: confira cada nome no <code>.claude-plugin/types/claude-code/index.d.ts</code> da sua instalação.
+    </div>
+
+    <!-- ===================== TOPICO 1 ===================== -->
+    <section id="topico-1" data-inema-topic="modulo-4-1#topico-1" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">1</span>
+        <h2 class="text-2xl font-bold flex-1">Intercepte uma chamada de ferramenta</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-1-t1-p1" class="text-neutral-300 mb-4 leading-relaxed">Todo mod que muda o fluxo começa no mesmo lugar: o evento <code>tool.call</code>. Ele dispara quando o Claude Code está <strong class="text-amber-400">prestes a rodar</strong> uma ferramenta (Bash, Edit, Write, Read, uma ferramenta MCP).</p>
+      <p data-inema-block="m4-1-t1-p2" class="text-neutral-300 mb-6 leading-relaxed">Os tipos dizem o que acontece por baixo: <code>next(e)</code> roda os hooks dos outros plugins e depois o núcleo, que é <strong>o pedido de permissão e a própria ferramenta</strong>. O seu hook fica antes de tudo isso, com três saídas possíveis.</p>
+
+      <div class="rounded-2xl border border-amber-500/30 bg-dark-900/40 p-3 sm:p-4 mb-3 overflow-hidden">
+        <svg viewBox="0 0 800 260" class="w-full h-auto" role="img" aria-label="O modelo pede uma ferramenta e o evento tool.call chega ao hook do mod. Dele saem três caminhos: deny, que devolve uma recusa ao modelo e a ferramenta nunca roda; next, que segue para os outros plugins, depois para o pedido de permissão e por fim para a ferramenta; e result, que responde no lugar da ferramenta e pula a permissão.">
+          <defs>
+            <pattern id="m41a-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#fbbf24" opacity="0.10"/></pattern>
+            <filter id="m41a-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <marker id="m41a-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38bdf8"/></marker>
+          </defs>
+          <rect x="0" y="0" width="800" height="260" fill="url(#m41a-grid)"/>
+          <g font-family="Inter,sans-serif" font-size="12" text-anchor="middle">
+            <rect x="20" y="100" width="120" height="56" rx="12" fill="#1f2937" stroke="#6b7280" stroke-width="2"/><text x="80" y="124" fill="#e5e7eb">modelo pede</text><text x="80" y="142" fill="#9ca3af" font-size="11">Bash: rm -rf build</text>
+            <line class="wf-flow" x1="142" y1="128" x2="193" y2="128" stroke="#38bdf8" stroke-width="2" marker-end="url(#m41a-arrow)"/>
+            <g filter="url(#m41a-glow)"><rect x="198" y="96" width="150" height="64" rx="14" fill="#2a1d06" stroke="#fbbf24" stroke-width="2"/></g>
+            <text x="273" y="124" fill="#fbbf24" font-family="JetBrains Mono,monospace" font-weight="600">tool.call</text><text x="273" y="143" fill="#fde68a" font-size="11">o seu hook</text>
+            <line x1="273" y1="94" x2="273" y2="52" stroke="#f87171" stroke-width="2" marker-end="url(#m41a-arrow)"/>
+            <rect x="198" y="14" width="150" height="36" rx="10" fill="#2a0f0f" stroke="#f87171" stroke-width="2"/><text x="273" y="37" fill="#fecaca" font-family="JetBrains Mono,monospace">{ deny }</text>
+            <line class="wf-flow" x1="350" y1="128" x2="401" y2="128" stroke="#38bdf8" stroke-width="2" marker-end="url(#m41a-arrow)"/>
+            <rect class="wf-a" x="406" y="100" width="110" height="56" rx="12" fill="#0b1f2e" stroke="#38bdf8" stroke-width="2"/><text x="461" y="124" fill="#bae6fd">outros</text><text x="461" y="142" fill="#7dd3fc" font-size="11">plugins</text>
+            <line class="wf-flow" x1="518" y1="128" x2="551" y2="128" stroke="#38bdf8" stroke-width="2" marker-end="url(#m41a-arrow)"/>
+            <rect class="wf-a" x="556" y="100" width="110" height="56" rx="12" fill="#0b1f2e" stroke="#38bdf8" stroke-width="2"/><text x="611" y="124" fill="#bae6fd">permissão</text><text x="611" y="142" fill="#7dd3fc" font-size="11">regras e diálogo</text>
+            <line class="wf-flow" x1="668" y1="128" x2="701" y2="128" stroke="#38bdf8" stroke-width="2" marker-end="url(#m41a-arrow)"/>
+            <rect x="706" y="100" width="80" height="56" rx="12" fill="#1f2937" stroke="#6b7280" stroke-width="2"/><text x="746" y="124" fill="#e5e7eb">ferramenta</text><text x="746" y="142" fill="#9ca3af" font-size="11">roda</text>
+            <line x1="273" y1="162" x2="273" y2="200" stroke="#9ca3af" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#m41a-arrow)"/>
+            <rect x="198" y="204" width="150" height="36" rx="10" fill="#1f2937" stroke="#9ca3af" stroke-width="2"/><text x="273" y="227" fill="#e5e7eb" font-family="JetBrains Mono,monospace">{ result }</text>
+            <text x="560" y="212" fill="#9ca3af" font-size="11">next(e): o caminho normal, com permissão</text>
+            <text x="560" y="230" fill="#fca5a5" font-size="11">{ result }: pula permissão e ferramenta</text>
+          </g>
+        </svg>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">Como ler o desenho:</strong> o hook âmbar está antes da permissão. Para cima, <code>{ deny }</code> encerra a chamada. Para a direita, <code>next(e)</code> segue o caminho de sempre. Para baixo, <code>{ result }</code> responde no lugar da ferramenta: é o único caminho que pula o pedido de permissão, por isso fica pontilhado.</p>
+
+      <div class="bg-amber-900/20 rounded-xl border border-amber-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-amber-400 mb-3 flex items-center"><span class="mr-2">🆕</span> Novo aqui? As respostas de um tool.call</h3>
+        <ul class="space-y-2 text-neutral-300 text-sm">
+          <li><strong><code>{ deny: motivo }</code></strong> — recusa a chamada. O modelo recebe o texto como resultado de erro.</li>
+          <li><strong><code>{ result }</code></strong> — responde sem rodar a ferramenta. É como um mod serve a própria ferramenta MCP (módulo 3.4).</li>
+          <li><strong><code>next(e)</code> / <code>next({ ...e, command })</code></strong> — deixa seguir, igual ou reescrito.</li>
+        </ul>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-amber-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-amber-900/20 border-b border-amber-500/30"><span class="text-amber-400 font-semibold text-sm">📄 plugin-authoring/examples/tool-call.ts (exemplo oficial, inteiro)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">import type { Register } from 'claude-code'
+
+const PROTECTED = /(^|\/)\.env(\.|$)/
+
+export const register: Register = on =&gt; {
+  on('tool.call', { tool: 'Edit' }, ($, e, next) =&gt;
+    PROTECTED.test(e.file_path)
+      ? { deny: `${$.plugin.name}: ${e.file_path} is protected here.` }
+      : next(e),
+  )
+
+  on('tool.call', { tool: 'Bash' }, async ($, e, next) =&gt; {
+    const ran = await next({ ...e, command: e.command.trim() })
+    const hasFailed = ran.deny === undefined &amp;&amp; ran.isError === true
+
+    $.ui.status(hasFailed ? `failed: ${e.command.slice(0, 40)}` : undefined)
+
+    return ran
+  })
+}</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-amber-400">O que olhar:</strong> o matcher <code>{ tool: 'Edit' }</code> estreita o <code>e</code>: dentro do hook, <code>e.file_path</code> já tem tipo. O segundo hook reescreve o comando (tira espaços) e só depois olha o resultado.</div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-dark-800 rounded-xl p-6 border border-amber-500/30">
+          <h3 class="font-semibold text-amber-400 mb-3">✓ Bom uso do matcher</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ <code>{ tool: 'Bash' }</code> para analisar comandos</li>
+            <li>✓ Um hook por ferramenta de edição (Edit, Write, NotebookEdit)</li>
+            <li>✓ Sem matcher só quando a regra vale para todas (ex.: ferramentas MCP pagas)</li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ Armadilhas</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ Hook sem matcher que trata todo <code>e</code> como Bash</li>
+            <li>✗ Devolver antes do <code>next</code> terminar: aborta o que roda por baixo</li>
+            <li>✗ Contar sucesso antes de <code>await next(e)</code></li>
+          </ul>
+        </div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 2 ===================== -->
+    <section id="topico-2" data-inema-topic="modulo-4-1#topico-2" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">2</span>
+        <h2 class="text-2xl font-bold flex-1">Negue com motivo claro</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-1-t2-p1" class="text-neutral-300 mb-4 leading-relaxed">O texto do <code>deny</code> não é para você: é para o <strong class="text-amber-400">modelo</strong>. Ele lê a recusa como resultado de erro da ferramenta e decide o próximo passo com base nela.</p>
+      <p data-inema-block="m4-1-t2-p2" class="text-neutral-300 mb-6 leading-relaxed">Um "negado" seco faz o modelo tentar de novo por outro caminho: <code>find -delete</code> no lugar de <code>rm</code>, um script Python que apaga. Um bom motivo diz quem barrou, o que teria acontecido e o que fazer agora.</p>
+
+      <div class="overflow-x-auto mb-6 rounded-xl border border-dark-600">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-dark-700/60 text-amber-400"><tr><th class="px-4 py-3 font-semibold">Parte do motivo</th><th class="px-4 py-3 font-semibold">Para quê</th><th class="px-4 py-3 font-semibold">No freio-de-mao</th></tr></thead>
+          <tbody class="divide-y divide-dark-600">
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Quem barrou</td><td class="px-4 py-3 text-neutral-300">o modelo e a pessoa sabem que foi um mod, não um erro</td><td class="px-4 py-3 text-neutral-300"><code>freio-de-mao:</code> no começo</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">O que aconteceria</td><td class="px-4 py-3 text-neutral-300">o modelo explica o risco com números</td><td class="px-4 py-3 text-neutral-300"><code>Ele faria: ${resumo}</code></td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">O que fazer agora</td><td class="px-4 py-3 text-neutral-300">fecha a porta do "outro caminho"</td><td class="px-4 py-3 text-neutral-300"><code>Não tente apagar por outro caminho</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-amber-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-amber-900/20 border-b border-amber-500/30"><span class="text-amber-400 font-semibold text-sm">📄 inema-mods/mods/freio-de-mao/hooks/register.tsx (trecho: o deny do Cancelar)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">    // Cancelar ou texto livre: não roda.
+    return {
+      deny: `freio-de-mao: o usuário cancelou. O comando faria: ${resumo}. Não tente apagar por outro caminho; pergunte ao usuário como seguir.`,
+    }</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-amber-400">O que olhar:</strong> as três partes da tabela numa frase só. O <code>resumo</code> vem da medição feita antes (quantos arquivos, quanto espaço).</div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-dark-800 rounded-xl p-6 border border-amber-500/30">
+          <h3 class="font-semibold text-amber-400 mb-3">✓ Motivo que funciona</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ Começa com o nome do mod</li>
+            <li>✓ Diz o efeito que foi evitado</li>
+            <li>✓ Manda devolver a decisão ao usuário</li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ Motivo que gera insistência</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ <code>"negado"</code></li>
+            <li>✗ <code>"erro"</code> (parece falha passageira)</li>
+            <li>✗ Texto que não diz o que fazer em seguida</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6">
+        <h3 class="text-lg font-semibold text-primary mb-2 flex items-center"><span class="mr-2">💡</span> Negar é sempre seguro</h3>
+        <p class="text-neutral-300 text-sm">Um <code>deny</code> só tira poder: a ferramenta não roda e ninguém precisa aprovar nada. Por isso ele é o padrão certo quando o mod não sabe o que fazer (sem tela, medição que falhou, backup que deu erro).</p>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 3 ===================== -->
+    <section id="topico-3" data-inema-topic="modulo-4-1#topico-3" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">3</span>
+        <h2 class="text-2xl font-bold flex-1">Pergunte ao humano com ui.ask</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-1-t3-p1" class="text-neutral-300 mb-4 leading-relaxed">Entre deixar e negar existe perguntar. <code>$.ui.ask(pergunta, opções)</code> abre o mesmo diálogo que o Claude usa para fazer perguntas e devolve o <strong class="text-amber-400">rótulo escolhido</strong>, ou o texto livre digitado em "Other".</p>
+      <p data-inema-block="m4-1-t3-p2" class="text-neutral-300 mb-6 leading-relaxed">Segundo os tipos, a chamada <strong>rejeita</strong> quando a pessoa dispensa o diálogo e numa execução <code>-p</code>, onde não há ninguém para perguntar. É por isso que todo <code>ui.ask</code> do kit INEMA termina em <code>.catch</code>.</p>
+
+      <div class="bg-amber-900/20 rounded-xl border border-amber-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-amber-400 mb-2 flex items-center"><span class="mr-2">🆕</span> Novo aqui? AskOptions</h3>
+        <p class="text-neutral-300 text-sm">O segundo argumento do <code>$.ui.ask</code> é uma lista de 2 a 4 rótulos ou um objeto <code>{ options, header, multiSelect }</code>. O <code>header</code> é a etiqueta curta ao lado da pergunta (até 12 caracteres). Com <code>multiSelect</code>, a resposta volta com os rótulos separados por vírgula.</p>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-amber-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-amber-900/20 border-b border-amber-500/30"><span class="text-amber-400 font-semibold text-sm">📄 inema-mods/mods/vigia-api/hooks/register.tsx (trecho da função vigiar)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">  const resposta = await $.ui
+    .ask(`Isso usa serviço pago (${achado.nome}). Autoriza agora?`, {
+      header: 'API paga',
+      options: [NEGAR, SO_ESTA, POR_HORA],
+    })
+    .catch(() =&gt; undefined)
+  if (resposta === undefined) {
+    return {
+      deny:
+        `vigia-api: "${achado.nome}" usa serviço pago e não há ninguém na tela para autorizar. ` +
+        'Não tente por outro caminho: peça autorização ao usuário em texto, dizendo qual serviço e para quê. ' +
+        `Ele pode liberar com /vigia autorizar ${achado.padrao.trim()}`,
+    }
+  }</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-amber-400">O que olhar:</strong> <code>NEGAR</code> é a primeira opção. O <code>.catch</code> transforma "sem tela" em <code>undefined</code>, e <code>undefined</code> vira um <code>deny</code> explicado.</div>
+      </div>
+
+      <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-red-400 mb-2 flex items-center"><span class="mr-2">⚠️</span> A opção segura vai em primeiro lugar</h3>
+        <p class="text-neutral-300 text-sm">O diálogo pode se resolver sozinho quando a pessoa está longe do teclado (o resultado do AskUserQuestion traz <code>afkTimeoutMs</code> nesse caso). O <code>COMO-FAZER-UM-MOD.md</code> do inema-mods registra isso em "Visto ao vivo": ponha Cancelar ou Negar primeiro, para que uma resposta automática nunca seja a destrutiva.</p>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">🥇</div><div class="text-sm font-semibold text-amber-400">Seguro primeiro</div><p class="text-xs text-neutral-400 mt-1">Cancelar, Negar</p></div>
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">🧯</div><div class="text-sm font-semibold text-amber-400">.catch</div><p class="text-xs text-neutral-400 mt-1">claude -p e Esc</p></div>
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">🟰</div><div class="text-sm font-semibold text-amber-400">Compare exato</div><p class="text-xs text-neutral-400 mt-1">texto livre existe</p></div>
+        <div class="bg-dark-800 rounded-xl p-4 border border-dark-600 text-center"><div class="text-2xl mb-1">🏷️</div><div class="text-sm font-semibold text-amber-400">header</div><p class="text-xs text-neutral-400 mt-1">até 12 caracteres</p></div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 4 ===================== -->
+    <section id="topico-4" data-inema-topic="modulo-4-1#topico-4" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">4</span>
+        <h2 class="text-2xl font-bold flex-1">Troque o modelo de um subagente</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-1-t4-p1" class="text-neutral-300 mb-4 leading-relaxed">Mudar o fluxo não é só barrar. O Rafa quer que as buscas do subagente Explore rodem num modelo menor, para poupar cota. Os dois kits resolvem isso em <strong class="text-amber-400">pontos diferentes</strong> da cadeia.</p>
+      <p data-inema-block="m4-1-t4-p2" class="text-neutral-300 mb-6 leading-relaxed">O <code>roteador-subagente</code> do inema-mods age uma vez, quando o subagente nasce, no evento <code>agent.spawn</code>. O <code>model-router</code> do kit da Prompt Advisers age passo a passo, no stream <code>turn.step</code>.</p>
+
+      <div class="bg-amber-900/20 rounded-xl border border-amber-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-amber-400 mb-2 flex items-center"><span class="mr-2">🆕</span> Novo aqui? agent.spawn</h3>
+        <p class="text-neutral-300 text-sm">Evento que dispara quando um subagente vai ser criado. O <code>e</code> traz <code>subagentType</code> (Explore, general-purpose...) e <code>model</code>, o parâmetro como o modelo pediu na chamada do Agent. Os tipos dizem: um hook define <code>model</code> para escolher o modelo do subagente; forks sempre herdam e ignoram esse campo.</p>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-amber-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-amber-900/20 border-b border-amber-500/30"><span class="text-amber-400 font-semibold text-sm">📄 inema-mods/mods/roteador-subagente/hooks/register.tsx (trecho)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">  on('agent.spawn', async ($, e, next) =&gt; {
+    // Respeita o que foi pedido: modelo explícito, fork (sempre herda) e teammate.
+    if (e.model !== undefined || e.fork || e.isTeammate === true) return next(e)
+    const alvo = destino(await read($, modo), mapa, e.subagentType)
+    if (alvo === undefined) return next(e)
+    const r = await next({ ...e, model: alvo })
+    const id = r.agentId
+    if (id !== undefined) await update($, roteados, x =&gt; ({ ...x, [id]: alvo }))
+    return r
+  })</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-amber-400">O que olhar:</strong> a primeira linha útil é de respeito. Se alguém pediu um modelo explicitamente, o mod não mexe. Só depois ele reescreve <code>model</code> e passa adiante com <code>next</code>.</div>
+      </div>
+
+      <div class="overflow-x-auto mb-6 rounded-xl border border-dark-600">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-dark-700/60 text-amber-400"><tr><th class="px-4 py-3 font-semibold"></th><th class="px-4 py-3 font-semibold">roteador-subagente (inema-mods)</th><th class="px-4 py-3 font-semibold">model-router (Prompt Advisers, MIT)</th></tr></thead>
+          <tbody class="divide-y divide-dark-600">
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Evento</td><td class="px-4 py-3 text-neutral-300"><code>agent.spawn</code></td><td class="px-4 py-3 text-neutral-300"><code>turn.step</code> (stream, <code>async function*</code>)</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Quando decide</td><td class="px-4 py-3 text-neutral-300">uma vez, ao criar o subagente</td><td class="px-4 py-3 text-neutral-300">a cada passo; pelo <code>e.agentId</code> sabe se é subagente</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Como troca</td><td class="px-4 py-3 text-neutral-300"><code>next({ ...e, model: alvo })</code></td><td class="px-4 py-3 text-neutral-300"><code>yield* next(...)</code> com a entrada reescrita</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Arquivo</td><td class="px-4 py-3 text-neutral-300"><code>hooks/register.tsx</code></td><td class="px-4 py-3 text-neutral-300"><code>plugins/model-router/hooks/model-router.mjs</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">O que olhar na tabela:</strong> o <code>agent.spawn</code> é mais simples e basta para "este tipo de subagente usa aquele modelo". O <code>turn.step</code> dá controle fino (até passos do turno principal), mas exige tratar stream, assunto do módulo 2.1.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-dark-800 rounded-xl p-6 border border-amber-500/30">
+          <h3 class="font-semibold text-amber-400 mb-3">✓ Troque quando</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✓ O modelo não foi pedido na chamada</li>
+            <li>✓ O tipo de subagente está no mapa do <code>/config</code></li>
+            <li>✓ O usuário ligou o roteador (<code>/router on</code>)</li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl p-6 border border-red-500/30">
+          <h3 class="font-semibold text-red-400 mb-3">✗ Não troque</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>✗ Fork (sempre herda o modelo)</li>
+            <li>✗ Teammate</li>
+            <li>✗ Modelo escolhido explicitamente</li>
+          </ul>
+        </div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 5 ===================== -->
+    <section id="topico-5" data-inema-topic="modulo-4-1#topico-5" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">5</span>
+        <h2 class="text-2xl font-bold flex-1">Preserve as permissões do usuário</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-1-t5-p1" class="text-neutral-300 mb-4 leading-relaxed">A pessoa já tem regras: o que o Claude pode rodar sem perguntar, o que sempre pede aprovação, hooks clássicos de <code>PreToolUse</code>. Um mod de controle deve <strong class="text-amber-400">somar</strong> a essas regras, nunca contorná-las.</p>
+      <p data-inema-block="m4-1-t5-p2" class="text-neutral-300 mb-6 leading-relaxed">A regra prática sai do desenho do tópico 1: para ferramentas do próprio Claude Code, termine sempre em <code>next(e)</code> ou em <code>{ deny }</code>. Uma reescrita (<code>next({ ...e, command: novo })</code>) também passa pela permissão, já com o comando novo.</p>
+
+      <div class="overflow-x-auto mb-6 rounded-xl border border-dark-600">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-dark-700/60 text-amber-400"><tr><th class="px-4 py-3 font-semibold">Camada</th><th class="px-4 py-3 font-semibold">Onde fica</th><th class="px-4 py-3 font-semibold">Pode</th></tr></thead>
+          <tbody class="divide-y divide-dark-600">
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Hooks das configurações gerenciadas</td><td class="px-4 py-3 text-neutral-300">antes de tudo</td><td class="px-4 py-3 text-neutral-300">um deny deles é o resultado final</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Seu <code>tool.call</code></td><td class="px-4 py-3 text-neutral-300">acima da permissão</td><td class="px-4 py-3 text-neutral-300"><code>deny</code>, reescrever, <code>next</code></td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100"><code>classic.PreToolUse</code></td><td class="px-4 py-3 text-neutral-300">dentro do <code>tool.call</code>, abaixo de todos os plugins</td><td class="px-4 py-3 text-neutral-300"><code>allow</code>, <code>ask</code>, <code>deny</code> ou nada</td></tr>
+            <tr class="bg-dark-800"><td class="px-4 py-3 text-neutral-100">Diálogo de permissão</td><td class="px-4 py-3 text-neutral-300">desenhado só pelo engine</td><td class="px-4 py-3 text-neutral-300">o mod só acrescenta uma linha com <code>$.ui.notice</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6 mb-6">
+        <h3 class="text-base font-semibold text-red-400 mb-2 flex items-center"><span class="mr-2">⚠️</span> Recusa de permissão chega como erro</h3>
+        <p class="text-neutral-300 text-sm">Pegadinha 22 do <code>COMO-FAZER-UM-MOD.md</code>: quando a pessoa recusa a permissão, o <code>tool.call</code> recebe <code>isError: true</code>, igual a uma ferramenta que falhou. Não dá para separar os dois. O teste certo de sucesso é o da pegadinha 6: <code>ran.deny === undefined &amp;&amp; ran.isError !== true</code>.</p>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-amber-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-amber-900/20 border-b border-amber-500/30"><span class="text-amber-400 font-semibold text-sm">📄 inema-mods/mods/guarda-colisao/hooks/register.tsx (trecho)</span></div>
+        <div class="p-5">
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">  on('tool.call', { tool: 'Edit' }, async ($, e, next) =&gt; {
+    const barrar = await decidir($, e.file_path, cfg)
+    if (barrar) return barrar
+    const ran = await next(e)
+    if (ran.deny === undefined &amp;&amp; ran.isError !== true) await marcar($, e.file_path, cfg)
+    return ran
+  })</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-amber-400">O que olhar:</strong> ou <code>deny</code>, ou <code>next(e)</code>. O mod nunca responde <code>{ result }</code> por uma edição, então a regra de permissão da pessoa continua decidindo. E só marca o arquivo quando a edição de fato aconteceu.</div>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6">
+        <h3 class="text-lg font-semibold text-primary mb-2 flex items-center"><span class="mr-2">💡</span> Perguntar sem abrir outro diálogo</h3>
+        <p class="text-neutral-300 text-sm">Se a ferramenta já vai pedir permissão, às vezes basta enriquecer esse pedido: <code>$.ui.notice(e.tool_use_id, "conferido pelo meu-mod")</code> mostra uma linha sob o diálogo aberto e o engine a remove quando a chamada termina. E <code>$.tool.check</code> pergunta qual seria a decisão de permissão sem rodar nada.</p>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== TOPICO 6 ===================== -->
+    <section id="topico-6" data-inema-topic="modulo-4-1#topico-6" class="mb-16">
+      <div class="flex flex-wrap items-center gap-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">6</span>
+        <h2 class="text-2xl font-bold flex-1">Estude a guarda do freio-de-mão</h2>
+        <button type="button" data-inema-doubt-toggle aria-pressed="false" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600 text-neutral-300 hover:bg-dark-600 transition-colors text-sm"><span aria-hidden="true">?</span><span>Tenho dúvida</span></button>
+      </div>
+      <p data-inema-block="m4-1-t6-p1" class="text-neutral-300 mb-4 leading-relaxed">O <code>freio-de-mao</code> junta tudo deste módulo. Antes de um Bash que apaga ou descarta (<code>rm -rf</code>, <code>git reset --hard</code>, <code>git clean</code>, <code>push --force</code>), ele <strong class="text-amber-400">mede o estrago sem apagar</strong> e pergunta: Cancelar, Mandar para a lixeira, Fazer backup e prosseguir, ou Prosseguir.</p>
+      <p data-inema-block="m4-1-t6-p2" class="text-neutral-300 mb-6 leading-relaxed">O hook inteiro tem umas 60 linhas em <code>mods/freio-de-mao/hooks/register.tsx</code>. As funções que recebem <code>$</code> (<code>medir</code>, <code>registrar</code>, <code>fazerBackup</code>) ficam no topo do arquivo, fora do <code>register</code> (pegadinha 1).</p>
+
+      <div class="rounded-2xl border border-amber-500/30 bg-dark-900/40 p-3 sm:p-4 mb-3 overflow-hidden">
+        <svg viewBox="0 0 800 230" class="w-full h-auto" role="img" aria-label="Fluxo do freio-de-mão. Um comando Bash chega. Se não há perigo, segue com next. Se há, o mod mede o estrago e pergunta com ui.ask. Sem tela, nega por padrão. Cancelar nega com o resumo. Lixeira reescreve o comando e segue. Backup copia e segue. Prosseguir segue sem mudança.">
+          <defs>
+            <pattern id="m41b-grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.3" cy="1.3" r="1.3" fill="#fbbf24" opacity="0.10"/></pattern>
+            <filter id="m41b-glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <marker id="m41b-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38bdf8"/></marker>
+          </defs>
+          <rect x="0" y="0" width="800" height="230" fill="url(#m41b-grid)"/>
+          <g font-family="Inter,sans-serif" font-size="12" text-anchor="middle">
+            <rect x="16" y="90" width="110" height="50" rx="12" fill="#1f2937" stroke="#6b7280" stroke-width="2"/><text x="71" y="112" fill="#e5e7eb">Bash</text><text x="71" y="129" fill="#9ca3af" font-size="11">rm -rf build</text>
+            <line class="wf-flow" x1="128" y1="115" x2="163" y2="115" stroke="#38bdf8" stroke-width="2" marker-end="url(#m41b-arrow)"/>
+            <rect class="wf-a" x="168" y="90" width="110" height="50" rx="12" fill="#0b1f2e" stroke="#38bdf8" stroke-width="2"/><text x="223" y="112" fill="#bae6fd">analisar</text><text x="223" y="129" fill="#7dd3fc" font-size="11">há perigo?</text>
+            <line x1="223" y1="88" x2="223" y2="44" stroke="#9ca3af" stroke-width="2" marker-end="url(#m41b-arrow)"/>
+            <text x="223" y="34" fill="#9ca3af" font-family="JetBrains Mono,monospace" font-size="11">não: next(e)</text>
+            <line class="wf-flow" x1="280" y1="115" x2="315" y2="115" stroke="#38bdf8" stroke-width="2" marker-end="url(#m41b-arrow)"/>
+            <rect class="wf-a" x="320" y="90" width="110" height="50" rx="12" fill="#0b1f2e" stroke="#38bdf8" stroke-width="2"/><text x="375" y="112" fill="#bae6fd">medir</text><text x="375" y="129" fill="#7dd3fc" font-size="11">$.process.run</text>
+            <line class="wf-flow" x1="432" y1="115" x2="467" y2="115" stroke="#38bdf8" stroke-width="2" marker-end="url(#m41b-arrow)"/>
+            <g filter="url(#m41b-glow)"><rect x="472" y="86" width="120" height="58" rx="14" fill="#2a1d06" stroke="#fbbf24" stroke-width="2"/></g>
+            <text x="532" y="111" fill="#fbbf24" font-family="JetBrains Mono,monospace" font-weight="600">ui.ask</text><text x="532" y="129" fill="#fde68a" font-size="11">.catch</text>
+            <g font-size="11">
+              <line x1="594" y1="100" x2="640" y2="34" stroke="#f87171" stroke-width="1.5" marker-end="url(#m41b-arrow)"/><text x="715" y="30" fill="#fca5a5">sem tela / Cancelar: deny</text>
+              <line x1="594" y1="108" x2="640" y2="82" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#m41b-arrow)"/><text x="715" y="82" fill="#bae6fd">Lixeira: next(reescrito)</text>
+              <line x1="594" y1="122" x2="640" y2="130" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#m41b-arrow)"/><text x="715" y="134" fill="#bae6fd">Backup: copia, next(e)</text>
+              <line x1="594" y1="132" x2="640" y2="180" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#m41b-arrow)"/><text x="715" y="186" fill="#e5e7eb">Prosseguir: next(e)</text>
+            </g>
+            <text x="300" y="210" fill="#9ca3af" font-size="11">toda decisão é registrada em $.state e aparece no /freio</text>
+          </g>
+        </svg>
+      </div>
+      <p class="text-sm text-neutral-400 mb-6"><strong class="text-neutral-300">Como ler o desenho:</strong> o caminho azul só chega ao <code>ui.ask</code> quando há algo a perder. Das quatro saídas, só uma (vermelha) nega; as outras terminam em <code>next</code>, então a permissão da pessoa ainda decide depois.</p>
+
+      <div class="space-y-5 mb-6">
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">1</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1"><code>analisar(e.command, cwd)</code></h4> <p class="text-neutral-300 text-sm">Regra pura, sem <code>$</code>, em <code>hooks/regras.ts</code>. Lista vazia: <code>return next(e)</code>.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">2</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1"><code>medir($, p)</code></h4> <p class="text-neutral-300 text-sm">Conta arquivos e tamanho com <code>$.process.run</code>, com <code>timeoutMs</code>. Nada a perder (alvo não existe): segue sem perguntar.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">3</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Monta as opções</h4> <p class="text-neutral-300 text-sm"><code>[CANCELAR, ...lixeira, ...backup, PROSSEGUIR]</code>: Cancelar sempre primeiro; Lixeira e Backup só quando dá.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">4</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1"><code>$.ui.ask(...).catch(() =&gt; undefined)</code></h4> <p class="text-neutral-300 text-sm">Sem tela: a opção <code>sem_tela</code> do <code>/config</code> decide; o padrão é <code>negar</code>.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">5</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1"><code>registrar($, ...)</code></h4> <p class="text-neutral-300 text-sm">Guarda a decisão com <code>update($, paradas, ...)</code> e a hora de <code>$.clock.now()</code>.</p></div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center"><span class="text-amber-400 font-bold">6</span></div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600"><h4 class="font-semibold text-neutral-100 mb-1">Age conforme a resposta</h4> <p class="text-neutral-300 text-sm">Lixeira: <code>next({ ...e, command: novo })</code>. Backup que falha: <code>deny</code>, o comando não roda. Cancelar: <code>deny</code> com o resumo.</p></div>
+        </div>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-amber-500/30 overflow-hidden mb-6">
+        <div class="px-5 py-3 bg-amber-900/20 border-b border-amber-500/30"><span class="text-amber-400 font-semibold text-sm">🎯 Objetivo: ver o freio-de-mão passar nos próprios testes</span></div>
+        <div class="p-5">
+          <p class="text-sm text-neutral-400 mb-3">No terminal, dentro da pasta <code>inema-mods</code> que você clonou:</p>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">claude plugin validate mods/freio-de-mao
+claude plugin test mods/freio-de-mao</pre>
+          <p class="text-sm text-neutral-400 mt-4 mb-3">Depois abra <code>claude</code> na mesma pasta e cole:</p>
+          <pre class="font-mono text-sm text-neutral-200 whitespace-pre-wrap bg-dark-900/60 rounded-lg p-4 border border-dark-600">Leia mods/freio-de-mao/hooks/register.tsx e mods/freio-de-mao/tests/freio.test.ts. Para cada saída do hook de tool.call (deny ou next), me diga qual teste a cobre. Não rode nem instale nada.</pre>
+        </div>
+        <div class="px-5 py-3 bg-dark-700/40 border-t border-dark-600 text-neutral-300 text-sm"><strong class="text-amber-400">Como verificar:</strong> o validate termina em <code>✔ Validation passed</code>; o test termina com uma linha <code>N pass</code> e outra <code>0 fail</code>. Na resposta do Claude, os testes "Cancelar", "sem tela: padrão nega" e "backup que falha" aparecem ligados a um <code>deny</code>.</div>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-dark-600 p-6 mb-6" data-inema-check="modulo-4-1#q1">
+        <p class="font-medium mb-4">Teste rápido (opcional): o mod do Rafa pergunta antes de um <code>git push --force</code>. Numa execução <code>claude -p</code>, o que deve acontecer?</p>
+        <div class="space-y-2">
+          <button type="button" data-inema-check-option="0" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">O <code>ui.ask</code> espera até alguém responder.</button>
+          <button type="button" data-inema-check-option="1" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">O <code>ui.ask</code> rejeita; o <code>.catch</code> cai num <code>deny</code> que explica o motivo ao modelo.</button>
+          <button type="button" data-inema-check-option="2" class="block w-full text-left px-4 py-2 rounded-lg bg-dark-700 border border-dark-600 hover:bg-dark-600 transition-colors text-sm">O mod responde <code>{ result }</code> para o comando parecer que rodou.</button>
+        </div>
+        <div data-inema-check-feedback class="mt-4 text-sm" role="status" aria-live="polite"></div>
+      </div>
+      <div class="flex justify-start mt-6">
+        <button type="button" data-inema-read-toggle aria-pressed="false" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:bg-amber-500/30 transition-colors">
+          <span class="inema-read-icon" aria-hidden="true">○</span><span class="inema-read-label">Marcar como lido</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== RESUMO ===================== -->
+    <section class="mb-12">
+      <div class="bg-gradient-to-br from-amber-900/40 via-dark-800 to-dark-800 rounded-xl border border-amber-500/30 p-8">
+        <h2 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🎓</span> Resumo do módulo</h2>
+        <div class="space-y-4 mb-8">
+          <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-neutral-100">tool.call fica antes da permissão</strong><span class="text-neutral-400"> — deny, next ou result.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-neutral-100">O deny é lido pelo modelo</strong><span class="text-neutral-400"> — quem barrou, o que evitou, o que fazer.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-neutral-100">ui.ask com .catch e opção segura primeiro</strong><span class="text-neutral-400"> — claude -p não tem tela.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-neutral-100">agent.spawn troca o modelo do subagente</strong><span class="text-neutral-400"> — respeitando o pedido explícito.</span></div></div>
+          <div class="flex items-start space-x-3"><span class="text-amber-400 mt-1">✓</span><div><strong class="text-neutral-100">Nunca { result } por ferramenta do engine</strong><span class="text-neutral-400"> — a permissão continua decidindo.</span></div></div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-4 mb-8">
+          <h3 class="font-semibold text-amber-400 mb-2">Próximo módulo:</h3>
+          <p class="text-neutral-300">4.2 — Testar com claude plugin test</p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="index.html" class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">← Voltar para a trilha</a>
+          <a href="modulo-4-2.html" class="flex-1 text-center px-6 py-3 bg-amber-600 text-white rounded-lg font-semibold hover:bg-amber-500 transition-colors">Módulo 4.2 →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="hidden lg:block">
+    <nav data-inema-toc aria-label="Índice da página" class="sticky top-24">
+      <p class="text-sm text-neutral-400 mb-3"><span data-inema-section-counter>Seção 1 de 6</span></p>
+      <ol class="space-y-2 text-sm">
+        <li><a href="#topico-1" class="text-neutral-400 hover:text-amber-400">1. tool.call</a></li>
+        <li><a href="#topico-2" class="text-neutral-400 hover:text-amber-400">2. Negar com motivo</a></li>
+        <li><a href="#topico-3" class="text-neutral-400 hover:text-amber-400">3. ui.ask</a></li>
+        <li><a href="#topico-4" class="text-neutral-400 hover:text-amber-400">4. Modelo do subagente</a></li>
+        <li><a href="#topico-5" class="text-neutral-400 hover:text-amber-400">5. Permissões</a></li>
+        <li><a href="#topico-6" class="text-neutral-400 hover:text-amber-400">6. freio-de-mão</a></li>
+      </ol>
+    </nav>
+  </aside>
+  </div>
+
+  <footer class="border-t border-dark-600 py-8 mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+      <p>Mods do Claude Code — técnico · 2026 | <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300">INEMA.CLUB</a> - <a href="https://inema.pro" target="_blank" class="text-amber-700 hover:text-amber-600 dark:text-slate-300 dark:hover:text-slate-200">PRO</a></p>
+      <p class="mt-2 text-xs">Kits usados no curso: <a href="https://github.com/inematds/inema-mods" target="_blank" class="text-sky-400 hover:text-sky-300">inematds/inema-mods</a> · <a href="https://github.com/promptadvisers/claude-mods-starter-kit" target="_blank" class="text-sky-400 hover:text-sky-300">Claude Mods Starter Kit</a> (Prompt Advisers, MIT)</p>
+    </div>
+  </footer>
+
+  <script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const _html = document.documentElement;
+    if (!_html.classList.contains('dark')) { themeToggleDarkIcon.classList.remove('hidden'); }
+    else { themeToggleLightIcon.classList.remove('hidden'); }
+    themeToggle.addEventListener('click', () => {
+      if (window.INEMA && INEMA.setPref) { INEMA.setPref('theme', _html.classList.contains('dark') ? 'claro' : 'inema-dark'); }
+      else { _html.classList.toggle('dark'); }
+      themeToggleDarkIcon.classList.toggle('hidden', _html.classList.contains('dark'));
+      themeToggleLightIcon.classList.toggle('hidden', !_html.classList.contains('dark'));
+      try { localStorage.setItem('theme', _html.classList.contains('dark') ? 'dark' : 'light'); } catch (e) {}
+    });
+    function toggleTopic(button) {
+      const item = button.closest('.topic-item');
+      const exp = item.querySelector('.topic-explanation');
+      const card = button.closest('[id^="modulo-"]') || document;
+      card.querySelectorAll('.topic-explanation.active').forEach(e => { if (e !== exp) { e.classList.remove('active'); const b = e.parentElement.querySelector('[aria-controls]'); if (b) b.setAttribute('aria-expanded', 'false'); } });
+      exp.classList.toggle('active');
+      button.setAttribute('aria-expanded', exp.classList.contains('active') ? 'true' : 'false');
+    }
+    let _lastModalTrigger = null;
+    function openModal(id){ const m=document.getElementById(id); if(m){ _lastModalTrigger=document.activeElement; m.classList.remove('hidden'); document.body.style.overflow='hidden'; const c=m.querySelector('button'); if(c) c.focus(); } }
+    function closeModal(){ document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden')); document.body.style.overflow='auto'; if(_lastModalTrigger){ _lastModalTrigger.focus(); _lastModalTrigger=null; } }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  </script>
+  <script src="../../assets/learn.js"></script>
+  <script>
+    if (window.INEMA && typeof window.INEMA.init === 'function') { window.INEMA.init(); }
+  </script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      if (window.INEMA && INEMA.registerCheck) {
+
+        INEMA.registerCheck('modulo-4-1#q1', { answer: 1, explain: {
+          '0': 'Não há ninguém para responder num claude -p: os tipos dizem que o ui.ask rejeita nesse caso. Sem .catch, o hook falha e é pulado.',
+          '1': 'Isso. O .catch transforma a rejeição num padrão seguro e explícito: negar e explicar ao modelo, como fazem o freio-de-mao e o vigia-api.',
+          '2': 'Responder { result } por uma ferramenta do engine pula a permissão e mente ao modelo. Nunca prossiga calado numa ação destrutiva.'
+        } });
+      }
+    });
+  </script>
+</body>
+</html>
